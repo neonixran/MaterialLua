@@ -218,38 +218,6 @@ local Themes = {
 		ColorPickerAccent = Color3.fromRGB(219, 68, 103),
 		TextField = Color3.fromRGB(219, 68, 103),
 		TextFieldAccent = Color3.fromRGB(255, 255, 255)
-	},
-	Github = {
-		MainFrame = Color3.fromRGB(51, 3, 0),
-		Minimise = Color3.fromRGB(189, 44, 0),
-		MinimiseAccent = Color3.fromRGB(189, 44, 0),
-		Maximise = Color3.fromRGB(108, 198, 68),
-		MaximiseAccent = Color3.fromRGB(108, 198, 68),
-		NavBar = Color3.fromRGB(55,55,55),
-		NavBarAccent = Color3.fromRGB(255,255,255),
-		NavBarInvert = Color3.fromRGB(235,235,235),
-		TitleBar = Color3.fromRGB(116, 112, 140),
-		TitleBarAccent = Color3.fromRGB(255,255,255),
-		Overlay = Color3.fromRGB(116, 112, 140),
-		Banner = Color3.fromRGB(255,255,255),
-		BannerAccent = Color3.fromRGB(116, 112, 140),
-		Content = Color3.fromRGB(116, 112, 140),
-		Button = Color3.fromRGB(64, 120, 192),
-		ButtonAccent = Color3.fromRGB(64, 120, 192),
-		ChipSet = Color3.fromRGB(116, 112, 140),
-		ChipSetAccent = Color3.fromRGB(255,255,255),
-		DataTable = Color3.fromRGB(116, 112, 140),
-		DataTableAccent = Color3.fromRGB(255,255,255),
-		Slider = Color3.fromRGB(64, 120, 192),
-		SliderAccent = Color3.fromRGB(64, 120, 192),
-		Toggle = Color3.fromRGB(64, 120, 192),
-		ToggleAccent = Color3.fromRGB(64, 120, 192),
-		Dropdown = Color3.fromRGB(64, 120, 192),
-		DropdownAccent = Color3.fromRGB(64, 120, 192),
-		ColorPicker = Color3.fromRGB(64, 120, 192),
-		ColorPickerAccent = Color3.fromRGB(64, 120, 192),
-		TextField = Color3.fromRGB(245, 245, 245),
-		TextFieldAccent = Color3.fromRGB(255, 255, 255)
 	}
 }
 
@@ -3585,10 +3553,9 @@ function Material:Load(Config)
 					Options = {
 						"Light",
 						"Dark",
-						"GitHub",
 						"Mocha",
 						"Aqua",
-						"Jester",
+						"Jester"
 					}
 				})
 			end
