@@ -1,152 +1,175 @@
-local Material = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/MaterialLua/master/Module.lua"))()
-
-local X = Material.Load({
-	Title = "ChibuHub",
-	Style = 3,
-	SizeX = 500,
-	SizeY = 350,
-	Theme = "Light",
-	ColorOverrides = {
-		MainFrame = Color3.fromRGB(235,235,235)
-	}
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Module.lua"), "Material Lua")()
+local Lib = Library:Load({
+    Title = "Getting Started",
+    SizeX = 300,
+    SizeY = 360
 })
 
-local Y = X.New({
-	Title = "1"
+local Main = Lib:New({
+    Title = "Main"
 })
 
-local Z = X.New({
-	Title = "2"
+local Settings = Lib:New({
+    Title = "Settings"
 })
 
-local A = Y.Button({
-	Text = "Kill All",
-	Callback = function()
-		print("hello")
-	end,
-	Menu = {
-		Information = function(self)
-			X.Banner({
-				Text = "This function can get you banned in up-to-date servers; use at your own risk."
-			})
-		end
-	}
+Main:Separator()
+
+Main:Label({
+    Text = "Label",
+    XAlignment = "Center",
+    Menu = {
+        Information = function()
+            Lib:Banner({
+                Text = "This is a Label"
+            })
+        end
+    }
 })
 
-local B = Y.Toggle({
-	Text = "I'm a switch",
-	Callback = function(Value)
-		print(Value)
-	end,
-	Enabled = false
+Main:Button({
+    Text = "Button",
+    Callback = function()
+        print("Clicked!")
+    end,
+        Menu = {
+        Information = function()
+            Lib:Banner({
+                Text = "This is a Button"
+            })
+        end
+    }
 })
 
-local C = Y.Slider({
-	Text = "Slip and... you get the idea",
-	Callback = function(Value)
-		print(Value)
-	end,
-	Min = 200,
-	Max = 400,
-	Def = 300
+Main:Toggle({
+    Text = "Toggle",
+    Callback = function(State)
+        print(("Toggle State: %s"):format(tostring(State)))
+    end,
+    Enabled = false,
+    Menu = {
+        Information = function()
+            Lib:Banner({
+                Text = "This is a Toggle"
+            })
+        end
+    }
 })
 
-local D = Y.Dropdown({
-	Text = "Dropping care package",
-	Callback = function(Value)
-		print(Value)
-	end,
-	Options = {
-		"Floor 1",
-		"Floor 2",
-		"Floor 3",
-		"Floor 4",
-		"Floor 5"
-	},
-	Menu = {
-		Information = function(self)
-			X.Banner({
-				Text = "Test alert!"
-			})
-		end
-	}
+Main:Slider({
+    Text = "Slider",
+    Callback = function(Value)
+        print(("Slider Value: %d"):format(Value))
+    end,
+    Min = 200,
+    Max = 400,
+    Def = 300,
+    Menu = {
+        Information = function()
+            Lib:Banner({
+                Text = "This is a Slider"
+            })
+        end
+    }
 })
 
-local E = Y.ChipSet({
-	Text = "Chipping away",
-	Callback = function(ChipSet)
-		table.foreach(ChipSet, function(Option, Value)
-			print(Option, Value)
-		end)
-	end,
-	Options = {
-		ESP = true,
-		TeamCheck = false,
-		UselessBool = {
-			Enabled = true,
-			Menu = {
-				Information = function(self)
-					X.Banner({
-						Text = "This bool has absolutely no purpose whatsoever."
-					})
-				end
-			}
-		}
-	}
+Main:Dropdown({
+    Text = "Dropdown",
+    Callback = function(Value)
+    	print(("Dropdown Option: %s"):format(Value))
+    end,
+    Options = {
+        "A", 
+        "B",
+        "C"
+    },
+    Menu = {
+    	Information = function()
+            Lib:Banner({
+                Text = "This is a Dropdown"
+            })
+    	end
+    }
 })
 
-local F = Y.DataTable({
-	Text = "Chipping away",
-	Callback = function(ChipSet)
-		table.foreach(ChipSet, function(Option, Value)
-			print(Option, Value)
-		end)
-	end,
-	Options = {
-		ESP2 = true,
-		TeamCheck2 = false,
-		UselessBool2 = {
-			Enabled = true,
-			Menu = {
-				Information = function(self)
-					X.Banner({
-						Text = "This bool ALSO has absolutely no purpose. Sorry."
-					})
-				end
-			}
-		}
-	}
+Main:ChipSet({
+    Callback = function(Selected, State)
+    	print(Selected, State)
+    end,
+    Options = {
+    	A = true,
+    	B = true,
+    	C = false
+    },
+    Menu = {
+    	Information = function()
+            Lib:Banner({
+                Text = "This is a ChipSet"
+            })
+    	end
+    }
 })
 
-local G = Y.ColorPicker({
-	Text = "ESP Colour",
-	Default = Color3.fromRGB(0,255,110),
-	Callback = function(Value)
-		print("RGB:", Value.R * 255, Value.G * 255, Value.B * 255)
-	end,
-	Menu = {
-		Information = function(self)
-			X.Banner({
-				Text = "This changes the color of your ESP."
-			})
-		end
-	}
+Main:DataTable({
+    Callback = function(Selected, State)
+    	print(Selected, State)
+    end,
+    Options = {
+    	A = true,
+    	B = true,
+    	C = false
+    },
+    Menu = {
+    	Information = function()
+            Lib:Banner({
+                Text = "This is a DataTable"
+            })
+    	end
+    }
 })
 
-local H = Y.TextField({
-	Text = "Country",
-	Callback = function(Value)
-		print(Value)
-	end,
-	Menu = {
-		GB = function(self)
-			self.SetText("GB")
-		end,
-		JP = function(self)
-			self.SetText("JP")
-		end,
-		KO = function(self)
-			self.SetText("KO")
-		end
-	}
+Main:ColorPicker({
+    Text = "ColorPicker",
+    Callback = function(Value)
+    	print(("Color: %d, %d, %d"):format(Value.R * 255, Value.G * 255, Value.B * 255))
+    end,
+    Menu = {
+    	Information = function()
+            Lib:Banner({
+                Text = "This is a ColorPicker"
+            })
+    	end
+    }
 })
+
+Main:Bind({
+    Text = "Bind",
+    Bind = Enum.KeyCode.P,
+    Notify = true,
+    Callback = function(Value)
+    	print(("Bind: %s"):format(tostring(Value)))
+    end,
+    Menu = {
+    	Information = function()
+            Lib:Banner({
+                Text = "This is a Bind"
+            })
+    	end
+    }
+})
+
+Main:TextField({
+    Text = "Name",
+    Callback = function(Value)
+    	print(("TextField: %s"):format(Value))
+    end,
+    Menu = {
+    	Information = function()
+            Lib:Banner({
+                Text = "This is a TextField"
+            })
+    	end
+    }
+})
+
+Settings:GuiSettings()
