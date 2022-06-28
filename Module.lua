@@ -2759,7 +2759,7 @@ function Material:Load(Config)
                     return DataTable.Visible
                 end
 
-				function DataTable:Destroy()
+				function DataTableLibrary:Destroy()
 					DataTable:Destroy()
 				end
 
