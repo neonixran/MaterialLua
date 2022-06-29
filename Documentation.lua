@@ -1,7 +1,9 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Module.lua"), "Material Lua")()
 
 Library:Notification({
-    Text = <string[any]>
+    -> Title <string[any]>
+    -> Description <string[any]>
+    -> Duration <number[inf]> 
 })
 
 local Lib = Library:Load({
