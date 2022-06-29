@@ -20,7 +20,7 @@ local Mouse = Players.LocalPlayer:GetMouse()
 -- Data Settings --
 local Default = {
     Keybind = "RightControl",
-    Theme = "Jester",
+    Theme = "Light",
     Overrides = {
         MainFrame = {255, 255, 255}
     }
@@ -860,10 +860,42 @@ function Material:Load(Config)
         OldInstance:Destroy()
     end)
 
+	local function GetExploit()
+		local Table = {}
+        Table.Synapse = syn
+        Table.Sentinel = issentinelclosure
+        Table.ScriptWare = getexecutorname
+    
+        for ExploitName, ExploitFunction in next, Table do
+            if ExploitFunction then
+                return ExploitName
+            end
+        end
+        
+        return "Undefined"
+	end
+
+	local ProtectFunctions = {}
+    ProtectFunctions.Synapse = function(GuiObject)
+		syn.protect_gui(GuiObject)
+		GuiObject.Parent = CoreGui
+	end
+
+    ProtectFunctions.Sentinel = function(GuiObject)
+		GuiObject.Parent = CoreGui
+	end
+
+    ProtectFunctions.ScriptWare = function(GuiObject)
+		GuiObject.Parent = gethui()
+	end
+
+    ProtectFunctions.Undefined = function(GuiObject)
+		GuiObject.Parent = CoreGui
+	end
+
 	local NewInstance = Objects:New("ScreenGui")
 	NewInstance.Name = Load_Title
-	syn.protect_gui(NewInstance)
-	NewInstance.Parent = CoreGui
+	ProtectFunctions[GetExploit()](NewInstance)
 
 	getgenv().OldInstance = NewInstance
 
