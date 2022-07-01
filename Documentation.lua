@@ -16,6 +16,7 @@ local Lib = Library:Load({
     -> DestroyOtherGUIs <bool=true>
     -> Theme <string["Light", "Dark", "Mocha", "Aqua", "Jester"]
     -> Overrides <table>
+    -> Menu <table>
 })
 
 Lib:Banner({
