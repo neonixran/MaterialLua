@@ -837,6 +837,7 @@ function Material:Load(Config)
 
 	local Load_Title = typeof(Config.Title) == "string" and Config.Title or "Getting Started"
 	local Load_RichText = typeof(Config.RichText) == "boolean" and Config.RichText or false
+	local Load_DestroyOtherGUIs = typeof(Config.DestroyOtherGUIs) ~= "boolean" and true or Config.DestroyOtherGUIs
 	local Load_Font = typeof(Config.Font) == "EnumItem" and Config.Font or Enum.Font.GothamSemibold
 	local Load_SizeX = typeof(Config.SizeX) == "number" and Config.SizeX or 255
 	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
@@ -856,9 +857,11 @@ function Material:Load(Config)
 
 	local Load_TextColor = typeof(Config.TextColor) == "Color3" and Config.TextColor or ThisTheme.TitleBarAccent
 
-	pcall(function()
-        OldInstance:Destroy()
-    end)
+	if Load_DestroyOtherGUIs then
+		pcall(function()
+			OldInstance:Destroy()
+		end)
+	end
 
 	local function GetExploit()
 		local Table = {}
@@ -897,7 +900,7 @@ function Material:Load(Config)
 	NewInstance.Name = Load_Title
 	ProtectFunctions[GetExploit()](NewInstance)
 
-	getgenv().OldInstance = NewInstance
+	getgenv().OldInstance = Load_DestroyOtherGUIs and nil or NewInstance
 
 	MainGUI = NewInstance
 
@@ -3751,6 +3754,10 @@ function Material:Load(Config)
 
 	function TabLibrary:GetFont()
 		return TitleText.Font
+	end
+
+	function TabLibrary:CloseUI()
+		NewInstance:Destroy()
 	end
 
     return TabLibrary
