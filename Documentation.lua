@@ -13,6 +13,7 @@ local Lib = Library:Load({
     -> Style <number[1, 2, 3]>
     -> SizeX <number[inf]>
     -> SizeY <number[inf]>
+    -> DestroyOtherGUIs <bool=true>
     -> Theme <string["Light", "Dark", "Mocha", "Aqua", "Jester"]
     -> Overrides <table>
 })
@@ -170,6 +171,7 @@ Main:GuiSettings({
 <Color3> Lib:GetTextColor(<void>)
 <void> Lib:SetFont(<EnumItem>)
 <EnumItem> Lib:GetFont(<void>)
+<void> Lib:CloseUI(<void>)
 
 <void> Banner:SetText(<string[any]>)
 <string> Banner:GetText(<void>)
