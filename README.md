@@ -12,6 +12,7 @@ A material design library, designed for use in Roblox.
 - UI:
 [+] Added :Separator() UI element.
 [+] Added :Bind() UI element.
+[+] Added DestroyOtherGUIs parameter. 
 [+] Added :GuiSettings() function.
 [+] Added Config (this will save: KeyBind, Theme and Overrides->MainFrame).
     [!] If you change the theme, it will be updated when you run the UI again.
