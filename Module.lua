@@ -837,7 +837,10 @@ function Material:Load(Config)
 
 	local Load_Title = typeof(Config.Title) == "string" and Config.Title or "Getting Started"
 	local Load_RichText = typeof(Config.RichText) == "boolean" and Config.RichText or false
-	local Load_DestroyOtherGUIs = typeof(Config.DestroyOtherGUIs) ~= "boolean" and true or Config.DestroyOtherGUIs
+	local Load_UI = typeof(Config.UI) == "table" and Config.UI or {
+        CheckName = false,
+        DestroyOthers = true
+    }
 	local Load_Font = typeof(Config.Font) == "EnumItem" and Config.Font or Enum.Font.GothamSemibold
 	local Load_SizeX = typeof(Config.SizeX) == "number" and Config.SizeX or 255
 	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
@@ -857,24 +860,24 @@ function Material:Load(Config)
 
 	local Load_TextColor = typeof(Config.TextColor) == "Color3" and Config.TextColor or ThisTheme.TitleBarAccent
 
-	if Load_DestroyOtherGUIs then
-		pcall(function()
+	pcall(function()
+        if Load_UI.CheckName and OldInstance.Name == Load_Title or Load_UI.DestroyOthers then
 			OldInstance:Destroy()
-		end)
-	end
+        end
+	end)
 
 	local function GetExploit()
 		local Table = {}
         Table.Synapse = syn
         Table.Sentinel = issentinelclosure
         Table.ScriptWare = getexecutorname
-    
+   
         for ExploitName, ExploitFunction in next, Table do
             if ExploitFunction then
                 return ExploitName
             end
         end
-        
+
         return "Undefined"
 	end
 
@@ -900,7 +903,7 @@ function Material:Load(Config)
 	NewInstance.Name = Load_Title
 	ProtectFunctions[GetExploit()](NewInstance)
 
-	getgenv().OldInstance = Load_DestroyOtherGUIs and nil or NewInstance
+	getgenv().OldInstance = NewInstance
 
 	MainGUI = NewInstance
 
