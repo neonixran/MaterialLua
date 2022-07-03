@@ -9,78 +9,91 @@ A material design library, designed for use in Roblox.
 
 # Full Changelog
 ```
-- UI:
-[+] Added :Separator() UI element.
-[+] Added :Bind() UI element.
-[+] Added DestroyOtherGUIs parameter. 
-[+] Added :GuiSettings() function.
-[+] Added Config (this will save: KeyBind, Theme and Overrides->MainFrame).
+- Library:
+[+] Added :Separator(...) and :Bind(...) UI Elements.
+[+] Added :GetLoaded() and :GuiSettings(...) functions.
+[+] Added Save config (this will save: KeyBind, Theme and Overrides -> MainFrame).
     [!] If you change the theme, it will be updated when you run the UI again.
 [+] Added blacklisted KeyCodes.
-[+] Added :GetLoadedTime(), :GetBlacklist() and :Blacklist_KeyCode() functions.
-[*] Changed hide button to destroy button.
+    [+] Added :GetBlacklist() and :Blacklist_KeyCode(...) functions.
+[*] Changed Hide UI button to Destroy UI button.
+[!] Changed "." to ":" (Example: .Load to :Load)
+
+
+- UI elements (This is not available for UI all elements):
+[+] Added RichText, TextColor, Font and Visible parameters.
+[+] Added :SetTextColor(...), :GetTextColor(), :SetFont(...), :GetFont(), :SetVisible(...), :GetVisible() and :Destroy() functions.
+
 
 - :Load()
-    [+] Added RichText and Font parameters.
-    [+] Added Config in Overrides->MainFrame.
+[+] Added Config in Overrides->MainFrame.
+[+] Added UI parameter.
+    [+] Added CheckName.
+    [+] Added DestroyOthers.
+
 
 - :Banner()
-    [+] Added RichText, Font and TextColor parameters.
-    [+] Added Duration parameter.
-    [+] Added Button parameter (You can change the default text of the button).
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont() and :Close() functions.
+[+] Added Duration parameter.
+[+] Added Button parameter. (You can change the default text of the button)
+[+] Added :Close() function.
+
 
 - :New()
-    [+] Added RichText, Font, TextColor and Visible parameters.
-    [+] Added :GetTitle(), :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :SetImage() and :GetImage() functions.
+[+] Added :GetTitle(), :SetImage(...) and :GetImage() functions.
 
-- :Separator()
-    [+] Added Visible parameter.
-    [+] Addded :SetVisible(), :GetVisible() and :Destroy() functions.
 
 - :Label()
-    [+] Added XAlignment, RichText, TextColor, Font, Visible, MouseEnter, MouseLeave and Menu parameters.
-    [+] Added :SetAlignment(), :GetAlignment(), :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible() and :Destroy() functions.
+[+] Added XAlignment, MouseEnter, MouseLeave and Menu parameters.
+[+] Added :SetAlignment(...) and :GetAlignment()
+
 
 - :Button()
-    [+] Added RichText, Font, TextColor and Visible parameters.
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :Click() and :Destroy() functions.
+[+] Added :Click() function.
+
 
 - :Toggle()
-    [+] Added RichText, TextColor, Font, Disable and Visible parameters.
-        [!] The Disable parameter if set to true will disable all active toggles when the UI is destroyed.
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :SetDisable(), :GetDisable(), :StateChanged() and :Destroy() functions.
+[+] Added Disable parameter.
+    [!] The Disable parameter if set to true will disable all active toggles when the UI is destroyed.
+[+] Added :SetDisable(...), :GetDisable() and :StateChanged() functions.
+
 
 - :Slider()
-    [+] Added RichText, TextColor, Font, Disable and Visible parameters.
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :GetValue() and :Destroy() functions.
+[+] Added Precision parameter.
+[*] Changed Def parameter to Default.
+[+] Added :GetValue() function.
+
 
 - :Dropdown()
-    [+] Added RichText, TextColor, Font, Default, Hide and Visible parameters.
-        [!] The Hide parameter if set to true will hide the menu when an option is selected.
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :SetOption(), :GetOption() and :Destroy() functions.
+[+] Added Default and Hide parameters.
+    [!] The Hide parameter if set to true will hide the menu when an option is selected.
+[+] Added :SetOption(...) and :GetOption() functions.
+
 
 - :ChipSet() and :DataTable()
-    [*] Updated the way in which callback works -> Callback(function(Selected, State).
-        [!] Each option and state is separate from the others.
-    [+] Added Disable and Visible parameters.
-    [+] Added :GetOptions(), :SetState(), :GetState(), :SetVisible(), :GetVisible() and :Destroy() functions.
+[*] Updated the way in which callback works -> Callback(function(Selected, State).
+    [!] Each option and state is separate from the others.
+[+] Added Disable parameter.
+[+] Added :SetState(...) and :GetState() functions.
+
 
 - :ColorPicker()
-    [+] Added RichText, TextColor, Font, Default, Hide and Visible parameters.
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible() and :Destroy() functions.
+[+] Added Default and Hide parameters.
+
 
 - :Bind()
-    [+] Added RichText, TextColor, Font, Default, Hide, Notify and Visible parameters.
-        [!] The Notify parameter will notify the bind state.
-    [+] Added :SetText(), :GetText(), :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :SetState(), :GetState(), :SetNotify(), :GetNotify(), :SetBind(), :GetBind() and :Destroy() functions.
+[+] Added Default, Hide and Notify parameters.
+    [!] The Notify parameter will notify the bind state.
+[+] Added :SetState(...), :GetState(), :SetNotify(...), :GetNotify(), :SetBind(...) and :GetBind() functions.
 
-- :TextField()
-    [+] Added RichText, TextColor, Font, Default and Visible parameters.
-    [+] Added :SetTextColor(), :GetTextColor(), :SetFont(), :GetFont(), :SetVisible(), :GetVisible(), :SetInputType(), :GetInputType() and :Destroy() functions.
+
+- TextField()
+[+] Added Default parameter.
+[+] Added :SetInputType(...) and :GetInputType() functions.
+
 
 - :GuiSettings()
-    [+] Added Theme, Options and Rejoin parameters
-    [+] Added Hide UI using keys
-    [!] The settings will be saved when the Gui is destroyed or the player exits the game.`
+[+] Added Theme, Options and Rejoin parameters.
+    [!] The Options parameter includes: Dev Console, Micro Profiler and Performace Stats.
+[+] Added Hide UI using keys.
+[!] The settings will be saved when the Gui is destroyed or the player exits the game.
 ```
