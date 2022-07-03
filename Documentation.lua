@@ -13,7 +13,9 @@ local Lib = Library:Load({
     -> Style <number[1, 2, 3]>
     -> SizeX <number[inf]>
     -> SizeY <number[inf]>
-    -> DestroyOtherGUIs <bool=true>
+    -> UI <table>
+        -> CheckName <bool=false>
+        -> DestroyOthers <bool=true>
     -> Theme <string["Light", "Dark", "Mocha", "Aqua", "Jester"]
     -> Overrides <table>
     -> Menu <table>
