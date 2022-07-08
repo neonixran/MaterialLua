@@ -7,7 +7,7 @@ A material design library, designed for use in Roblox.
 # Documentation Site
 [MLDocs](http://materiallua.gq)
 
-# Full Changelog
+# Full Changelog [08/07/2022]
 ```
 - Library:
 [+] Added :Separator(...) and :Bind(...) UI Elements.
@@ -21,8 +21,8 @@ A material design library, designed for use in Roblox.
 
 
 - UI elements (This is not available for UI all elements):
-[+] Added RichText, TextColor, Font and Visible parameters.
-[+] Added :SetTextColor(...), :GetTextColor(), :SetFont(...), :GetFont(), :SetVisible(...), :GetVisible() and :Destroy() functions.
+[+] Added RichText, TextColor, Font, XAlignment and Visible parameters.
+[+] Added :SetAlignment(...), :GetAlignment(), :SetTextColor(...), :GetTextColor(), :SetFont(...), :GetFont(), :SetVisible(...), :GetVisible() and :Destroy() functions.
 
 
 - :Load()
