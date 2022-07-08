@@ -10,6 +10,8 @@ local Lib = Library:Load({
     -> Title <string[any]>
     -> RichText <bool=false>
     -> Font <EnumItem[any]>
+    -> XAlignment <string["Left", "Center"]>
+    -> Position = <string["Top-Left", "Left", "Center", "Top-Right", "Right"]>
     -> Style <number[1, 2, 3]>
     -> SizeX <number[inf]>
     -> SizeY <number[inf]>
@@ -41,13 +43,13 @@ local Main = Lib:New({
 })
 
 Main:Separator({
-    Visible = <bool=true>
+    -> Visible <bool=true>
 })
 
 Main:Label({
     -> Text <string[any]>
-    -> XAlignment <string["Left", "Center", "Right"]>
-    -> RichText 
+    -> XAlignment <string["Left", "Center"]>
+    -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
     -> Visible <bool=true>
@@ -58,6 +60,7 @@ Main:Label({
 
 Main:Button({
     -> Text <string[any]>
+    -> XAlignment <string["Left", "Center"]>            
     -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
@@ -68,6 +71,7 @@ Main:Button({
 
 Main:Toggle({
     -> Text <string[any]>
+    -> XAlignment <string["Left", "Center"]>               
     -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
@@ -80,6 +84,7 @@ Main:Toggle({
 
 Main:Slider({
     -> Text <string[any]>
+    -> XAlignment <string["Left", "Center"]>                    
     -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
@@ -94,6 +99,7 @@ Main:Slider({
 
 Main:Dropdown({
     -> Text <string[any]>
+    -> XAlignment <string["Left", "Center"]>                       
     -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
@@ -121,6 +127,7 @@ Main:DataTable({
 
 Main:ColorPicker({
     -> Text <string[any]>
+    -> XAlignment <string["Left", "Center"]>                                   
     -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
@@ -132,6 +139,7 @@ Main:ColorPicker({
 
 Main:Bind({
     -> Text <string[any]>
+    -> XAlignment <string["Left", "Center"]>                                      
     -> RichText <bool=false>
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
@@ -170,6 +178,8 @@ Main:GuiSettings({
 
 <void> Lib:SetTitle(<string[any]>)
 <string> Lib:GetTitle(<void>)
+<void> Lib:SetAlignment(<string["Left", "Center"]>)
+<string> Lib:GetAlignment(<void>)
 <void> Lib:SetTextColor(<Color3>)
 <Color3> Lib:GetTextColor(<void>)
 <void> Lib:SetFont(<EnumItem>)
@@ -201,7 +211,7 @@ Main:GuiSettings({
 
 <void> Label:SetText(<string[any]>)
 <string> Label:GetText(<void>)
-<void> Label:SetAlignment(<string["Left", "Center", "Right"]>)
+<void> Label:SetAlignment(<string["Left", "Center"]>)
 <string> Label:GetAlignment(<void>)
 <void> Label:SetTextColor(<Color3>)
 <Color3> Label:GetTextColor(<void>)
@@ -213,6 +223,8 @@ Main:GuiSettings({
 
 <void> Button:SetText(<string[any]>)
 <string> Button:GetText(<void>)
+<void> Button:SetAlignment(<string["Left", "Center"]>)
+<string> Button:GetAlignment(<void>)
 <void> Button:SetTextColor(<Color3>)
 <Color3> Button:GetTextColor(<void>)
 <void> Button:SetFont(<EnumItem>)
@@ -224,6 +236,8 @@ Main:GuiSettings({
 
 <void> Toggle:SetText(<string[any]>)
 <string> Toggle:GetText(<void>)
+<void> Toggle:SetAlignment(<string["Left", "Center"]>)
+<string> Toggle:GetAlignment(<void>)
 <void> Toggle:SetTextColor(<Color3>)
 <Color3> Toggle:GetTextColor(<void>)
 <void> Toggle:SetFont(<EnumItem>)
@@ -239,6 +253,8 @@ Main:GuiSettings({
 
 <void> Slider:SetText(<string[any]>)
 <string> Slider:GetText(<void>)
+<void> Slider:SetAlignment(<string["Left", "Center"]>)
+<string> Slider:GetAlignment(<void>)
 <void> Slider:SetTextColor(<Color3>)
 <Color3> Slider:GetTextColor(<void>)
 <void> Slider:SetFont(<EnumItem>)
@@ -254,6 +270,8 @@ Main:GuiSettings({
 
 <void> Dropdown:SetText(<string[any]>)
 <string> Dropdown:GetText(<void>)
+<void> Dropdown:SetAlignment(<string["Left", "Center"]>)
+<string> Dropdown:GetAlignment(<void>)
 <void> Dropdown:SetTextColor(<Color3>)
 <Color3> Dropdown:GetTextColor(<void>)
 <void> Dropdown:SetFont(<EnumItem>)
@@ -284,6 +302,8 @@ Main:GuiSettings({
 
 <void> ColorPicker:SetText(<string[any]>)
 <string> ColorPicker:GetText(<void>)
+<void> ColorPicker:SetAlignment(<string["Left", "Center"]>)
+<string> ColorPicker:GetAlignment(<void>)
 <void> ColorPicker:SetTextColor(<Color3>)
 <Color3> ColorPicker:GetTextColor(<void>)
 <void> ColorPicker:SetFont(<EnumItem>)
@@ -296,6 +316,8 @@ Main:GuiSettings({
 
 <void> Bind:SetText(<string[any]>)
 <string> Bind:GetText(<void>)
+<void> Bind:SetAlignment(<string["Left", "Center"]>)
+<string> Bind:GetAlignment(<void>)
 <void> Bind:SetTextColor(<Color3>)
 <Color3> Bind:GetTextColor(<void>)
 <void> Bind:SetFont(<EnumItem>)
