@@ -65,8 +65,6 @@ local Themes = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
-		Maximise = Color3.fromRGB(25, 255, 0),
-		MaximiseAccent = Color3.fromRGB(0, 255, 110),
 		NavBar = Color3.fromRGB(124, 37, 255),
 		NavBarAccent = Color3.fromRGB(255, 255, 255),
 		NavBarInvert = Color3.fromRGB(30, 30, 30),
@@ -127,8 +125,6 @@ local Themes = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
-		Maximise = Color3.fromRGB(189, 183, 177),
-		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		NavBar = Color3.fromRGB(176, 148, 125),
 		NavBarAccent = Color3.fromRGB(255, 255, 255),
 		NavBarInvert = Color3.fromRGB(30, 30, 30),
@@ -159,8 +155,6 @@ local Themes = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
-		Maximise = Color3.fromRGB(189, 183, 177),
-		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		NavBar = Color3.fromRGB(116, 112, 140),
 		NavBarAccent = Color3.fromRGB(255, 255, 255),
 		NavBarInvert = Color3.fromRGB(30, 30, 30),
@@ -191,8 +185,6 @@ local Themes = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
-		Maximise = Color3.fromRGB(189, 183, 177),
-		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		NavBar = Color3.fromRGB(219, 68, 103),
 		NavBarAccent = Color3.fromRGB(255, 255, 255),
 		NavBarInvert = Color3.fromRGB(30, 30, 30),
@@ -684,9 +676,7 @@ function TryAddMenu(Object, Menu, ReturnTable)
 		end)
 
         if Load_Style == 3 then
-			local GetMain = MainGUI:FindFirstChild("MainFrame") or MainGUI:WaitForChild("MainFrame", 10)
-
-			if GetMain then
+			if MainGUI:WaitForChild("MainFrame", 10) then
 				MainGUI.MainFrame.Overlay:GetPropertyChangedSignal("Visible"):Connect(function()
 					if MainGUI.MainFrame.Overlay.Visible then
 						TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(120, 0)}):Play()
@@ -760,6 +750,7 @@ function CreateNewButton(ButtonConfig, Parent)
 	ButtonConfig = (typeof(ButtonConfig) == "table" and ButtonConfig) or {}
 
 	local Button_Text = typeof(ButtonConfig.Text) == "string" and ButtonConfig.Text or "Button"
+	local Button_XAlignment = typeof(ButtonConfig.XAlignment) == "string" and ButtonConfig.XAlignment ~= "Right" and ButtonConfig.XAlignment or "Left"
 	local Button_RichText = typeof(ButtonConfig.RichText) == "boolean" and ButtonConfig.RichText or false
 	local Button_TextColor = typeof(ButtonConfig.TextColor) == "Color3" and ButtonConfig.TextColor or ThisTheme.ButtonAccent
 	local Button_Font = typeof(ButtonConfig.Font) == "EnumItem" and ButtonConfig.Font or Enum.Font.GothamSemibold
@@ -788,6 +779,7 @@ function CreateNewButton(ButtonConfig, Parent)
 	ButtonLabel.TextColor3 = Button_TextColor
 	ButtonLabel.Font = Button_Font
 	ButtonLabel.TextSize = 14
+	ButtonLabel.TextXAlignment = Button_XAlignment
     ButtonLabel.RichText = Button_RichText
 	ButtonLabel.ClipsDescendants = true
 	ButtonLabel.TextTransparency = 1
@@ -808,6 +800,12 @@ function CreateNewButton(ButtonConfig, Parent)
 		end,
 		GetText = function()
 			return ButtonLabel.Text
+		end,
+		SetAlignment = function(Alignment)
+			ButtonLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ButtonLabel.TextXAlignment
+		end,
+		GetAlignment = function()
+			return ButtonLabel.TextXAlignment.Name
 		end,
 		SetTextColor = function(TextColor)
 			ButtonLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ButtonLabel.TextColor3
@@ -836,6 +834,7 @@ function Material:Load(Config)
 	Load_Style = typeof(Config.Style) == "number" and (Config.Style and math.clamp(Config.Style, 1, 3)) or 3
 
 	local Load_Title = typeof(Config.Title) == "string" and Config.Title or "Getting Started"
+	local Load_XAlignment = typeof(Config.XAlignment) == "string" and Config.XAlignment ~= "Right" and Config.XAlignment or "Left"
 	local Load_RichText = typeof(Config.RichText) == "boolean" and Config.RichText or false
 	local Load_UI = typeof(Config.UI) == "table" and Config.UI or {
         CheckName = false,
@@ -844,12 +843,13 @@ function Material:Load(Config)
 	local Load_Font = typeof(Config.Font) == "EnumItem" and Config.Font or Enum.Font.GothamSemibold
 	local Load_SizeX = typeof(Config.SizeX) == "number" and Config.SizeX or 255
 	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
+    local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
 	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
 	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or {
-		MainFrame = Color3.fromRGB(Setting.Overrides.MainFrame[1], Setting.Overrides.MainFrame[2], Setting.Overrides.MainFrame[3])
+		MainFrame = table.maxn(Setting.Overrides.MainFrame) == 3 and Color3.fromRGB(unpack(Setting.Overrides.MainFrame))
 	}
 
-	local Load_Menu = (typeof(Config.Menu) == "table" and Config.Menu) or {}
+	local Load_Menu = typeof(Config.Menu) == "table" and Config.Menu or {}
 
     Load_Theme = Themes[Load_Theme]
 	ThisTheme = Load_Theme
@@ -866,42 +866,17 @@ function Material:Load(Config)
         end
 	end)
 
-	local function GetExploit()
-		local Table = {}
-        Table.Synapse = syn
-        Table.Sentinel = issentinelclosure
-        Table.ScriptWare = getexecutorname
-   
-        for ExploitName, ExploitFunction in next, Table do
-            if ExploitFunction then
-                return ExploitName
-            end
-        end
-
-        return "Undefined"
-	end
-
-	local ProtectFunctions = {}
-    ProtectFunctions.Synapse = function(GuiObject)
-		syn.protect_gui(GuiObject)
-		GuiObject.Parent = CoreGui
-	end
-
-    ProtectFunctions.Sentinel = function(GuiObject)
-		GuiObject.Parent = CoreGui
-	end
-
-    ProtectFunctions.ScriptWare = function(GuiObject)
-		GuiObject.Parent = gethui()
-	end
-
-    ProtectFunctions.Undefined = function(GuiObject)
-		GuiObject.Parent = CoreGui
-	end
-
 	local NewInstance = Objects:New("ScreenGui")
 	NewInstance.Name = Load_Title
-	ProtectFunctions[GetExploit()](NewInstance)
+
+    if not is_sirhurt_closure and syn and syn.protect_gui then
+        syn.protect_gui(NewInstance)
+        NewInstance.Parent = CoreGui
+    elseif gethui then
+        NewInstance.Parent = gethui()
+    else
+        NewInstance.Parent = CoreGui
+    end
 
 	getgenv().OldInstance = NewInstance
 
@@ -909,9 +884,9 @@ function Material:Load(Config)
 
     local MainFrame = Objects:New("Round")
 	MainFrame.Name = "MainFrame"
-	MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	MainFrame.AnchorPoint = Load_Position == "Top-Left" and Vector2.new(0, 0) or Load_Position == "Left" and Vector2.new(0, 0.5) or Load_Position == "Center" and Vector2.new(0.5, 0.5) or Load_Position == "Top-Right" and Vector2.new(1, 0) or Load_Position == "Right" and Vector2.new(1, 0.5)
 	MainFrame.Size = UDim2.fromOffset(0, Load_SizeY)
-	MainFrame.Position = UDim2.fromScale(0.5, 0.5)
+	MainFrame.Position = Load_Position == "Top-Left" and UDim2.fromOffset(5, 0) or Load_Position == "Left" and UDim2.new(0, 5, 0.555, 0) or Load_Position == "Center" and UDim2.fromScale(0.5, 0.5) or Load_Position == "Top-Right" and UDim2.fromScale(0.99, 0) or Load_Position == "Right" and UDim2.fromScale(0.99, 0.5)
 	MainFrame.ImageColor3 = ThisTheme.MainFrame
 	MainFrame.Parent = NewInstance
 
@@ -945,6 +920,7 @@ function Material:Load(Config)
 	local TitleText = Objects:New("Button")
 	TitleText.Name = "Title"
 	TitleText.Text = Load_Title
+	TitleText.TextXAlignment = Load_XAlignment
     TitleText.RichText = Load_RichText
 	TitleText.TextColor3 = Load_TextColor
 	TitleText.TextTransparency = 1
@@ -1361,7 +1337,7 @@ function Material:Load(Config)
 			LabelConfig = (typeof(LabelConfig) == "table" and LabelConfig) or {}
 
 			local Label_Text = typeof(LabelConfig.Text) == "string" and LabelConfig.Text or "Button"
-			local Label_XAlignment = typeof(LabelConfig.XAlignment) == "string" and LabelConfig.XAlignment or "Left"
+			local Label_XAlignment = typeof(LabelConfig.XAlignment) == "string" and LabelConfig.XAlignment ~= "Right" and LabelConfig.XAlignment or "Left"
 			local Label_RichText = typeof(LabelConfig.RichText) == "boolean" and LabelConfig.RichText or false
 			local Label_TextColor = typeof(LabelConfig.TextColor) == "Color3" and LabelConfig.TextColor or ThisTheme.ButtonAccent
 			local Label_Font = typeof(LabelConfig.Font) == "EnumItem" and LabelConfig.Font or Enum.Font.GothamSemibold
@@ -1450,7 +1426,7 @@ function Material:Load(Config)
 			end
 
 			function LabelLibrary:SetAlignment(Alignment)
-				LabelContent.TextXAlignment = typeof(Alignment) == "string" and Enum.TextXAlignment[Alignment] or LabelContent.TextXAlignment
+				LabelContent.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or LabelContent.TextXAlignment
 			end
 
 			function LabelLibrary:GetAlignment()
@@ -1501,7 +1477,15 @@ function Material:Load(Config)
 				return ButtonLabel.Text
 			end
 
-			function ButtonLibrary:SetTextColor(TextColor)
+			function ButtonLibrary:SetAlignment(Alignment)
+				ButtonLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ButtonLabel.TextXAlignment
+			end
+
+			function ButtonLibrary:GetAlignment()
+				return ButtonLabel.TextXAlignment.Name
+			end
+
+		    function ButtonLibrary:SetTextColor(TextColor)
 				ButtonLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ButtonLabel.TextColor3
 			end
 
@@ -1541,6 +1525,7 @@ function Material:Load(Config)
 
 			local Toggle_Text = typeof(ToggleConfig.Text) == "string" and ToggleConfig.Text or "Toggle"
 			local Toggle_RichText = typeof(ToggleConfig.RichText) == "boolean" and ToggleConfig.RichText or false
+            local Toggle_XAlignment = typeof(ToggleConfig.XAlignment) == "string" and ToggleConfig.XAlignment ~= "Right" and ToggleConfig.XAlignment or "Left"
 			local Toggle_TextColor = typeof(ToggleConfig.TextColor) == "Color3" and ToggleConfig.TextColor or ThisTheme.Toggle
 			local Toggle_Font = typeof(ToggleConfig.Font) == "EnumItem" and ToggleConfig.Font or Enum.Font.GothamSemibold
 			local Toggle_Visible = typeof(ToggleConfig.Visible) ~= "boolean" and true or ToggleConfig.Visible
@@ -1595,6 +1580,7 @@ function Material:Load(Config)
 			ToggleLabel.TextSize = 14
 			ToggleLabel.Text = Toggle_Text
             ToggleLabel.RichText = Toggle_RichText
+            ToggleLabel.TextXAlignment = Enum.TextXAlignment[Toggle_XAlignment]
 			ToggleLabel.TextColor3 = Toggle_TextColor
 			ToggleLabel.TextTransparency = 1
 			ToggleLabel.ClipsDescendants = true
@@ -1639,6 +1625,12 @@ function Material:Load(Config)
 				end,
 				GetText = function()
 					return ToggleLabel.Text
+				end,
+			 	SetAlignment = function(Alignment)
+					ToggleLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ToggleLabel.TextXAlignment
+				end,
+				GetAlignment = function()
+					return ToggleLabel.TextXAlignment.Name
 				end,
 				SetTextColor = function(TextColor)
 					ToggleLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ToggleLabel.TextColor3
@@ -1691,6 +1683,14 @@ function Material:Load(Config)
 
 			function ToggleLibrary:GetText()
 				return ToggleLabel.Text
+			end
+
+            function ToggleLibrary:SetAlignment(Alignment)
+				ToggleLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ToggleLabel.TextXAlignment
+			end
+
+			function ToggleLibrary:GetAlignment()
+				return ToggleLabel.TextXAlignment.Name
 			end
 
 			function ToggleLibrary:SetTextColor(TextColor)
@@ -1758,6 +1758,7 @@ function Material:Load(Config)
 			SliderConfig = typeof(SliderConfig) == "table" and SliderConfig or {}
 
    			local Slider_Text = typeof(SliderConfig.Text) == "string" and SliderConfig.Text or "Slider"
+			local Slider_XAlignment = typeof(SliderConfig.XAlignment) == "string" and SliderConfig.XAlignment ~= "Right" and SliderConfig.XAlignment or "Left"
 			local Slider_Visible = typeof(SliderConfig.Visible) ~= "boolean" and true or SliderConfig.Visible
             local Slider_RichText = typeof(SliderConfig.RichText) == "boolean" and SliderConfig.RichText or false
 			local Slider_TextColor = typeof(SliderConfig.TextColor) == "Color3" and SliderConfig.TextColor or ThisTheme.SliderAccent
@@ -1795,6 +1796,7 @@ function Material:Load(Config)
             SliderTitle.TextColor3 = Slider_TextColor
             SliderTitle.Text = Slider_Text
             SliderTitle.TextSize = 14
+			SliderTitle.TextXAlignment = Slider_XAlignment
             SliderTitle.RichText = Slider_RichText
             SliderTitle.Font = Slider_Font
             SliderTitle.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-5, 25)
@@ -1891,6 +1893,12 @@ function Material:Load(Config)
 				GetText = function()
 					return SliderTitle.Text
 				end,
+				SetAlignment = function(Alignment)
+					SliderTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or SliderTitle.TextXAlignment
+				end,
+				GetAlignment = function()
+					return SliderTitle.TextXAlignment.Name
+				end,
 				SetTextColor = function(TextColor)
 					SliderTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or SliderTitle.TextColor3
 				end,
@@ -1948,6 +1956,14 @@ function Material:Load(Config)
 
 			function SliderLibrary:GetText()
 				return SliderTitle.Text
+			end
+
+			function SliderLibrary:SetAlignment(Alignment)
+				SliderTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or SliderTitle.TextXAlignment
+			end
+
+			function SliderLibrary:GetAlignment()
+				return SliderTitle.TextXAlignment.Name
 			end
 
 			function SliderLibrary:SetTextColor(TextColor)
@@ -2015,6 +2031,7 @@ function Material:Load(Config)
 			DropdownConfig = typeof(DropdownConfig) == "table" and DropdownConfig or {}
 
 			local Dropdown_Text = typeof(DropdownConfig.Text) == "string" and DropdownConfig.Text or "Dropdown"
+			local Dropdown_XAlignment = typeof(DropdownConfig.XAlignment) == "string" and DropdownConfig.XAlignment ~= "Right" and DropdownConfig.XAlignment or "Left"
 			local Dropdown_RichText = typeof(DropdownConfig.RichText) == "boolean" and DropdownConfig.RichText or false
 			local Dropdown_TextColor = typeof(DropdownConfig.TextColor) == "Color3" and DropdownConfig.TextColor or ThisTheme.DropdownAccent
 			local Dropdown_Font = typeof(DropdownConfig.Font) == "EnumItem" and DropdownConfig.Font or Enum.Font.GothamSemibold
@@ -2044,6 +2061,7 @@ function Material:Load(Config)
             local DropdownTitle = Objects:New("Button")
 			DropdownTitle.Name = "Title"
 			DropdownTitle.Font = Dropdown_Font
+			DropdownTitle.TextXAlignment = Dropdown_XAlignment
 			DropdownTitle.Text = ("%s: %s"):format(Dropdown_Text, table.find(Dropdown_Options, Dropdown_Default) and Dropdown_Default or "")
 			DropdownTitle.RichText = Dropdown_RichText
 			DropdownTitle.TextColor3 = Dropdown_TextColor
@@ -2133,6 +2151,12 @@ function Material:Load(Config)
 				GetText = function()
 					return DropdownTitle.Text:split(": ")[1]
 				end,
+				SetAlignment = function(Alignment)
+					DropdownTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or DropdownTitle.TextXAlignment
+				end,
+				GetAlignment = function()
+					return DropdownTitle.TextXAlignment.Name
+				end,
 				SetTextColor = function(TextColor)
 					DropdownTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or DropdownTitle.TextColor3
 				end,
@@ -2184,6 +2208,14 @@ function Material:Load(Config)
             function DropdownLibrary:GetText()
                 return DropdownTitle.Text:split(": ")[1]
             end
+
+			function DropdownLibrary:SetAlignment(Alignment)
+				DropdownTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or DropdownTitle.TextXAlignment
+			end
+
+			function DropdownLibrary:GetAlignment()
+				return DropdownTitle.TextXAlignment.Name
+			end
 
 			function DropdownLibrary:SetTextColor(TextColor)
 				DropdownTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or DropdownTitle.TextColor3
@@ -2777,6 +2809,7 @@ function Material:Load(Config)
 			ColorPickerConfig = typeof(ColorPickerConfig) == "table" and ColorPickerConfig or {}
 
 			local ColorPicker_Text = typeof(ColorPickerConfig.Text) == "string" and ColorPickerConfig.Text or "ColorPicker"
+			local ColorPicker_XAlignment = typeof(ColorPickerConfig.XAlignment) == "string" and ColorPickerConfig.XAlignment ~= "Right" and ColorPickerConfig.XAlignment or "Left"
 			local ColorPicker_RichText = typeof(ColorPickerConfig.RichText) == "boolean" and ColorPickerConfig.RichText or false
 			local ColorPicker_TextColor = typeof(ColorPickerConfig.TextColor) == "Color3" and ColorPickerConfig.TextColor or ThisTheme.ColorPickerAccent
 			local ColorPicker_Font = typeof(ColorPickerConfig.Font) == "EnumItem" and ColorPickerConfig.Font or Enum.Font.GothamSemibold
@@ -2826,6 +2859,7 @@ function Material:Load(Config)
 			ColorLabel.TextSize = 14
 			ColorLabel.RichText = ColorPicker_RichText
 			ColorLabel.Text = ColorPicker_Text
+			ColorLabel.TextXAlignment = ColorPicker_XAlignment
 			ColorLabel.TextTransparency = 1
 			ColorLabel.Parent = ColorBar
 
@@ -3049,6 +3083,12 @@ function Material:Load(Config)
 				GetText = function()
 					return ColorLabel.Text
 				end,
+				SetAlignment = function(Alignment)
+					ColorLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ColorLabel.TextXAlignment
+				end,
+				GetAlignment = function()
+					return ColorLabel.TextXAlignment.Name
+				end,
 				SetTextColor = function(TextColor)
 					ColorLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ColorLabel.TextColor3
 				end,
@@ -3086,6 +3126,14 @@ function Material:Load(Config)
 
 			function ColorPickerLibrary:GetText()
 				return ColorLabel.Text
+			end
+
+			function ColorPickerLibrary:SetAlignment(Alignment)
+				ColorLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ColorLabel.TextXAlignment
+			end
+
+			function ColorPickerLibrary:GetAlignment()
+				return ColorLabel.TextXAlignment.Name
 			end
 
 			function ColorPickerLibrary:SetTextColor(TextColor)
@@ -3131,6 +3179,7 @@ function Material:Load(Config)
 			BindConfig = typeof(BindConfig) == "table" and BindConfig or {}
 
 			local Bind_Text = typeof(BindConfig.Text) == "string" and BindConfig.Text or "Bind"
+			local Bind_XAlignment = typeof(BindConfig.XAlignment) == "string" and BindConfig.XAlignment ~= "Right" and BindConfig.XAlignment or "Left"
 			local Bind_RichText = typeof(BindConfig.RichText) == "boolean" and BindConfig.RichText or false
 			local Bind_TextColor = typeof(BindConfig.TextColor) == "Color3" and BindConfig.TextColor or ThisTheme.ButtonAccent
 			local Bind_Font = typeof(BindConfig.Font) == "EnumItem" and BindConfig.Font or Enum.Font.GothamSemibold
@@ -3164,6 +3213,7 @@ function Material:Load(Config)
 			BindLabel.Font = Bind_Font
 			BindLabel.TextColor3 = Bind_TextColor
 			BindLabel.TextSize = 14
+			BindLabel.TextXAlignment = Bind_XAlignment
 			BindLabel.Text = Bind_Text
             BindLabel.RichText = Bind_RichText
 			BindLabel.TextTransparency = 1
@@ -3231,6 +3281,12 @@ function Material:Load(Config)
 				GetText = function()
 					return BindLabel.Text
 				end,
+				SetAlignment = function(Alignment)
+					BindLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or BindLabel.TextXAlignment
+				end,
+				GetAlignment = function()
+					return BindLabel.TextXAlignment.Name
+				end,
 				SetTextColor = function(TextColor)
 					BindLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or BindLabel.TextColor3
 				end,
@@ -3290,6 +3346,14 @@ function Material:Load(Config)
 
 			function BindLibrary:GetText()
 				return BindLabel.Text
+			end
+
+			function BindLibrary:SetAlignment(Alignment)
+				BindLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or BindLabel.TextXAlignment
+			end
+
+			function BindLibrary:GetAlignment()
+				return BindLabel.TextXAlignment.Name
 			end
 
 			function BindLibrary:SetTextColor(TextColor)
@@ -3570,8 +3634,7 @@ function Material:Load(Config)
 			local _Options = typeof(GuiConfig.Options) ~= "boolean" and true or GuiConfig.Options
 			local Rejoin = typeof(GuiConfig.Rejoin) ~= "boolean" and true or GuiConfig.Rejoin
 
-			local GetTheme
-			local ToggleGUI = OptionLibrary:Bind({
+			local ToggleUI = OptionLibrary:Bind({
 				Text = "Toggle Gui",
 				Bind = Enum.KeyCode[Setting.Keybind],
 				Callback = function(State)
@@ -3582,6 +3645,8 @@ function Material:Load(Config)
 					end
 				end
 			})
+
+			local GetTheme
 
 			if Theme then
 				GetTheme = OptionLibrary:Dropdown({
@@ -3642,7 +3707,7 @@ function Material:Load(Config)
 							Setting = Default
                             writefile("MaterialSetting.json", HttpService:JSONEncode(Setting))
 
-							ToggleGUI:SetBind(Setting.Keybind)
+							ToggleUI:SetBind(Setting.Keybind)
 
 							if Theme then
 								GetTheme:SetOption(Setting.Theme)
@@ -3664,7 +3729,7 @@ function Material:Load(Config)
 
 			Players.PlayerRemoving:Connect(function(Player)
 				if Player == Players.LocalPlayer then
-					Setting.Keybind = ToggleGUI:GetBind()
+					Setting.Keybind = ToggleUI:GetBind()
 
 					if Theme then
 						Setting.Theme = GetTheme:GetOption()
@@ -3676,7 +3741,7 @@ function Material:Load(Config)
 
 			NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 				if not NewInstance.Parent then
-					Setting.Keybind = ToggleGUI:GetBind()
+					Setting.Keybind = ToggleUI:GetBind()
 
 					if Theme then
 						Setting.Theme = GetTheme:GetOption()
@@ -3743,6 +3808,14 @@ function Material:Load(Config)
         return TitleText.Text
     end
 
+	function TabLibrary:SetAlignment(Alignment)
+		TitleText.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or TitleText.TextXAlignment
+	end
+
+	function TabLibrary:GetAlignment()
+		return TitleText.TextXAlignment.Name
+	end
+
 	function TabLibrary:SetTextColor(TextColor)
 		TitleText.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TitleText.TextColor3
 	end
@@ -3760,6 +3833,8 @@ function Material:Load(Config)
 	end
 
 	function TabLibrary:CloseUI()
+        TweenService:Create(MainFrame, TweenInfo.new(0.95, Enum.EasingStyle.Circular, Enum.EasingDirection.In), {Position = UDim2.new(0.5, MainFrame.Position.X.Offset, 2, MainFrame.Position.Y.Offset)}):Play()
+		task.wait(0.95)
 		NewInstance:Destroy()
 	end
 
