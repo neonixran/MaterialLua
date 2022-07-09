@@ -173,8 +173,6 @@ Main:GuiSettings({
 -- Custom Functions
 
 <string> Library:GetLoadedTime(<void>)
-<table> Library:GetBlacklist(<void>)
-<void> Library:Blacklist_KeyCode(<string["Add", "Remove"]>, <Enum/table[KeyCode]>)
 
 <void> Lib:SetTitle(<string[any]>)
 <string> Lib:GetTitle(<void>)
