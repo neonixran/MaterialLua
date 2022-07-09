@@ -3845,42 +3845,6 @@ function Material:GetLoadedTime()
     return ("The library has finished loading, it took: %.8f secs"):format(Loaded)
 end
 
-function Material:GetBlacklist()
-	return Blacklist
-end
-
-function Material:Blacklist_KeyCode(Action, KeyCode)
-	KeyCode = typeof(KeyCode) == "EnumItem" and KeyCode or typeof(KeyCode) == "string" and Enum.KeyCode[KeyCode]
-
-	if typeof(KeyCode) == "EnumItem" then
-		local Index = table.find(KeyCode, Blacklist)
-
-		if Action == "Add" then
-			if not Index then
-				table.insert(Blacklist, KeyCode)
-			end
-		elseif Action == "Remove" then
-			if Index then
-				table.remove(Blacklist, Index)
-			end
-		end
-	elseif typeof(KeyCode) == "table" then
-		for _, Key in pairs(KeyCode) do
-			local Index = table.find(Key, Blacklist)
-
-			if Action == "Add" then
-				if not Index then
-					table.insert(Blacklist, Key)
-				end
-			elseif Action == "Remove" then
-				if Index then
-					table.remove(Blacklist, Index)
-				end
-			end
-		end
-	end
-end
-
 Loaded = os.clock() - Timer
 
 return Material
