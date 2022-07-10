@@ -4,9 +4,6 @@ A material design library, designed for use in Roblox.
 # Discord
 [Balance](https://discord.gg/jzR3vfV)
 
-# Documentation Site
-[MLDocs](http://materiallua.gq)
-
 # Full Changelog [08/07/2022]
 ```
 - Library:
