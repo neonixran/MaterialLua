@@ -340,3 +340,4 @@ Main:GuiSettings({
 <bool> TextField:GetVisible(<void>)
 <void> TextField:SetInputType(<string["Default", "Number", "Phone", "PasswordShown"...]>)
 <string> TextField:GetInputType(<void>)
+<void> TextField:Destroy(<void>)
