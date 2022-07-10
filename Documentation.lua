@@ -65,7 +65,7 @@ Main:Button({
     -> TextColor <Color3[any]>
     -> Font <EnumItem[any]>
     -> Visible <bool=true>
-    -> Callback <function(ButtonLibrary)>
+    -> Callback <function>
     -> Menu <table>
 })
 
@@ -158,7 +158,7 @@ Main:TextField({
     -> Font <EnumItem[any]>
     -> Visible <bool=true>
     -> Default <string[any]>
-    -> InputType <string["Number", "Phone", "Default", "PasswordShown", "Username"]
+    -> Type <string["Number", "Phone", "Default", "PasswordShown", "Username"...]>
     -> Callback <function(Text, TextFieldLibrary)>
     -> Menu <table>
 })
@@ -229,7 +229,7 @@ Main:GuiSettings({
 <EnumItem> Button:GetFont(<void>)
 <void> Button:SetVisible(<bool>)
 <bool> Button:GetVisible(<void>)
-<void> Button:Click(<void)
+<void> Button:Click(<void>)
 <void> Button:Destroy(<void>)
 
 <void> Toggle:SetText(<string[any]>)
