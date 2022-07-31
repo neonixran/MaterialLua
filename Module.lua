@@ -21,9 +21,7 @@ local Mouse = Players.LocalPlayer:GetMouse()
 local Default = {
     Keybind = "RightControl",
     Theme = "Light",
-    Overrides = {
-        MainFrame = {255, 255, 255}
-    }
+    Overrides = {}
 }
 
 local Success, Setting = pcall(function()
@@ -1389,7 +1387,7 @@ function Material:Load(Config)
 					LabelContent.Text = typeof(Text) == "string" and Text or LabelContent.Text
 				end,
 				GetText = function()
-					return LabelContent.Text
+					return LabelContent.RichText and LabelContent.ContentText or LabelContent.Text
 				end,
 				SetAlignment = function(Alignment)
 					LabelContent.TextXAlignment = typeof(Alignment) == "string" and Enum.TextXAlignment[Alignment] or LabelContent.TextXAlignment
@@ -1422,7 +1420,7 @@ function Material:Load(Config)
 			end
 
 			function LabelLibrary:GetText()
-				return LabelContent.Text
+				return LabelContent.RichText and LabelContent.ContentText or LabelContent.Text
 			end
 
 			function LabelLibrary:SetAlignment(Alignment)
@@ -1474,7 +1472,7 @@ function Material:Load(Config)
 			end
 
 			function ButtonLibrary:GetText()
-				return ButtonLabel.Text
+				return ButtonLabel.RichText and ButtonLabel.ContentText or ButtonLabel.Text
 			end
 
 			function ButtonLibrary:SetAlignment(Alignment)
@@ -1512,7 +1510,7 @@ function Material:Load(Config)
 			function ButtonLibrary:Click()
 				pcall(ButtonCallback, ButtonLibrary)
 			end
-			
+
 			function ButtonLibrary:Destroy()
 				NewButton:Destroy()
 			end
@@ -1624,7 +1622,7 @@ function Material:Load(Config)
 					ToggleLabel.Text = typeof(Text) == "string" and Text or ToggleLabel.Text
 				end,
 				GetText = function()
-					return ToggleLabel.Text
+					return ToggleLabel.RichText and ToggleLabel.ContentText or ToggleLabel.Text
 				end,
 			 	SetAlignment = function(Alignment)
 					ToggleLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ToggleLabel.TextXAlignment
@@ -1682,7 +1680,7 @@ function Material:Load(Config)
 			end
 
 			function ToggleLibrary:GetText()
-				return ToggleLabel.Text
+				return ToggleLabel.RichText and ToggleLabel.ContentText or ToggleLabel.Text
 			end
 
             function ToggleLibrary:SetAlignment(Alignment)
@@ -1735,8 +1733,8 @@ function Material:Load(Config)
 				return Toggle_Disable
 			end
 
-			function ToggleLibrary:StateChanged(Callback)
-				local Connection
+			function ToggleLibrary:GetStateChanged(Callback)
+                local Connection
 				Connection = Toggle:GetAttributeChangedSignal("State"):Connect(function()
 					pcall(Callback, Toggle:GetAttribute("State"), Connection)
 				end)
@@ -1863,7 +1861,7 @@ function Material:Load(Config)
 
                 MouseMove = Mouse.Move:Connect(function()
 					local Px = GetXY(SliderTracker)
-					local SizeFromScale = (Min_Size +  (Max_Size - Min_Size)) * Px
+					SizeFromScale = (Min_Size +  (Max_Size - Min_Size)) * Px
 					local Power = 10 ^ Slider_Precision
 					local Value = math.floor((Slider_Min + ((Slider_Max - Slider_Min) * Px)) * Power) / Power
 
@@ -1891,7 +1889,7 @@ function Material:Load(Config)
 					SliderTitle.Text = typeof(Text) == "string" and Text or SliderTitle.Text
 				end,
 				GetText = function()
-					return SliderTitle.Text
+					return SliderTitle.RichText and SliderTitle.ContentText or SliderTitle.Text
 				end,
 				SetAlignment = function(Alignment)
 					SliderTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or SliderTitle.TextXAlignment
@@ -1939,6 +1937,16 @@ function Material:Load(Config)
 				GetMax = function()
 					return Slider_Max
 				end,
+				SetValue = function(Value)
+					Value = typeof(Value) == "number" and math.clamp(Value, Slider_Min, Slider_Max)
+
+					DefaultScale = (Value - Slider_Min) / (Slider_Max - Slider_Min)
+					TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(5, 5)}):Play()
+					TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(DefaultScale, 1)}):Play()
+
+					SliderValue.Text = Value
+					pcall(Slider_Callback, Value, SliderLibrary)
+				end,
 				GetValue = function()
 					return tonumber(SliderValue.Text)
 				end
@@ -1955,7 +1963,7 @@ function Material:Load(Config)
 			end
 
 			function SliderLibrary:GetText()
-				return SliderTitle.Text
+				return SliderTitle.RichText and SliderTitle.ContentText or SliderTitle.Text
 			end
 
 			function SliderLibrary:SetAlignment(Alignment)
@@ -2016,6 +2024,17 @@ function Material:Load(Config)
 				return Slider_Max
 			end
 
+			function SliderLibrary:SetValue(Value)
+				Value = typeof(Value) == "number" and math.clamp(Value, Slider_Min, Slider_Max)
+
+				DefaultScale = (Value - Slider_Min) / (Slider_Max - Slider_Min)
+				TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(5, 5)}):Play()
+				TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(DefaultScale, 1)}):Play()
+
+				SliderValue.Text = Value
+				pcall(Slider_Callback, Value, SliderLibrary)
+			end
+
 			function SliderLibrary:GetValue()
 				return tonumber(SliderValue.Text)
 			end
@@ -2036,9 +2055,9 @@ function Material:Load(Config)
 			local Dropdown_TextColor = typeof(DropdownConfig.TextColor) == "Color3" and DropdownConfig.TextColor or ThisTheme.DropdownAccent
 			local Dropdown_Font = typeof(DropdownConfig.Font) == "EnumItem" and DropdownConfig.Font or Enum.Font.GothamSemibold
 			local Dropdown_Visible = typeof(DropdownConfig.Visible) ~= "boolean" and true or DropdownConfig.Visible
-			local Dropdown_Default = typeof(DropdownConfig.Default) == "string" and DropdownConfig.Default or ""
 			local Dropdown_Hide = typeof(DropdownConfig.Hide) ~= "boolean" and true or DropdownConfig.Hide
 			local Dropdown_Options = typeof(DropdownConfig.Options) == "table" and DropdownConfig.Options or {}
+			local Dropdown_Default = typeof(DropdownConfig.Default) == "string" and table.find(Dropdown_Options, DropdownConfig.Default) and DropdownConfig.Default or ""
 			local Dropdown_Callback = typeof(DropdownConfig.Callback) == "function" and DropdownConfig.Callback or function() end
 
 			local Dropdown_Menu = typeof(DropdownConfig.Menu) == "table" and DropdownConfig.Menu or {}
@@ -2051,6 +2070,9 @@ function Material:Load(Config)
 			Dropdown.Visible = Dropdown_Visible
 			Dropdown.Parent = PageContentFrame
 
+			Dropdown:SetAttribute("Title", Dropdown_Text)
+			Dropdown:SetAttribute("Option", Dropdown_Default)
+
 			local DropdownBar = Objects:New("Round")
 			DropdownBar.Name = "TitleBar"
 			DropdownBar.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
@@ -2062,7 +2084,7 @@ function Material:Load(Config)
 			DropdownTitle.Name = "Title"
 			DropdownTitle.Font = Dropdown_Font
 			DropdownTitle.TextXAlignment = Dropdown_XAlignment
-			DropdownTitle.Text = ("%s: %s"):format(Dropdown_Text, table.find(Dropdown_Options, Dropdown_Default) and Dropdown_Default or "")
+			DropdownTitle.Text = ("%s: %s"):format(Dropdown_Text, Dropdown_Default)
 			DropdownTitle.RichText = Dropdown_RichText
 			DropdownTitle.TextColor3 = Dropdown_TextColor
 			DropdownTitle.TextTransparency = 1
@@ -2122,7 +2144,7 @@ function Material:Load(Config)
 
 				NewButton.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
 				NewButton.MouseButton1Down:Connect(function()
-					DropdownTitle.Text = ("%s: %s"):format(DropdownTitle.Text:split(": ")[1], Value)
+					DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
 
 					if Dropdown_Hide then
 						TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = 0}):Play()
@@ -2131,6 +2153,7 @@ function Material:Load(Config)
 					end
 
 					pcall(Dropdown_Callback, Value)
+					Dropdown:SetAttribute("Option", Value)
 				end)
 			end
 
@@ -2144,12 +2167,13 @@ function Material:Load(Config)
 
             local MenuAdded, MenuButton = TryAddMenu(DropdownBar, Dropdown_Menu, {
 				SetText = function(Text)
-					local Find_Text = DropdownTitle.Text:gsub(DropdownTitle.Text:split(": ")[1], typeof(Text) == "string" and Text or DropdownTitle.Text:split(": ")[1])
+					Text = typeof(Text) == "string" and Text or Dropdown:GetAttribute("Title")
 
-					DropdownTitle.Text = Find_Text
+					DropdownTitle.Text = ("%s: %s"):format(Text, Dropdown:GetAttribute("Option"))
+					Dropdown:SetAttribute("Title", Text)
 				end,
 				GetText = function()
-					return DropdownTitle.Text:split(": ")[1]
+					return Dropdown:GetAttribute("Title")
 				end,
 				SetAlignment = function(Alignment)
 					DropdownTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or DropdownTitle.TextXAlignment
@@ -2179,10 +2203,11 @@ function Material:Load(Config)
 					return Dropdown_Options
 				end,
 				SetOption = function(Option)
-					Option = typeof(Option) == "string" and Option
+					Option = typeof(Option) == "string" and Option or Dropdown:GetAttribute("Option")
 
 					if table.find(Dropdown_Options, Option) or Option == "" then
-						DropdownTitle.Text = ("%s: %s"):format(DropdownTitle.Text:split(": ")[1], Option)
+						DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Option)
+						Dropdown:SetAttribute("Option", Option)
 
 						if Option ~= "" then
 							pcall(Dropdown_Callback, Option)
@@ -2190,7 +2215,7 @@ function Material:Load(Config)
 					end
 				end,
 				GetOption = function()
-					return DropdownTitle.Text:split(": ")[2]
+					return Dropdown:GetAttribute("Option")
 				end
 			})
 
@@ -2200,13 +2225,14 @@ function Material:Load(Config)
 			end
 
             function DropdownLibrary:SetText(Text)
-                local Find_Text = DropdownTitle.Text:gsub(DropdownTitle.Text:split(": ")[1], (typeof(Text) == "string" and Text) or DropdownTitle.Text:split(": ")[1])
+				Text = typeof(Text) == "string" and Text or Dropdown:GetAttribute("Title")
 
-                DropdownTitle.Text = Find_Text
+				DropdownTitle.Text = ("%s: %s"):format(Text, Dropdown:GetAttribute("Option"))
+				Dropdown:SetAttribute("Title", Text)
             end
 
             function DropdownLibrary:GetText()
-                return DropdownTitle.Text:split(": ")[1]
+                return Dropdown:GetAttribute("Title")
             end
 
 			function DropdownLibrary:SetAlignment(Alignment)
@@ -2291,10 +2317,11 @@ function Material:Load(Config)
 			end
 
 			function DropdownLibrary:SetOption(Option)
-				Option = typeof(Option) == "string" and Option
+				Option = typeof(Option) == "string" and Option or Dropdown:GetAttribute("Option")
 
 				if table.find(Dropdown_Options, Option) or Option == "" then
-					DropdownTitle.Text = ("%s: %s"):format(DropdownTitle.Text:split(": ")[1], Option)
+					DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Option)
+					Dropdown:SetAttribute("Option", Option)
 
 					if Option ~= "" then
 						pcall(Dropdown_Callback, Option)
@@ -2303,7 +2330,17 @@ function Material:Load(Config)
 			end
 
 			function DropdownLibrary:GetOption()
-				return DropdownTitle.Text:split(": ")[2]
+				return Dropdown:GetAttribute("Option")
+			end
+
+			function DropdownLibrary:GetChanged(SignalConfig)
+				local Type = typeof(SignalConfig.Type) == "string" and SignalConfig.Type or "Option"
+				local Callback = typeof(SignalConfig.Callback) == "function" and SignalConfig.Callback or function() end
+
+				local Connection
+				Connection = Dropdown:GetAttributeChangedSignal(Type):Connect(function()
+					pcall(Callback, Dropdown:GetAttribute(Type), Connection)
+				end)
 			end
 
 			function DropdownLibrary:Destroy()
@@ -2596,6 +2633,7 @@ function Material:Load(Config)
 							TweenService:Create(v.ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
 
 							pcall(ChipSet_Callback, Index, BuildTable[Index] , ChipSetLibrary)
+                            break
 						end
 					end
 				end
@@ -2749,7 +2787,7 @@ function Material:Load(Config)
 
 						pcall(DataTable_Callback, Key, BuildTable[Key], DataTableLibrary)
 					end)
-
+					
 					local DataTable_Connection
 					DataTable_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 						if not NewInstance.Parent then
@@ -3081,7 +3119,7 @@ function Material:Load(Config)
 					ColorLabel.Text = typeof(Text) == "string" and Text or ColorLabel.Text
 				end,
 				GetText = function()
-					return ColorLabel.Text
+					return ColorLabel.RichText and ColorLabel.ContentText or ColorLabel.Text
 				end,
 				SetAlignment = function(Alignment)
 					ColorLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or ColorLabel.TextXAlignment
@@ -3125,7 +3163,7 @@ function Material:Load(Config)
 			end
 
 			function ColorPickerLibrary:GetText()
-				return ColorLabel.Text
+				return ColorLabel.RichText and ColorLabel.ContentText or ColorLabel.Text
 			end
 
 			function ColorPickerLibrary:SetAlignment(Alignment)
@@ -3166,6 +3204,13 @@ function Material:Load(Config)
 
 			function ColorPickerLibrary:GetColor()
 				return ColorTracker.ImageColor3
+			end
+
+			function ColorPickerLibrary:GetColorChanged(Callback)
+				local Connection
+				Connection = ColorTracker:GetPropertyChangedSignal("ImageColor3"):Connect(function()
+					pcall(Callback, ColorTracker.ImageColor3, Connection)
+				end)
 			end
 
 			function ColorPickerLibrary:Destroy()
@@ -3256,7 +3301,7 @@ function Material:Load(Config)
 
 			local BindConnection
 			BindConnection = UserInputService.InputBegan:Connect(function(Input, GameProcessed)
-				if Input.KeyCode.Name == KeyCode then
+				if Input.KeyCode.Name == KeyCode and not GameProcessed then
 					if NewInstance.Parent then
 						Bind_Enabled = not Bind_Enabled
 
@@ -3279,7 +3324,7 @@ function Material:Load(Config)
 					BindLabel.Text = typeof(Text) == "string" and Text or BindLabel.Text
 				end,
 				GetText = function()
-					return BindLabel.Text
+					return BindLabel.RichText and BindLabel.ContentText or BindLabel.Text
 				end,
 				SetAlignment = function(Alignment)
 					BindLabel.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or BindLabel.TextXAlignment
@@ -3345,7 +3390,7 @@ function Material:Load(Config)
 			end
 
 			function BindLibrary:GetText()
-				return BindLabel.Text
+				return BindLabel.RichText and BindLabel.ContentText or BindLabel.Text
 			end
 
 			function BindLibrary:SetAlignment(Alignment)
@@ -3425,7 +3470,6 @@ function Material:Load(Config)
 			TextFieldConfig = typeof(TextFieldConfig) == "table" and TextFieldConfig or {}
 
 			local TextField_Text = typeof(TextFieldConfig.Text) == "string" and TextFieldConfig.Text or "Bind"
-			local TextField_RichText = typeof(TextFieldConfig.RichText) == "boolean" and TextFieldConfig.RichText or false
 			local TextField_TextColor = typeof(TextFieldConfig.TextColor) == "Color3" and TextFieldConfig.TextColor or ThisTheme.TextFieldAccent
 			local TextField_Font = typeof(TextFieldConfig.Font) == "EnumItem" and TextFieldConfig.Font or Enum.Font.GothamSemibold
 			local TextField_Visible = typeof(TextFieldConfig.Visible) ~= "boolean" and true or TextFieldConfig.Visible
@@ -3620,6 +3664,67 @@ function Material:Load(Config)
 				return TextInput.TextInputType.Name
 			end
 
+			function TextFieldLibrary:GetPlayer(Input)
+				if typeof(Input) == "string" then
+					local Found = {}
+					local Method = Input:lower()
+
+					if Method == "me" then
+						table.insert(Found, Players.LocalPlayer.Name)
+					elseif Method == "random" then
+						table.insert(Found, Players:GetPlayers()[math.random(1, #Players:GetPlayers())])
+					end
+
+					for _,v in pairs(Players:GetPlayers()) do
+						if Method == "others" then
+							if v ~= Players.LocalPlayer then
+								table.insert(Found, v)
+							end
+						elseif Method == "all" then
+							table.insert(Found, v)
+						elseif Method == "nonfriends" then
+							if not v:GetFriendStatus(Players.LocalPlayer) == Enum.FriendStatus.NotFriend and v ~= Players.LocalPlayer then
+								table.insert(Found, v)
+							end
+						elseif Method == "friends" then
+							if v:GetFriendStatus(Players.LocalPlayer) == Enum.FriendStatus.NotFriend then
+								table.insert(Found, v)
+							end
+						elseif Method == "enemies" then
+							if v.Team ~= Players.LocalPlayer.Team then
+								table.insert(Found, v)
+							end
+						elseif Method == "allies" then
+							if v.Team == Players.LocalPlayer.Team then
+								table.insert(Found, v)
+							end
+						else
+							if v.Name:lower():sub(1, #Input) == Input:lower() or v.DisplayName:lower():sub(1, #Input) == Input:lower() then
+								table.insert(Found, v)
+							end
+						end
+					end
+
+					if table.maxn(Found) > 0 then
+						return Found
+					end
+
+					return nil
+				end
+			end
+
+			function TextFieldLibrary:GetChangedText(SignalConfig)
+				local Type = typeof(SignalConfig.Type) == "string" and SignalConfig.Type or "Title"
+				local Callback = typeof(SignalConfig.Callback) == "function" and SignalConfig.Callback or function() end
+
+				Type = Type == "Title" and "PlaceholderText" or "Text"
+
+				local Connection
+				Connection = TextInput:GetPropertyChangedSignal(Type):Connect(function()
+					pcall(Callback, TextInput[Type], Connection)
+				end)
+			end
+
 			function TextFieldLibrary:Destroy()
 				TextField:Destroy()
 			end
@@ -3638,11 +3743,7 @@ function Material:Load(Config)
 				Text = "Toggle Gui",
 				Bind = Enum.KeyCode[Setting.Keybind],
 				Callback = function(State)
-					if State then
-						TweenService:Create(MainFrame, TweenInfo.new(0.95, Enum.EasingStyle.Circular, Enum.EasingDirection.In), {Position = UDim2.new(-1, MainFrame.Position.X.Offset, 0.5, MainFrame.Position.Y.Offset)}):Play()
-					else
-						TweenService:Create(MainFrame, TweenInfo.new(0.95, Enum.EasingStyle.Circular, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, MainFrame.Position.X.Offset, 0.5, MainFrame.Position.Y.Offset)}):Play()
-					end
+					TweenService:Create(MainFrame, TweenInfo.new(0.95, Enum.EasingStyle.Circular, Enum.EasingDirection.In), {Position = UDim2.new(State and -1 or 0.5, MainFrame.Position.X.Offset, 0.5, MainFrame.Position.Y.Offset)}):Play()
 				end
 			})
 
