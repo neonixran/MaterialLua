@@ -34,29 +34,6 @@ if not Success then
     writefile("MaterialSetting.json", HttpService:JSONEncode(Setting))
 end
 
--- Blacklisted Keys --
-local Blacklist = {
-	Enum.KeyCode.A,
-	Enum.KeyCode.W,
-	Enum.KeyCode.D,
-	Enum.KeyCode.S,
-	Enum.KeyCode.Space,
-	Enum.KeyCode.Escape,
-	Enum.KeyCode.F9,
-	Enum.KeyCode.Backquote,
-	Enum.KeyCode.Tab,
-	Enum.KeyCode.Backspace,
-	Enum.KeyCode.CapsLock,
-	Enum.KeyCode.Insert,
-	Enum.KeyCode.Up,
-	Enum.KeyCode.Down,
-	Enum.KeyCode.Left,
-	Enum.KeyCode.Right,
-	Enum.KeyCode.F12,
-	Enum.KeyCode.Print,
-	Enum.KeyCode[Setting.Keybind]
-}
-
 -- Library --
 local Themes = {
 	Light = {
@@ -93,12 +70,12 @@ local Themes = {
 		MainFrame = Color3.fromRGB(25, 25, 25),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
-		NavBar = Color3.fromRGB(55, 55, 55),
-		NavBarAccent = Color3.fromRGB(255, 255, 255),
+		NavBar = Color3.fromRGB(245, 245, 245),
+		NavBarAccent = Color3.fromRGB(35, 35, 35),
 		NavBarInvert = Color3.fromRGB(235, 235, 235),
 		TitleBar = Color3.fromRGB(55, 55, 55),
 		TitleBarAccent = Color3.fromRGB(255, 255, 255),
-		Overlay = Color3.fromRGB(175, 175, 175),
+		Overlay = Color3.fromRGB(15, 15, 15),
 		Banner = Color3.fromRGB(55, 55, 55),
 		BannerAccent = Color3.fromRGB(255, 255, 255),
 		Content = Color3.fromRGB(85, 85, 85),
@@ -844,7 +821,7 @@ function Material:Load(Config)
     local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
 	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
 	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or {
-		MainFrame = table.maxn(Setting.Overrides.MainFrame) == 3 and Color3.fromRGB(unpack(Setting.Overrides.MainFrame))
+		MainFrame = table.maxn(Setting.Overrides.MainFrame) == 3 and Color3.fromRGB(unpack(Setting.Overrides.MainFrame)) or Color3.fromRGB(255, 255, 255)
 	}
 
 	local Load_Menu = typeof(Config.Menu) == "table" and Config.Menu or {}
@@ -2787,7 +2764,7 @@ function Material:Load(Config)
 
 						pcall(DataTable_Callback, Key, BuildTable[Key], DataTableLibrary)
 					end)
-					
+
 					local DataTable_Connection
 					DataTable_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 						if not NewInstance.Parent then
@@ -3233,11 +3210,33 @@ function Material:Load(Config)
 			local Bind_Notify = typeof(BindConfig.Notify) == "boolean" and BindConfig.Notify or false
 			local Bind_KeyCode = typeof(BindConfig.Bind) == "EnumItem" and BindConfig.Bind or Enum.KeyCode.G
 			local Bind_Callback = typeof(BindConfig.Callback) == "function" and BindConfig.Callback or function() end
+			local Bind_Blacklist = typeof(BindConfig.Blacklist) == "table" and BindConfig.Blacklist or {
+				Enum.KeyCode.A,
+				Enum.KeyCode.W,
+				Enum.KeyCode.D,
+				Enum.KeyCode.S,
+				Enum.KeyCode.Space,
+				Enum.KeyCode.Escape,
+				Enum.KeyCode.F9,
+				Enum.KeyCode.Backquote,
+				Enum.KeyCode.Tab,
+				Enum.KeyCode.Backspace,
+				Enum.KeyCode.CapsLock,
+				Enum.KeyCode.Insert,
+				Enum.KeyCode.Up,
+				Enum.KeyCode.Down,
+				Enum.KeyCode.Left,
+				Enum.KeyCode.Right,
+				Enum.KeyCode.F12,
+				Enum.KeyCode.Print
+			}
 
 			local Bind_Menu = typeof(BindConfig.Menu) == "table" and BindConfig.Menu or {}
 
 			local BindLibrary = {}
 			local KeyCode = Bind_KeyCode.Name
+
+			Bind_Blacklist[#Bind_Blacklist + 1] = Enum.KeyCode[Setting.Keybind]
 
 			local BindContainer = Objects:New("SmoothButton")
 			BindContainer.Name = "Bind"
@@ -3288,9 +3287,17 @@ function Material:Load(Config)
 				local Input, GameProcessed = UserInputService.InputBegan:Wait()
 
 				if Input.KeyCode.Name == "Unknown" then
+					Material.Notification({
+						Description = ("Invalid key!"),
+					})
+
 					KeyCode = nil
 					BindButton.Text = "None"
-				elseif table.find(Blacklist, Input.KeyCode) then
+				elseif table.find(Bind_Blacklist, Input.KeyCode) then
+					Material.Notification({
+						Description = ("[%s] is a blacklisted key, please use another one."):format(Input.KeyCode.Name),
+					})
+
 					KeyCode = Bind_KeyCode.Name
 					BindButton.Text = Bind_KeyCode.Name
 				else
@@ -3377,6 +3384,27 @@ function Material:Load(Config)
 				end,
 				GetBind = function()
 					return KeyCode
+				end,
+				Blacklist = function(Option, Key)
+					Option = typeof(Option) == "string" and Option or "Add"
+					Key = typeof(Key) == "EnumItem" and Key or nil
+
+					if Key then
+						local Index = table.find(Bind_Blacklist, Key)
+
+						if Option == "Add" then
+							if not Index and Key ~= Enum.KeyCode[Setting.Keybind] then
+								Bind_Blacklist[#Bind_Blacklist + 1] = Key
+							end
+						elseif Option == "Remove" then
+							if Index then
+								table.remove(Bind_Blacklist, Index)
+							end
+						end
+					end
+				end,
+				GetBlacklisted = function()
+					return Bind_Blacklist
 				end
 			})
 
@@ -3457,6 +3485,29 @@ function Material:Load(Config)
 
 			function BindLibrary:GetBind()
 				return KeyCode
+			end
+
+			function BindLibrary:Blacklist(Option, Key)
+				Option = typeof(Option) == "string" and Option or "Add"
+				Key = typeof(Key) == "EnumItem" and Key or nil
+
+				if Key then
+					local Index = table.find(Bind_Blacklist, Key)
+
+					if Option == "Add" then
+						if not Index and Key ~= Enum.KeyCode[Setting.Keybind] then
+							Bind_Blacklist[#Bind_Blacklist + 1] = Key
+						end
+					elseif Option == "Remove" then
+						if Index and Key ~= Enum.KeyCode[Setting.Keybind] then
+							table.remove(Bind_Blacklist, Index)
+						end
+					end
+				end
+			end
+
+			function BindLibrary:GetBlacklisted()
+				return Bind_Blacklist
 			end
 
 			function BindLibrary:Destroy()
