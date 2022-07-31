@@ -63,7 +63,7 @@ Main:Slider({
     end,
     Min = 200,
     Max = 400,
-    Def = 300,
+    Default = 300,
     Menu = {
         Information = function()
             Lib:Banner({
