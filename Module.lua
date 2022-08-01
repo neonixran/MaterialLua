@@ -821,7 +821,7 @@ function Material:Load(Config)
     local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
 	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
 	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or {
-		MainFrame = table.maxn(Setting.Overrides.MainFrame) == 3 and Color3.fromRGB(unpack(Setting.Overrides.MainFrame)) or Color3.fromRGB(255, 255, 255)
+		MainFrame = Color3.fromRGB(unpack(Setting.Overrides.MainFrame)),
 	}
 
 	local Load_Menu = typeof(Config.Menu) == "table" and Config.Menu or {}
@@ -1594,6 +1594,10 @@ function Material:Load(Config)
 				end
 			end)
 
+			if Toggle_Enabled then
+				pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
+			end
+
             local MenuAdded, MenuButton = TryAddMenu(Toggle, Toggle_Menu, {
 				SetText = function(Text)
 					ToggleLabel.Text = typeof(Text) == "string" and Text or ToggleLabel.Text
@@ -1695,7 +1699,7 @@ function Material:Load(Config)
 			function ToggleLibrary:SetState(State)
 				Toggle_Enabled = typeof(State) ~= "boolean" and Toggle_Enabled or State
 				TweenService:Create(Dot, TweenInfo.new(0.15), {Position = ((Toggle_Enabled and UDim2.fromScale(1, 0.5)) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = (Toggle_Enabled and ThisTheme.Toggle) or ThisTheme.ToggleAccent}):Play()
-				pcall(Toggle_Callback, Toggle_Enabled)
+				pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
 			end
 
 			function ToggleLibrary:GetState()
@@ -2014,6 +2018,13 @@ function Material:Load(Config)
 
 			function SliderLibrary:GetValue()
 				return tonumber(SliderValue.Text)
+			end
+
+			function SliderLibrary:GetValueChanged(Callback)
+				local Connection
+				Connection = SliderValue:GetPropertyChangedSignal("Text"):Connect(function()
+					pcall(Callback, tonumber(SliderValue.Text), Connection)
+				end)
 			end
 
 			function SliderLibrary:Destroy()
