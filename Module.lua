@@ -70,8 +70,8 @@ local Themes = {
 		MainFrame = Color3.fromRGB(25, 25, 25),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
-		NavBar = Color3.fromRGB(245, 245, 245),
-		NavBarAccent = Color3.fromRGB(35, 35, 35),
+		NavBar = Color3.fromRGB(55, 55, 55),
+		NavBarAccent = Color3.fromRGB(255, 255, 255),
 		NavBarInvert = Color3.fromRGB(235, 235, 235),
 		TitleBar = Color3.fromRGB(55, 55, 55),
 		TitleBarAccent = Color3.fromRGB(255, 255, 255),
@@ -100,6 +100,8 @@ local Themes = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
+		Maximise = Color3.fromRGB(189, 183, 177),
+		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		NavBar = Color3.fromRGB(176, 148, 125),
 		NavBarAccent = Color3.fromRGB(255, 255, 255),
 		NavBarInvert = Color3.fromRGB(30, 30, 30),
@@ -184,6 +186,36 @@ local Themes = {
 		ColorPicker = Color3.fromRGB(255, 255, 255),
 		ColorPickerAccent = Color3.fromRGB(219, 68, 103),
 		TextField = Color3.fromRGB(219, 68, 103),
+		TextFieldAccent = Color3.fromRGB(255, 255, 255)
+	},
+	Github = {
+		MainFrame = Color3.fromRGB(51, 3, 0),
+		Minimise = Color3.fromRGB(189, 44, 0),
+		MinimiseAccent = Color3.fromRGB(189, 44, 0),
+		NavBar = Color3.fromRGB(55,55,55),
+		NavBarAccent = Color3.fromRGB(255,255,255),
+		NavBarInvert = Color3.fromRGB(235,235,235),
+		TitleBar = Color3.fromRGB(116, 112, 140),
+		TitleBarAccent = Color3.fromRGB(255,255,255),
+		Overlay = Color3.fromRGB(116, 112, 140),
+		Banner = Color3.fromRGB(255,255,255),
+		BannerAccent = Color3.fromRGB(116, 112, 140),
+		Content = Color3.fromRGB(116, 112, 140),
+		Button = Color3.fromRGB(64, 120, 192),
+		ButtonAccent = Color3.fromRGB(64, 120, 192),
+		ChipSet = Color3.fromRGB(116, 112, 140),
+		ChipSetAccent = Color3.fromRGB(255,255,255),
+		DataTable = Color3.fromRGB(116, 112, 140),
+		DataTableAccent = Color3.fromRGB(255,255,255),
+		Slider = Color3.fromRGB(64, 120, 192),
+		SliderAccent = Color3.fromRGB(64, 120, 192),
+		Toggle = Color3.fromRGB(64, 120, 192),
+		ToggleAccent = Color3.fromRGB(64, 120, 192),
+		Dropdown = Color3.fromRGB(64, 120, 192),
+		DropdownAccent = Color3.fromRGB(64, 120, 192),
+		ColorPicker = Color3.fromRGB(64, 120, 192),
+		ColorPickerAccent = Color3.fromRGB(64, 120, 192),
+		TextField = Color3.fromRGB(245, 245, 245),
 		TextFieldAccent = Color3.fromRGB(255, 255, 255)
 	}
 }
@@ -820,9 +852,7 @@ function Material:Load(Config)
 	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
     local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
 	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
-	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or {
-		MainFrame = Color3.fromRGB(unpack(Setting.Overrides.MainFrame)),
-	}
+	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or Setting.Overrides
 
 	local Load_Menu = typeof(Config.Menu) == "table" and Config.Menu or {}
 
