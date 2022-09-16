@@ -27,17 +27,13 @@ local Default = {
 }
 
 local Success, Setting = pcall(function()
-	if readfile then
-    	return HttpService:JSONDecode(readfile("MaterialSettings.json"))
-	end
+	return HttpService:JSONDecode(readfile("MaterialSettings.json"))
 end)
 
 if not Success then
 	Setting = Default
 
-	if writefile then
-		writefile("MaterialSettings.json", HttpService:JSONEncode(Default))
-	end
+	writefile("MaterialSettings.json", HttpService:JSONEncode(Default))
 end
 
 -- Library --
@@ -850,7 +846,15 @@ function Material:Load(Config)
 
 	local NewInstance = Objects:New("ScreenGui")
 	NewInstance.Name = Load_Title
-	NewInstance.Parent = gethui()
+
+    if not is_sirhurt_closure and (syn and syn.protect_gui) then
+        syn.protect_gui(NewInstance)
+        NewInstance.Parent = CoreGui
+    elseif gethui then
+        NewInstance.Parent = gethui()
+    else
+        NewInstance.Parent = CoreGui
+    end
 
 	getgenv().OldInstance = NewInstance
 
@@ -858,9 +862,9 @@ function Material:Load(Config)
 
     local MainFrame = Objects:New("Round")
 	MainFrame.Name = "MainFrame"
-	MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	MainFrame.AnchorPoint = Load_Position == "Top-Left" and Vector2.new(0, 0) or Load_Position == "Left" and Vector2.new(0, 0.5) or Load_Position == "Center" and Vector2.new(0.5, 0.5) or Load_Position == "Top-Right" and Vector2.new(1, 0) or Load_Position == "Right" and Vector2.new(1, 0.5)
 	MainFrame.Size = UDim2.fromOffset(0, Load_SizeY)
-	MainFrame.Position = UDim2.fromScale(0.5, 0.5)
+	MainFrame.Position = Load_Position == "Top-Left" and UDim2.fromOffset(5, 0) or Load_Position == "Left" and UDim2.new(0, 5, 0.555, 0) or Load_Position == "Center" and UDim2.fromScale(0.5, 0.5) or Load_Position == "Top-Right" and UDim2.fromScale(0.99, 0) or Load_Position == "Right" and UDim2.fromScale(0.99, 0.5)
 	MainFrame.ImageColor3 = ThisTheme.MainFrame
 	MainFrame.Parent = NewInstance
 
@@ -900,26 +904,6 @@ function Material:Load(Config)
 	TitleText.Font = Load_Font
 	TitleText.Parent = TitleBar
 
-	--[[TitleText.MouseButton1Down:Connect(function()
-		local Mx, My = Mouse.X, Mouse.Y
-		local MouseMove, MouseKill
-
-		MouseMove = Mouse.Move:Connect(function()
-			local nMx, nMy = Mouse.X, Mouse.Y
-			local Dx, Dy = nMx - Mx, nMy - My
-
-			MainFrame.Position = MainFrame.Position + UDim2.fromOffset(Dx, Dy)
-			Mx, My = nMx, nMy
-		end)
-
-		MouseKill = UserInputService.InputEnded:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-				MouseMove:Disconnect()
-				MouseKill:Disconnect()
-			end
-		end)
-	end)]]--
-
 	local Dragging
     local DragInput
     local DragStart
@@ -927,14 +911,14 @@ function Material:Load(Config)
 
     local function Update(Input)
         local Delta = Input.Position - DragStart
-        MainFrame.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        TitleText.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
     end
 
-    MainFrame.InputBegan:Connect(function(Input)
+    TitleText.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
             Dragging = true
             DragStart = Input.Position
-            StartPos = MainFrame.Position
+            StartPos = TitleText.Position
 
             Input.Changed:Connect(function()
                 if Input.UserInputState == Enum.UserInputState.End then
@@ -944,7 +928,7 @@ function Material:Load(Config)
         end
     end)
 
-    MainFrame.InputChanged:Connect(function(Input)
+    TitleText.InputChanged:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
             DragInput = Input
         end
