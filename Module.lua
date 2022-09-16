@@ -816,6 +816,7 @@ function Material:Load(Config)
 	local Load_RichText = typeof(Config.RichText) == "boolean" and Config.RichText or false
 	local Load_Font = typeof(Config.Font) == "EnumItem" and Config.Font or Enum.Font.GothamSemibold
 	local Load_SizeX = typeof(Config.SizeX) == "number" and Config.SizeX or 255
+	local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
 	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
 	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
 	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or Setting.Overrides
