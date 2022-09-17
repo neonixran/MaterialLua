@@ -905,41 +905,25 @@ function Material:Load(Config)
 	TitleText.Font = Load_Font
 	TitleText.Parent = TitleBar
 
-	local Dragging
-    local DragInput
-    local DragStart
-    local StartPos
+	TitleText.MouseButton1Down:Connect(function()
+		local Mx, My = Mouse.X, Mouse.Y
+		local MouseMove, MouseKill
 
-    local function Update(Input)
-        local Delta = Input.Position - DragStart
-        TitleText.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
-    end
+		MouseMove = Mouse.Move:Connect(function()
+			local nMx, nMy = Mouse.X, Mouse.Y
+			local Dx, Dy = nMx - Mx, nMy - My
 
-    TitleText.InputBegan:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-            Dragging = true
-            DragStart = Input.Position
-            StartPos = TitleText.Position
+			MainFrame.Position = MainFrame.Position + UDim2.fromOffset(Dx, Dy)
+			Mx, My = nMx, nMy
+		end)
 
-            Input.Changed:Connect(function()
-                if Input.UserInputState == Enum.UserInputState.End then
-                    Dragging = false
-                end
-            end)
-        end
-    end)
-
-    TitleText.InputChanged:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
-            DragInput = Input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(Input)
-        if Input == DragInput and Dragging then
-            Update(Input)
-        end
-    end)
+		MouseKill = UserInputService.InputEnded:Connect(function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+				MouseMove:Disconnect()
+				MouseKill:Disconnect()
+			end
+		end)
+	end)
 
 	local CloseButton = Objects:New("SmoothButton")
 	CloseButton.Size = UDim2.fromOffset(20, 20)
