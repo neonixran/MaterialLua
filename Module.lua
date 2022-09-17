@@ -834,7 +834,7 @@ function Material:Load(Config)
 	ThisTheme = Theme
 
     for KeyOverride, ValueOverride in next, Load_Overrides do
-		ThisTheme[KeyOverride] = (ValueOverride):match("^%x%x%x%x%x%x$") and Color3.fromHex(ValueOverride) or typeof(ValueOverride) == "Color3" and ValueOverride or ThisTheme[KeyOverride]
+		ThisTheme[KeyOverride] = (typeof(ValueOverride) == "string" and (ValueOverride):match("^%x%x%x%x%x%x$") and Color3.fromHex(ValueOverride)) or typeof(ValueOverride) == "Color3" and ValueOverride or ThisTheme[KeyOverride]
 	end
 
 	local Load_TextColor = typeof(Config.TextColor) == "Color3" and Config.TextColor or ThisTheme.TitleBarAccent
