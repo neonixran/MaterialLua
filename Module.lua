@@ -378,7 +378,7 @@ end
 
 local Material = {}
 
-Material.Notification = loadstring(game:HttpGet("https://gist.github.com/neonixran/c801f6a97ed3b59194addc1bdd90a35f/raw/ab13788566be4a625acd562676fb573e266c61bf/Notification.lua"))(Setting.Theme).Notify
+Material.Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Notification.lua"))(Setting.Theme).Notify
 
 local Styles = {
 	[1] = "Normal",
