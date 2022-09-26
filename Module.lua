@@ -3797,28 +3797,31 @@ function Material:Load(Config)
 			GuiConfig = typeof(GuiConfig) == "table" and GuiConfig or {}
 
 			local _Options = typeof(GuiConfig.Options) ~= "boolean" and true or GuiConfig.Options
+			local Theme = typeof(GuiConfig.Theme) ~= "boolean" and true or GuiConfig.Theme
 			local Rejoin = typeof(GuiConfig.Rejoin) ~= "boolean" and true or GuiConfig.Rejoin
 
 			local ToggleGUI = OptionLibrary:Bind({
 				Text = "Toggle Gui",
-				Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind,
+				Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind
 				Callback = function(State)
 					TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = UDim2.new(State and -1 or 0.5, MainFrame.Position.X.Offset, 0.5, MainFrame.Position.Y.Offset)}):Play()
 				end
 			})
 
-			local GetTheme = OptionLibrary:Dropdown({
-				Text = "Theme",
-				Hide = true,
-				Default = Setting.Theme,
-				Options = {
-					"Light",
-					"Dark",
-					"Mocha",
-					"Aqua",
-					"Jester",
-				}
-			})
+			if Theme then
+				local GetTheme = OptionLibrary:Dropdown({
+					Text = "Theme",
+					Hide = true,
+					Default = Setting.Theme,
+					Options = {
+						"Light",
+						"Dark",
+						"Mocha",
+						"Aqua",
+						"Jester",
+					}
+				})
+			end
 
 			if Rejoin then
 				OptionLibrary:Separator()
