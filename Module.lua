@@ -3802,7 +3802,7 @@ function Material:Load(Config)
 
 			local ToggleGUI = OptionLibrary:Bind({
 				Text = "Toggle Gui",
-				Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind
+				Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind,
 				Callback = function(State)
 					TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = UDim2.new(State and -1 or 0.5, MainFrame.Position.X.Offset, 0.5, MainFrame.Position.Y.Offset)}):Play()
 				end
