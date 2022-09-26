@@ -1,3 +1,33 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@neonixran 
+neonixran
+/
+MaterialLua
+Public
+forked from Kinlei/MaterialLua
+Code
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+MaterialLua/Module.lua
+@neonixran
+neonixran Update Module.lua
+Latest commit a5cc999 22 hours ago
+ History
+ 5 contributors
+@Kinlei@neonixran@aKinlei@Stefanuk12@ChrisvanChip
+3990 lines (3329 sloc)  146 KB
+
 -- Initialization --
 local Timer = os.clock()
 
@@ -3889,7 +3919,11 @@ function Material:Load(Config)
 
 			Players.LocalPlayer.Destroying:Connect(function()
 				Setting.Keybind = ToggleGUI:GetBind()
-				Setting.Theme = GetTheme:GetOption()
+
+                if Theme then
+				    Setting.Theme = GetTheme:GetOption()
+                end
+
 				Setting.Overrides = Load_Overrides
 
 				writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
@@ -3898,8 +3932,12 @@ function Material:Load(Config)
 			NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 				if not NewInstance.Parent then
 					Setting.Keybind = ToggleGUI:GetBind()
-					Setting.Theme = GetTheme:GetOption()
-					Setting.Overrides = Load_Overrides
+
+                    if Theme then
+					    Setting.Theme = GetTheme:GetOption()
+                    end
+
+                    Setting.Overrides = Load_Overrides
 
 					writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
 				end
