@@ -1,4 +1,4 @@
--- Initialization --
+ -- Initialization --
 local Timer = os.clock()
 
 -- Services --
@@ -3808,21 +3808,18 @@ function Material:Load(Config)
 				end
 			})
 
-			local GetTheme
-			if Theme then
-				GetTheme = OptionLibrary:Dropdown({
-					Text = "Theme",
-					Hide = true,
-					Default = Setting.Theme,
-					Options = {
-						"Light",
-						"Dark",
-						"Mocha",
-						"Aqua",
-						"Jester",
-					}
-				})
-			end
+			local GetTheme = OptionLibrary:Dropdown({
+				Text = "Theme",
+				Hide = true,
+				Default = Setting.Theme,
+				Options = {
+					"Light",
+					"Dark",
+					"Mocha",
+					"Aqua",
+					"Jester",
+				}
+			})
 
 			if Rejoin then
 				OptionLibrary:Separator()
@@ -3869,10 +3866,7 @@ function Material:Load(Config)
                             writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
 
 							ToggleGUI:SetBind(Setting.Keybind)
-
-							if Theme then
-								GetTheme:SetOption(Setting.Theme)
-							end
+							GetTheme:SetOption(Setting.Theme)
 
 							Self:SetText("Configuration restored!")
 							task.wait(0.15)
@@ -3890,11 +3884,7 @@ function Material:Load(Config)
 
 			Players.LocalPlayer.Destroying:Connect(function()
 				Setting.Keybind = ToggleGUI:GetBind()
-
-                if Theme then
-				    Setting.Theme = GetTheme:GetOption()
-                end
-
+				Setting.Theme = GetTheme:GetOption()
 				Setting.Overrides = Load_Overrides
 
 				writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
@@ -3903,11 +3893,7 @@ function Material:Load(Config)
 			NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 				if not NewInstance.Parent then
 					Setting.Keybind = ToggleGUI:GetBind()
-
-                    if Theme then
-					    Setting.Theme = GetTheme:GetOption()
-                    end
-
+					Setting.Theme = GetTheme:GetOption()
                     Setting.Overrides = Load_Overrides
 
 					writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
