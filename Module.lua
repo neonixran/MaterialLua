@@ -3808,8 +3808,9 @@ function Material:Load(Config)
 				end
 			})
 
+			local GetTheme
 			if Theme then
-				local GetTheme = OptionLibrary:Dropdown({
+				GetTheme = OptionLibrary:Dropdown({
 					Text = "Theme",
 					Hide = true,
 					Default = Setting.Theme,
