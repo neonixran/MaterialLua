@@ -1,7 +1,4 @@
- -- Initialization --
-local Timer = os.clock()
-
--- Services --
+-- Services
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local StarterGui = game:GetService("StarterGui")
@@ -11,35 +8,41 @@ local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
+local RobloxReplicatedStorage = game:GetService("RobloxReplicatedStorage")
 
--- Variables --
-local Loaded
+-- Variables
 local Load_Style
+local ToggleGUI
+local GetTheme
 local Mouse = Players.LocalPlayer:GetMouse()
 
--- Data Settings --
+-- Settings
 local Default = {
     Keybind = "RightControl",
-    Theme = "Light",
+    Theme = "Dark",
     Overrides = {
-		MainFrame = "ffffff",
-	}
+        MainFrame = "191919"
+    }
 }
 
 local Success, Setting = pcall(function()
-	return HttpService:JSONDecode(readfile("MaterialSettings.json"))
+    return HttpService:JSONDecode(readfile("MaterialSettings.json"))
 end)
 
 if not Success then
-	Setting = Default
+    Setting = Default
 
-	writefile("MaterialSettings.json", HttpService:JSONEncode(Default))
+    writefile("MaterialSettings.json", HttpService:JSONEncode(Default))
 end
 
--- Library --
+-- Functions
 local Themes = {
 	Light = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
+		Minimise = Color3.fromRGB(255, 106, 0),
+		MinimiseAccent = Color3.fromRGB(147, 59, 0),
+		Maximise = Color3.fromRGB(25, 255, 0),
+		MaximiseAccent = Color3.fromRGB(0, 255, 110),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
 		NavBar = Color3.fromRGB(124, 37, 255),
@@ -70,6 +73,10 @@ local Themes = {
 	},
 	Dark = {
 		MainFrame = Color3.fromRGB(25, 25, 25),
+		Minimise = Color3.fromRGB(255, 106, 0),
+		MinimiseAccent = Color3.fromRGB(147, 59, 0),
+		Maximise = Color3.fromRGB(25, 255, 0),
+		MaximiseAccent = Color3.fromRGB(0,255,110),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
 		NavBar = Color3.fromRGB(55, 55, 55),
@@ -100,6 +107,14 @@ local Themes = {
 	},
 	Mocha = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
+		Minimise = Color3.fromRGB(219, 210, 202),
+		MinimiseAccent = Color3.fromRGB(219, 210, 202),
+		Maximise = Color3.fromRGB(189, 183, 177),
+		MaximiseAccent = Color3.fromRGB(189, 183, 177),
+		Minimise = Color3.fromRGB(219, 210, 202),
+		MinimiseAccent = Color3.fromRGB(219, 210, 202),
+		Maximise = Color3.fromRGB(189, 183, 177),
+		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
 		Maximise = Color3.fromRGB(189, 183, 177),
@@ -132,6 +147,10 @@ local Themes = {
 	},
 	Aqua = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
+		Minimise = Color3.fromRGB(219, 210, 202),
+		MinimiseAccent = Color3.fromRGB(219, 210, 202),
+		Maximise = Color3.fromRGB(189, 183, 177),
+		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
 		NavBar = Color3.fromRGB(116, 112, 140),
@@ -300,16 +319,16 @@ local Properties = {
 		AutoButtonColor = false,
 		BackgroundTransparency = 1,
 		Image = "http://www.roblox.com/asset/?id=5555108481",
-		Size = UDim2.fromOffset(20,20),
-		Position = UDim2.fromScale(1, 0.5) - UDim2.fromOffset(25,10),
+		Size = UDim2.fromOffset(20, 20),
+		Position = UDim2.fromScale(1, 0.5) - UDim2.fromOffset(25, 10),
 		BorderSizePixel = 0
 	},
 	NavBar = {
 		Name = "SheetToggle",
 		Image = "http://www.roblox.com/asset/?id=5576439039",
 		BackgroundTransparency = 1,
-		Size = UDim2.fromOffset(20,20),
-		Position = UDim2.fromOffset(5,5),
+		Size = UDim2.fromOffset(20, 20),
+		Position = UDim2.fromOffset(5, 5),
 		AutoButtonColor = false,
 		BorderSizePixel = 0
 	}
@@ -326,12 +345,42 @@ function FindType(String)
 end
 
 function IsKeyCode(Key)
-    for _,v in pairs(Enum.KeyCode:GetEnumItems()) do
-        if v.Name:lower() == Key:lower() then
-            return true
-        end
-    end
-    return false
+	local Success, KeyCode = pcall(function()
+		return Enum.KeyCode[Key]
+	end)
+
+	if Success then
+		return KeyCode
+	end
+end
+
+function Position(Current, Frame)
+	local X, Y = Frame and Frame.Position.X.Offset, Frame and Frame.Position.Y.Offset or 0
+
+    local Positions = {
+        Left = {
+            AnchorPoint = Vector2.new(0, 0.5),
+            Position = UDim2.new(0.005, X, 0.555, Y),--UDim2.new(0.005, X, 0.5, Y),
+            Hide = UDim2.new(-2, X, 0.555, Y),
+        },
+        Center = {
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = UDim2.new(0.5, X, 0.5, Y),
+            Hide = UDim2.new(-2, X, 0.5, Y),
+        },
+        Right = {
+            AnchorPoint = Vector2.new(1, 0.5),
+            Position = UDim2.new(0.991, X, 0.5, Y),
+            Hide = UDim2.new(-2, X, 0.5, Y),
+        },
+        Bottom = {
+            AnchorPoint = Vector2.new(0.5, 1),
+            Position = UDim2.new(0.5, X, 0.967, Y),
+            Hide = UDim2.new(-2, X, 0.967, Y),
+        }
+    }
+
+    return Positions[Current]
 end
 
 local Objects = {}
@@ -376,17 +425,13 @@ local function CircleAnim(GuiObject, EndColour, StartColour)
 	task.delay(2, Circle.Destroy, Circle)
 end
 
+-- Library
 local Material = {}
+Material.Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Notification.lua"), "Material Lua [Notification]")(Setting.Theme).Notify
 
-Material.Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Notification.lua"))(Setting.Theme).Notify
-
-local Styles = {
-	[1] = "Normal",
-	[2] = "Invert",
-	[3] = "Sheets"
-}
-
+local MainGUI
 local ThisTheme
+local Styles = {"Normal", "Invert", "Sheets"}
 
 local NavBar = {
 	Normal = function()
@@ -605,8 +650,6 @@ local NavBar = {
 	end
 }
 
-local MainGUI
-
 function TryAddMenu(Object, Menu, ReturnTable)
 	ReturnTable.Object = Object
 
@@ -781,7 +824,7 @@ function CreateNewButton(ButtonConfig, Parent)
 
 	TryAddMenu(Button, Button_Menu, {
 		SetText = function(Text)
-			ButtonLabel.Text = (typeof(Text) ~= "string" and ButtonLabel.Text) or Text
+			ButtonLabel.Text = typeof(Text) ~= "string" and ButtonLabel.Text or Text
 		end,
 		GetText = function()
 			return ButtonLabel.Text
@@ -819,6 +862,7 @@ function Material:Load(Config)
 	local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
 	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
 	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
+	local Load_Minimize = typeof(Config.Minimize) == "boolean" and Config.Minimize or false
 	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or Setting.Overrides
 	local Load_UI = typeof(Config.UI) == "table" and Config.UI or {
         CheckName = false,
@@ -826,6 +870,8 @@ function Material:Load(Config)
     }
 
 	local Load_Menu = typeof(Config.Menu) == "table" and Config.Menu or {}
+
+	local Open = true
 
 	Setting.Theme = Load_Theme
 	local Theme = Setting.Theme
@@ -840,83 +886,83 @@ function Material:Load(Config)
 	local Load_TextColor = typeof(Config.TextColor) == "Color3" and Config.TextColor or ThisTheme.TitleBarAccent
 
 	pcall(function()
-        if Load_UI.CheckName and OldInstance.Name == Load_Title or Load_UI.DestroyOthers then
+		if Load_UI.CheckName and OldInstance.Name == Load_Title or Load_UI.DestroyOthers then
 			OldInstance:Destroy()
-        end
+		end
 	end)
 
 	local NewInstance = Objects:New("ScreenGui")
 	NewInstance.Name = Load_Title
 
-    if not is_sirhurt_closure and (syn and syn.protect_gui) then
-        syn.protect_gui(NewInstance)
-        NewInstance.Parent = CoreGui
-    elseif gethui then
-        NewInstance.Parent = gethui()
-    else
-        NewInstance.Parent = CoreGui
-    end
+	if gethui then
+		NewInstance.Parent = gethui()
+	elseif not is_sirhurt_closure and (syn and syn.protect_gui) then
+		syn.protect_gui(NewInstance)
+		NewInstance.Parent = CoreGui
+	else
+		NewInstance.Parent = CoreGui
+	end
 
 	getgenv().OldInstance = NewInstance
 
 	MainGUI = NewInstance
 
-    local MainFrame = Objects:New("Round")
+	local MainFrame = Objects:New("Round")
 	MainFrame.Name = "MainFrame"
-	MainFrame.AnchorPoint = Load_Position == "Top-Left" and Vector2.new(0, 0) or Load_Position == "Left" and Vector2.new(0, 0.5) or Load_Position == "Center" and Vector2.new(0.5, 0.5) or Load_Position == "Top-Right" and Vector2.new(1, 0) or Load_Position == "Right" and Vector2.new(1, 0.5)
+	MainFrame.AnchorPoint = Position(Load_Position, MainFrame).AnchorPoint
+	MainFrame.Position = Position(Load_Position, MainFrame).Position
 	MainFrame.Size = UDim2.fromOffset(0, Load_SizeY)
-	MainFrame.Position = Load_Position == "Top-Left" and UDim2.fromOffset(5, 0) or Load_Position == "Left" and UDim2.new(0, 5, 0.555, 0) or Load_Position == "Center" and UDim2.fromScale(0.5, 0.5) or Load_Position == "Top-Right" and UDim2.fromScale(0.99, 0) or Load_Position == "Right" and UDim2.fromScale(0.99, 0.5)
 	MainFrame.ImageColor3 = ThisTheme.MainFrame
 	MainFrame.Parent = NewInstance
-
-    TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, Load_SizeY)}):Play()
-
+ 
+	TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, Load_SizeY)}):Play()
+	
 	task.wait(1)
-
-    local MainShadow = Objects:New("Shadow")
+ 
+	local MainShadow = Objects:New("Shadow")
 	MainShadow.ImageColor3 = ThisTheme.MainFrame
 	MainShadow.Parent = MainFrame
-
+ 
 	local TitleBar = Objects:New("SmoothButton")
 	TitleBar.Name = "TitleBar"
 	TitleBar.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 	TitleBar.ImageColor3 = ThisTheme.TitleBar
 	TitleBar.ImageTransparency = 1
 	TitleBar.Parent = MainFrame
-
+ 
 	local ExtraBar = Objects:New("Frame")
 	ExtraBar.Name = "Hidden"
 	ExtraBar.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 5)
 	ExtraBar.Position = UDim2.fromScale(0, 1) - UDim2.fromOffset(0, 5)
 	ExtraBar.BackgroundColor3 = ThisTheme.TitleBar
 	ExtraBar.Parent = TitleBar
-
+ 
 	local TitleShadow = Objects:New("Shadow")
 	TitleShadow.ImageColor3 = ThisTheme.TitleBar
 	TitleShadow.ImageTransparency = 1
 	TitleShadow.Parent = TitleBar
-
+ 
 	local TitleText = Objects:New("Button")
 	TitleText.Name = "Title"
 	TitleText.Text = Load_Title
-    TitleText.RichText = Load_RichText
+	TitleText.RichText = Load_RichText
 	TitleText.TextColor3 = Load_TextColor
 	TitleText.TextTransparency = 1
 	TitleText.Font = Load_Font
 	TitleText.Parent = TitleBar
-
+ 
 	TitleText.MouseButton1Down:Connect(function()
 		local Mx, My = Mouse.X, Mouse.Y
 		local MouseMove, MouseKill
-
+ 
 		MouseMove = Mouse.Move:Connect(function()
 			local nMx, nMy = Mouse.X, Mouse.Y
 			local Dx, Dy = nMx - Mx, nMy - My
-
+	
 			MainFrame.Position = MainFrame.Position + UDim2.fromOffset(Dx, Dy)
 			Mx, My = nMx, nMy
 		end)
-
+ 
 		MouseKill = UserInputService.InputEnded:Connect(function(Input)
 			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				MouseMove:Disconnect()
@@ -924,36 +970,54 @@ function Material:Load(Config)
 			end
 		end)
 	end)
-
+ 
 	local CloseButton = Objects:New("SmoothButton")
 	CloseButton.Size = UDim2.fromOffset(20, 20)
 	CloseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-	CloseButton.ImageColor3 = ThisTheme.Close
+	CloseButton.ImageColor3 = Load_Minimize and ThisTheme.Minimise or ThisTheme.Close
 	CloseButton.ImageTransparency = 1
 	CloseButton.Parent = TitleBar
-
+ 
 	local CloseShadow = Objects:New("Shadow")
-	CloseShadow.ImageColor3 = ThisTheme.CloseAccent
+	CloseShadow.ImageColor3 = Load_Minimize and ThisTheme.MinimiseAccent or ThisTheme.CloseAccent
 	CloseShadow.ImageTransparency = 1
 	CloseShadow.Parent = CloseButton
-
+ 
 	CloseButton.MouseButton1Down:Connect(function()
-		TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = UDim2.new(0.5, MainFrame.Position.X.Offset, 2, MainFrame.Position.Y.Offset)}):Play()
-		task.wait(1)
-		NewInstance:Destroy()
+		if not Load_Minimize then
+			TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, 0)}):Play()
+			MainFrame.ClipsDescendants = true
+			task.wait(1)
+			NewInstance:Destroy()
+		else
+			Open = not Open
+
+			TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+			TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(Load_SizeX, Load_SizeY) or UDim2.fromOffset(Load_SizeX, 30)}):Play()
+			TweenService:Create(CloseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
+			TweenService:Create(CloseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
+
+			if Open then
+				task.wait(0.15)
+				MainFrame.ClipsDescendants = false
+				TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
+			else
+				MainFrame.ClipsDescendants = true
+			end
+		end
 	end)
 
-    local Content = Objects:New("Round")
+	local Content = Objects:New("Round")
 	Content.Name = "Content"
 	Content.ImageColor3 = ThisTheme.Content
 	Content.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(10, 75)
 	Content.Position = UDim2.fromOffset(5, 70)
 	Content.ImageTransparency = 1
 	Content.Parent = MainFrame
-
+	
 	local NavigationBar, NavigationBarContent, NavBarMenu, NavBarOverlay = NavBar[Styles[Load_Style]]()
 	NavigationBar.Parent = MainFrame
-
+	
 	TweenService:Create(TitleBar, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(ExtraBar, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
 	TweenService:Create(TitleShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
@@ -961,10 +1025,10 @@ function Material:Load(Config)
 	TweenService:Create(CloseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(CloseShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(Content, TweenInfo.new(1), {ImageTransparency = 0.8}):Play()
-
+ 
 	task.wait(1)
 
-    if NavBarMenu then
+	if NavBarMenu then
 		TweenService:Create(TitleText, TweenInfo.new(0.5), {Size = TitleText.Size - UDim2.fromOffset(25, 0), Position = TitleText.Position + UDim2.fromOffset(25, 0)}):Play()
 		TweenService:Create(Content, TweenInfo.new(0.5), {Size = Content.Size + UDim2.fromOffset(0, 35), Position = Content.Position - UDim2.fromOffset(0, 35)}):Play()
 
@@ -994,20 +1058,21 @@ function Material:Load(Config)
 	local ButtonTrack = {}
 	local PageTrack = {}
 
-    function TabLibrary:Banner(BannerConfig)
+	function TabLibrary:Banner(BannerConfig)
 		local Banner_Text = typeof(BannerConfig.Text) == "string" and BannerConfig.Text or "Banner"
 		local Banner_RichText = typeof(BannerConfig.RichText) == "boolean" and BannerConfig.RichText or false
 		local Banner_TextColor = typeof(BannerConfig.TextColor) == "Color3" and BannerConfig.TextColor or ThisTheme.BannerAccent
 		local Banner_Font = typeof(BannerConfig.Font) == "EnumItem" and BannerConfig.Font or Enum.Font.Gotham
-		local Banner_Duration = (typeof(BannerConfig.Duration) == "number" and BannerConfig.Duration) or nil
-		local Banner_Options = (typeof(BannerConfig.Options) == "table" and BannerConfig.Options) or {}
+		local Banner_Duration = typeof(BannerConfig.Duration) == "number" and BannerConfig.Duration or nil
+		local Banner_Options = typeof(BannerConfig.Options) == "table" and BannerConfig.Options or {}
 		local Banner_Button = typeof(BannerConfig.Button) == "table" and BannerConfig.Button or {
 			Text = "Close",
 			Callback = function() end
 		}
-        local BannerLibrary = {}
 
-        local ExistingBanner, ExistingBannerOverlay = MainFrame:FindFirstChild("BannerOverlay"), MainFrame:FindFirstChild("Banner")
+		local BannerLibrary = {}
+
+		local ExistingBanner, ExistingBannerOverlay = MainFrame:FindFirstChild("BannerOverlay"), MainFrame:FindFirstChild("Banner")
 
 		if ExistingBanner then
 			ExistingBanner:Destroy()
@@ -1017,7 +1082,7 @@ function Material:Load(Config)
 			ExistingBannerOverlay:Destroy()
 		end
 
-        local BannerOverlay = Objects:New("SmoothButton")
+		local BannerOverlay = Objects:New("SmoothButton")
 		BannerOverlay.Name = "BannerOverlay"
 		BannerOverlay.BackgroundColor3 = ThisTheme.BannerAccent
 		BannerOverlay.ImageColor3 = ThisTheme.BannerAccent
@@ -1116,9 +1181,9 @@ function Material:Load(Config)
 			end
 		end
 
-        TweenService:Create(BannerContainer, TweenInfo.new(0.5), {Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-10, 30)}):Play()
+		TweenService:Create(BannerContainer, TweenInfo.new(0.5), {Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-10, 30)}):Play()
 
-        function BannerLibrary:SetText(Value)
+		function BannerLibrary:SetText(Value)
 			BannerLabel.Text = typeof(Value) == "string" and Value or BannerLabel.Text
         end
 
@@ -1151,18 +1216,18 @@ function Material:Load(Config)
 			TweenService:Create(BannerLabel, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
         end
 
-        return BannerLibrary
-    end
+		return BannerLibrary
+	end
 
-    function TabLibrary:New(TabConfig)
+	function TabLibrary:New(TabConfig)
 		local Tab_Title = typeof(TabConfig.Title) == "string" and TabConfig.Title or "Tab"
 		local Tab_RichText = typeof(TabConfig.RichText) == "boolean" and TabConfig.RichText or false
 		local Tab_TextColor = typeof(TabConfig.TextColor) == "Color3" and TabConfig.TextColor or Color3.fromRGB(255, 255, 255)
 		local Tab_Font = typeof(TabConfig.Font) == "EnumItem" and TabConfig.Font or Enum.Font.GothamBold
 		local Tab_Visible = typeof(TabConfig.Visible) ~= "boolean" and true or TabConfig.Visible
-		local Tab_ImageID = (typeof(TabConfig.Image) == "number" and TabConfig.Image) or nil
+		local Tab_ImageID = typeof(TabConfig.Image) == "number" and TabConfig.Image or nil
 
-        local Button
+		local Button
 		local NewImage
         local Tab_Settings = {
             TextSize = 12,
@@ -1239,13 +1304,11 @@ function Material:Load(Config)
 			for _, Track in next, ButtonTrack do
 				if not (Track == Button) then
 					TweenService:Create(Track, TweenInfo.new(0.15), {TextTransparency = 0.5}):Play()
-
 					pcall(function()
 						TweenService:Create(Track:FindFirstChildWhichIsA("ImageLabel"), TweenInfo.new(0.15), {ImageTransparency = 0.5}):Play()
 					end)
 				else
 					TweenService:Create(Track, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
-
 					pcall(function()
 						TweenService:Create(Track:FindFirstChildWhichIsA("ImageLabel"), TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
 					end)
@@ -1283,9 +1346,9 @@ function Material:Load(Config)
 
         TabCount += 1
 
-        local OptionLibrary = {}
+		local OptionLibrary = {}
 
-        function OptionLibrary:Separator(SeparatorConfig)
+		function OptionLibrary:Separator()
 			SeparatorConfig = typeof(SeparatorConfig) == "table" and SeparatorConfig or {}
 
 			local Separator_Visible = typeof(SeparatorConfig.Visible) ~= "boolean" and true or SeparatorConfig.Visible
@@ -1312,15 +1375,15 @@ function Material:Load(Config)
 			end
 
             return SeparatorLibrary
-        end
+		end
 
-        function OptionLibrary:Label(LabelConfig)
-			LabelConfig = (typeof(LabelConfig) == "table" and LabelConfig) or {}
+		function OptionLibrary:Label(LabelConfig)
+			LabelConfig = typeof(LabelConfig) == "table" and LabelConfig or {}
 
-			local Label_Text = typeof(LabelConfig.Text) == "string" and LabelConfig.Text or "Button"
+			local Label_Text = typeof(LabelConfig.Text) == "string" and LabelConfig.Text or "Label"
 			local Label_XAlignment = typeof(LabelConfig.XAlignment) == "string" and LabelConfig.XAlignment or "Left"
 			local Label_RichText = typeof(LabelConfig.RichText) == "boolean" and LabelConfig.RichText or false
-			local Label_TextColor = typeof(LabelConfig.TextColor) == "Color3" and LabelConfig.TextColor or ThisTheme.ButtonAccent
+			local Label_TextColor = typeof(LabelConfig.TextColor) == "Color3" and LabelConfig.TextColor or ThisTheme.ChipSet
 			local Label_Font = typeof(LabelConfig.Font) == "EnumItem" and LabelConfig.Font or Enum.Font.GothamSemibold
 			local Label_Visible = typeof(LabelConfig.Visible) ~= "boolean" and true or LabelConfig.Visible
 
@@ -1331,11 +1394,11 @@ function Material:Load(Config)
 
 			local LabelLibrary = {}
 
-            local LabelContainer = Objects:New("Round")
+			local LabelContainer = Objects:New("Round")
 			LabelContainer.Name = "Label"
 			LabelContainer.Visible = Label_Visible
 			LabelContainer.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
-			LabelContainer.ImageColor3 = ThisTheme.Button
+			LabelContainer.ImageColor3 = ThisTheme.MainFrame
 			LabelContainer.Parent = PageContentFrame
 
 			local LabelContent = Objects:New("Label")
@@ -1352,16 +1415,16 @@ function Material:Load(Config)
             LabelContent.Parent = LabelContainer
 
 			if Label_MouseEnter then
-				local Connection_Enter
-				Connection_Enter = LabelContent.MouseEnter:Connect(function()
-					pcall(Label_MouseEnter, LabelLibrary, Connection_Enter)
+				local EnterConnection
+				EnterConnection = LabelContent.MouseEnter:Connect(function()
+					pcall(Label_MouseEnter, LabelLibrary, EnterConnection)
 				end)
 			end
 
 			if Label_MouseLeave then
-				local Connection_Leave
-				Connection_Leave = LabelContent.MouseLeave:Connect(function()
-					pcall(Label_MouseLeave, LabelLibrary, Connection_Leave)
+				local LeaveConnection
+				LeaveConnection = LabelContent.MouseLeave:Connect(function()
+					pcall(Label_MouseLeave, LabelLibrary, LeaveConnection)
 				end)
 			end
 
@@ -1370,7 +1433,7 @@ function Material:Load(Config)
 					LabelContent.Text = typeof(Text) == "string" and Text or LabelContent.Text
 				end,
 				GetText = function()
-					return LabelContent.Text
+					return Label_RichText and LabelContent.ContentText or LabelContent.Text
 				end,
 				SetAlignment = function(Alignment)
 					LabelContent.TextXAlignment = typeof(Alignment) == "string" and Enum.TextXAlignment[Alignment] or LabelContent.TextXAlignment
@@ -1403,7 +1466,7 @@ function Material:Load(Config)
 			end
 
 			function LabelLibrary:GetText()
-				return LabelContent.Text
+				return Label_RichText and LabelContent.ContentText or LabelContent.Text
 			end
 
 			function LabelLibrary:SetAlignment(Alignment)
@@ -1442,11 +1505,11 @@ function Material:Load(Config)
 				LabelContainer:Destroy()
 			end
 
-            return LabelLibrary
-        end
+			return LabelLibrary
+		end
 
-        function OptionLibrary:Button(ButtonConfig)
-            local NewButton, ButtonLabel, ButtonCallback = CreateNewButton(ButtonConfig, PageContentFrame)
+		function OptionLibrary:Button(ButtonConfig)
+			local NewButton, ButtonLabel, ButtonCallback = CreateNewButton(ButtonConfig, PageContentFrame)
 
 			local ButtonLibrary = {}
 
@@ -1455,7 +1518,7 @@ function Material:Load(Config)
 			end
 
 			function ButtonLibrary:GetText()
-				return ButtonLabel.Text
+				return ButtonLabel.RichText and LabelContent.ContentText or LabelContent.Text
 			end
 
 			function ButtonLibrary:SetTextColor(TextColor)
@@ -1491,14 +1554,13 @@ function Material:Load(Config)
 			end
 
 			return ButtonLibrary
-        end
+		end
 
-        function OptionLibrary:Toggle(ToggleConfig)
+		function OptionLibrary:Toggle(ToggleConfig)
 			ToggleConfig = typeof(ToggleConfig) == "table" and ToggleConfig or {}
 
 			local Toggle_Text = typeof(ToggleConfig.Text) == "string" and ToggleConfig.Text or "Toggle"
-			local Toggle_RichText = typeof(ToggleConfig.RichText) == "boolean" and ToggleConfig.RichText or false
-			local Toggle_TextColor = typeof(ToggleConfig.TextColor) == "Color3" and ToggleConfig.TextColor or ThisTheme.Toggle
+			local Toggle_RichText = typeof(ToggleConfig.RichText) == "boolean" and ToggleConfig.RichText or false				local Toggle_TextColor = typeof(ToggleConfig.TextColor) == "Color3" and ToggleConfig.TextColor or ThisTheme.Toggle
 			local Toggle_Font = typeof(ToggleConfig.Font) == "EnumItem" and ToggleConfig.Font or Enum.Font.GothamSemibold
 			local Toggle_Visible = typeof(ToggleConfig.Visible) ~= "boolean" and true or ToggleConfig.Visible
 			local Toggle_Enabled = typeof(ToggleConfig.Enabled) == "boolean" and ToggleConfig.Enabled or false
@@ -1509,7 +1571,7 @@ function Material:Load(Config)
 
 			local ToggleLibrary = {}
 
-            local Toggle = Objects:New("SmoothButton")
+			local Toggle = Objects:New("SmoothButton")
 			Toggle.Name = "Toggle"
 			Toggle.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 			Toggle.ImageColor3 = ThisTheme.Toggle
@@ -1529,7 +1591,7 @@ function Material:Load(Config)
 			ToggleTracker.ImageTransparency = 1
 			ToggleTracker.Parent = Toggle
 
-            local Dot = Objects:New("Circle")
+			local Dot = Objects:New("Circle")
 			Dot.Name = "Dot"
 			Dot.Size = UDim2.fromOffset(16, 16)
 			Dot.Position = UDim2.fromScale(0, 0.5) - UDim2.fromOffset(8, 8)
@@ -1557,7 +1619,7 @@ function Material:Load(Config)
 			ToggleLabel.ClipsDescendants = true
 			ToggleLabel.Parent = Toggle
 
-            TweenService:Create(Toggle, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
+			TweenService:Create(Toggle, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
 			TweenService:Create(ToggleTracker, TweenInfo.new(0.5), {ImageTransparency = 0.5}):Play()
 			TweenService:Create(Dot, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
 			TweenService:Create(DotShadow, TweenInfo.new(0.5), {ImageTransparency = 0.5}):Play()
@@ -1565,18 +1627,18 @@ function Material:Load(Config)
 
 			TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
 
-            Toggle.MouseButton1Down:Connect(function()
+			Toggle.MouseButton1Down:Connect(function()
 				Toggle_Enabled = not Toggle_Enabled
 
 				Toggle:SetAttribute("State", Toggle_Enabled)
 
 				TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
 				CircleAnim(ToggleLabel, ThisTheme.ToggleAccent, ThisTheme.Toggle)
-				pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
+				pcall(Toggle_Callback, Toggle:GetAttribute("State"), ToggleLibrary)
 			end)
 
-            local Toggle_Connection
-            Toggle_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+			local Connection
+            Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 				if not NewInstance.Parent then
 					if Toggle_Disable then
 						if Toggle_Enabled then
@@ -1594,12 +1656,12 @@ function Material:Load(Config)
 				pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
 			end
 
-            local MenuAdded, MenuButton = TryAddMenu(Toggle, Toggle_Menu, {
+			local MenuAdded, MenuButton = TryAddMenu(Toggle, Toggle_Menu, {
 				SetText = function(Text)
 					ToggleLabel.Text = typeof(Text) == "string" and Text or ToggleLabel.Text
 				end,
 				GetText = function()
-					return ToggleLabel.Text
+					return Toggle_RichText and ToggleLabel.ContentText or ToggleLabel.Text
 				end,
 				SetTextColor = function(TextColor)
 					ToggleLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ToggleLabel.TextColor3
@@ -1645,7 +1707,7 @@ function Material:Load(Config)
 			end
 
 			function ToggleLibrary:GetText()
-				return ToggleLabel.Text
+				return Toggle_RichText and ToggleLabel.ContentText or ToggleLabel.Text
 			end
 
 			function ToggleLibrary:SetTextColor(TextColor)
@@ -1706,10 +1768,10 @@ function Material:Load(Config)
 				end
 			end
 
-            return ToggleLibrary
-        end
+			return ToggleLibrary
+		end
 
-       	function OptionLibrary:Slider(SliderConfig)
+		function OptionLibrary:Slider(SliderConfig)
 			SliderConfig = typeof(SliderConfig) == "table" and SliderConfig or {}
 
    			local Slider_Text = typeof(SliderConfig.Text) == "string" and SliderConfig.Text or "Slider"
@@ -1721,6 +1783,7 @@ function Material:Load(Config)
             local Slider_Min = typeof(SliderConfig.Min) == "number" and SliderConfig.Min or 0
             local Slider_Max = typeof(SliderConfig.Max) == "number" and SliderConfig.Max or 100
             local Slider_Precision = typeof(SliderConfig.Precision) == "number" and SliderConfig.Precision or 0
+
             local Slider_Menu = typeof(SliderConfig.Menu) == "table" and SliderConfig.Menu or {}
 
 			local SliderLibrary = {}
@@ -1730,10 +1793,10 @@ function Material:Load(Config)
                 Slider_Min, Slider_Max = Slider_Max, Value_Before
             end
 
-            local SliderDefault = (typeof(SliderConfig.Default) == "number" and math.clamp(SliderConfig.Default, Slider_Min, Slider_Max)) or math.clamp(50, Slider_Min, Slider_Max)
+			local SliderDefault = typeof(SliderConfig.Default) == "number" and math.clamp(SliderConfig.Default, Slider_Min, Slider_Max) or math.clamp(50, Slider_Min, Slider_Max)
             local DefaultScale = (SliderDefault - Slider_Min) / (Slider_Max - Slider_Min)
 
-            local Slider = Objects:New("Round")
+			local Slider = Objects:New("Round")
             Slider.Name = "Slider"
             Slider.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 35)
             Slider.ImageColor3 = ThisTheme.Slider
@@ -1780,7 +1843,7 @@ function Material:Load(Config)
             SliderFill.Size = UDim2.fromScale(DefaultScale, 1)
             SliderFill.Parent = SliderTracker
 
-            local Min_Size = 10
+			local Min_Size = 10
             local Max_Size = 36
 
             local SizeFromScale = (Min_Size + (Max_Size - Min_Size)) * DefaultScale
@@ -1794,7 +1857,7 @@ function Material:Load(Config)
             SliderDot.ZIndex = 50
             SliderDot.Parent = SliderTracker
 
-            local SliderFadedDot = Objects:New("Circle")
+			local SliderFadedDot = Objects:New("Circle")
             SliderFadedDot.Size = UDim2.fromOffset(SizeFromScale, SizeFromScale)
             SliderFadedDot.Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
             SliderFadedDot.ImageColor3 = ThisTheme.SliderAccent
@@ -1810,13 +1873,13 @@ function Material:Load(Config)
             TweenService:Create(SliderFill, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
             TweenService:Create(SliderDot, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
 
-            SliderDot.MouseButton1Down:Connect(function()
+			SliderDot.MouseButton1Down:Connect(function()
                 TweenService:Create(SliderFadedDot, TweenInfo.new(0.15), {ImageTransparency = 0.8}):Play()
                 local MouseMove, MouseKill
 
                 MouseMove = Mouse.Move:Connect(function()
 					local Px = GetXY(SliderTracker)
-					SizeFromScale = (Min_Size +  (Max_Size - Min_Size)) * Px -- local variable
+					SizeFromScale = (Min_Size +  (Max_Size - Min_Size)) * Px
 					local Power = 10 ^ Slider_Precision
 					local Value = math.floor((Slider_Min + ((Slider_Max - Slider_Min) * Px)) * Power) / Power
 
@@ -1844,7 +1907,7 @@ function Material:Load(Config)
 					SliderTitle.Text = typeof(Text) == "string" and Text or SliderTitle.Text
 				end,
 				GetText = function()
-					return SliderTitle.Text
+					return Slider_RichText and SliderTitle.ContentText or SliderTitle.Text
 				end,
 				SetTextColor = function(TextColor)
 					SliderTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or SliderTitle.TextColor3
@@ -1912,7 +1975,7 @@ function Material:Load(Config)
 			end
 
 			function SliderLibrary:GetText()
-				return SliderTitle.Text
+				return Slider_RichText and SliderTitle.ContentText or SliderTitle.Text
 			end
 
 			function SliderLibrary:SetTextColor(TextColor)
@@ -1985,14 +2048,13 @@ function Material:Load(Config)
 			end
 
 			return SliderLibrary
-        end
+		end
 
-        function OptionLibrary:Dropdown(DropdownConfig)
+		function OptionLibrary:Dropdown(DropdownConfig)
 			DropdownConfig = typeof(DropdownConfig) == "table" and DropdownConfig or {}
 
 			local Dropdown_Text = typeof(DropdownConfig.Text) == "string" and DropdownConfig.Text or "Dropdown"
 			local Dropdown_XAlignment = typeof(DropdownConfig.XAlignment) == "string" and DropdownConfig.XAlignment ~= "Right" and DropdownConfig.XAlignment or "Left"
-			local Dropdown_RichText = typeof(DropdownConfig.RichText) == "boolean" and DropdownConfig.RichText or false
 			local Dropdown_TextColor = typeof(DropdownConfig.TextColor) == "Color3" and DropdownConfig.TextColor or ThisTheme.DropdownAccent
 			local Dropdown_Font = typeof(DropdownConfig.Font) == "EnumItem" and DropdownConfig.Font or Enum.Font.GothamSemibold
 			local Dropdown_Visible = typeof(DropdownConfig.Visible) ~= "boolean" and true or DropdownConfig.Visible
@@ -2006,7 +2068,7 @@ function Material:Load(Config)
 
 			local DropdownLibrary = {}
 
-            local Dropdown = Objects:New("Frame")
+			local Dropdown = Objects:New("Frame")
 			Dropdown.Name = "Dropdown"
 			Dropdown.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 			Dropdown.Visible = Dropdown_Visible
@@ -2027,7 +2089,6 @@ function Material:Load(Config)
 			DropdownTitle.Font = Dropdown_Font
 			DropdownTitle.TextXAlignment = Dropdown_XAlignment
 			DropdownTitle.Text = ("%s: %s"):format(Dropdown_Text, Dropdown_Default)
-			DropdownTitle.RichText = Dropdown_RichText
 			DropdownTitle.TextColor3 = Dropdown_TextColor
 			DropdownTitle.TextTransparency = 1
 			DropdownTitle.TextSize = 14
@@ -2069,7 +2130,7 @@ function Material:Load(Config)
 
             local DropdownList = Objects:New("UIListLayout")
 			DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
-			DropdownList.Padding = UDim.new(0,5)
+			DropdownList.Padding = UDim.new(0, 5)
 			DropdownList.Parent = DropdownContent
 
             DropdownList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -2110,19 +2171,22 @@ function Material:Load(Config)
 			end)
 
 			SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
-				for _,v in pairs(DropdownContent:GetChildren()) do
+				for _,v in ipairs(DropdownContent:GetChildren()) do
 					if v.Name == "Button" then
 						if SearchInput.Text ~= "" then
 							if v.TextLabel.Text:lower():match(SearchInput.Text:lower()) then
 								v.ImageTransparency = 0
 								v.LayoutOrder = 1
+								v.Active = true
 							else
 								v.ImageTransparency = 0.55
 								v.LayoutOrder = 2
+								v.Active = false
 							end
 						else
 							v.ImageTransparency = 0
 							v.LayoutOrder = 0
+							v.Active = true
 						end
 					end
 				end
@@ -2313,7 +2377,7 @@ function Material:Load(Config)
 				end)
 
 				SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
-					for _,v in pairs(DropdownContent:GetChildren()) do
+					for _,v in ipairs(DropdownContent:GetChildren()) do
 						if v.Name == "Button" then
 							if SearchInput.Text ~= "" then
 								if v.TextLabel.Text:lower():match(SearchInput.Text:lower()) then
@@ -2390,43 +2454,45 @@ function Material:Load(Config)
 				Dropdown:Destroy()
 			end
 
-            return DropdownLibrary
-        end
+			return DropdownLibrary
+		end
 
-        function OptionLibrary:ChipSet(ChipSetConfig)
-			ChipSetConfig = (typeof(ChipSetConfig) == "table" and ChipSetConfig) or {}
+		function OptionLibrary:ChipSet(ChipSetConfig)
+			ChipSetConfig = typeof(ChipSetConfig) == "table" and ChipSetConfig or {}
 
-			local ChipSet_Disable = (typeof(ChipSetConfig.Disable) ~= "boolean" and true) or ChipSetConfig.Disable
-			local ChipSet_Visible = (typeof(ChipSetConfig.Visible) ~= "boolean" and true) or ChipSetConfig.Visible
-            local ChipSet_Callback = (typeof(ChipSetConfig.Callback) == "function" and ChipSetConfig.Callback) or function() end
-            local ChipSet_Options = (typeof(ChipSetConfig.Options) == "table" and ChipSetConfig.Options) or {}
+			local ChipSet_Disable = typeof(ChipSetConfig.Disable) ~= "boolean" and true or ChipSetConfig.Disable
+			local ChipSet_Style = typeof(ChipSetConfig.Style) == "number" and ChipSetConfig.Style or 1
+			local ChipSet_Visible = typeof(ChipSetConfig.Visible) ~= "boolean" and true or ChipSetConfig.Visible
+            local ChipSet_Callback = typeof(ChipSetConfig.Callback) == "function" and ChipSetConfig.Callback or function() end
+            local ChipSet_Options = typeof(ChipSetConfig.Options) == "table" and ChipSetConfig.Options or {}
+
+			local ChipSetLibrary = {}
 
 			local Keys = {}
-            local TotalOptions = 0
+			local TotalOptions = 0
 
 			for i,v in pairs(ChipSet_Options) do
                 TotalOptions += 1
                 table.insert(Keys, i)
             end
 
-            table.sort(Keys)
+			table.sort(Keys)
 
-            if TotalOptions > 0 then
-				local ChipSetLibrary = {}
+			local ChipSet = Objects:New("Round")
+			ChipSet.Name = "ChipSet"
+			ChipSet.ImageColor3 = ThisTheme.ChipSet
+			ChipSet.ImageTransparency = 1
+			ChipSet.Visible = ChipSet_Visible
+			ChipSet.Parent = PageContentFrame
 
-                local Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
+			if TotalOptions > 0 then
+				local Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
 
-				local ChipSet = Objects:New("Round")
-				ChipSet.Name = "ChipSet"
 				ChipSet.Size = Size
-				ChipSet.ImageColor3 = ThisTheme.ChipSet
-				ChipSet.ImageTransparency = 1
-				ChipSet.Visible = ChipSet_Visible
-				ChipSet.Parent = PageContentFrame
 
 				local ChipList = Objects:New("UIListLayout")
 				ChipList.SortOrder = Enum.SortOrder.LayoutOrder
-				ChipList.Padding = UDim.new(0,5)
+				ChipList.Padding = UDim.new(0, 5)
 				ChipList.Parent = ChipSet
 
 				local ChipPadding = Objects:New("UIPadding")
@@ -2436,7 +2502,7 @@ function Material:Load(Config)
 				ChipPadding.PaddingLeft = UDim.new(0, 5)
 				ChipPadding.Parent = ChipSet
 
-                local BuildTable = {}
+				local BuildTable = {}
 
 				for Key, Value in pairs(Keys) do
 					if typeof(ChipSet_Options[Value]) == "table" then
@@ -2446,9 +2512,9 @@ function Material:Load(Config)
 					end
 				end
 
-                TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
+				TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
 
-				for _, Value in pairs(Keys) do
+				for _,Value in pairs(Keys) do
 					local ChipItem = Objects:New("SmoothButton")
 					ChipItem.Name = "ChipItem"
 					ChipItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
@@ -2533,187 +2599,201 @@ function Material:Load(Config)
 						end
 					end)
 				end
+			end
 
-				function ChipSetLibrary:SetOptions(NewMenu)
-					ChipSet_Options = typeof(NewMenu) == "table" and NewMenu or {}
+			function ChipSetLibrary:SetOptions(NewMenu)
+				ChipSet_Options = typeof(NewMenu) == "table" and NewMenu or {}
 
-					Keys = {}
-					TotalOptions = 0
+				Keys = {}
+				TotalOptions = 0
 
-					for i in pairs(ChipSet_Options) do
-						TotalOptions = TotalOptions + 1
-						table.insert(Keys, i)
-					end
-
-					for _,Element in next, ChipSet:GetChildren() do
-						Element:Destroy()
-					end
-
-					Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
-
-					TweenService:Create(ChipSet, TweenInfo.new(0.15), {Size = Size}):Play()
-
-					ChipList = Objects:New("UIListLayout")
-					ChipList.SortOrder = Enum.SortOrder.LayoutOrder
-					ChipList.Padding = UDim.new(0,5)
-					ChipList.Parent = ChipSet
-
-					ChipPadding = Objects:New("UIPadding")
-					ChipPadding.PaddingBottom = UDim.new(0,5)
-					ChipPadding.PaddingTop = UDim.new(0,5)
-					ChipPadding.PaddingRight= UDim.new(0,5)
-					ChipPadding.PaddingLeft = UDim.new(0,5)
-					ChipPadding.Parent = ChipSet
-
-					BuildTable = {}
-
-					for _,Value in pairs(Keys) do
-						if typeof(ChipSet_Options[Value]) == "table" then
-							BuildTable[Value] = ChipSet_Options[Value].Enabled
-						else
-							BuildTable[Value] = ChipSet_Options[Value]
-						end
-					end
-
-					TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
-
-					for _,Value in pairs(Keys) do
-						local ChipItem = Objects:New("SmoothButton")
-						ChipItem.Name = "ChipItem"
-						ChipItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-						ChipItem.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
-						ChipItem.ImageTransparency = 1
-						ChipItem.Parent = ChipSet
-						ChipItem:SetAttribute("Key", Value)
-
-						local ChipShadow = Objects:New("Shadow")
-						ChipShadow.Name = "Shadow"
-						ChipShadow.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
-						ChipShadow.ImageTransparency = 1
-						ChipShadow.Parent = ChipItem
-
-						local Tick = Objects:New("Round")
-						Tick.Name = "Tick"
-						Tick.ScaleType = Enum.ScaleType.Stretch
-						Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
-						Tick.ImageColor3 = ThisTheme.ChipSetAccent
-						Tick.ImageTransparency = 1
-						Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(10, 10)
-						Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
-						Tick.Position = UDim2.fromOffset(5, 5)
-						Tick.Parent = ChipItem
-
-						local ChipLabel = Objects:New("Label")
-						ChipLabel.Name = "ChipLabel"
-						ChipLabel.Size = (BuildTable[Value] and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))
-						ChipLabel.Position = (BuildTable[Value] and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0)
-						ChipLabel.Text = Value
-						ChipLabel.Font = Enum.Font.Gotham
-						ChipLabel.TextSize = 12
-						ChipLabel.TextColor3 = (BuildTable[Value] and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet
-						ChipLabel.TextTransparency = 1
-						ChipLabel.Parent = ChipItem
-
-						TweenService:Create(ChipItem, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
-						TweenService:Create(ChipShadow, TweenInfo.new(0.5), {ImageTransparency = 0.2}):Play()
-						TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = (BuildTable[Key] and 0) or 1}):Play()
-						TweenService:Create(ChipLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-
-						local ChipMenu
-
-						if typeof(ChipSet_Options[Value]) == "table" then
-							local Menu = ChipSet_Options[Value].Menu or {}
-
-							local MenuAdded, MenuButton = TryAddMenu(ChipItem, Menu, {})
-
-							MenuButton.ImageColor3 = BuildTable[Value] and ThisTheme.ChipSetAccent or ThisTheme.ChipSet
-
-							ChipMenu = MenuButton
-						end
-
-						ChipItem.MouseButton1Down:Connect(function()
-							BuildTable[Value] = not BuildTable[Value]
-							local Enabled = BuildTable[Value]
-
-							TweenService:Create(ChipItem, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-							TweenService:Create(ChipShadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-							TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
-							TweenService:Create(ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
-
-							if ChipMenu then
-								TweenService:Create(ChipMenu, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet}):Play()
-							end
-
-							pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
-						end)
-
-						local ChipSet_Connection
-						ChipSet_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
-							if not NewInstance.Parent then
-								if ChipSet_Disable then
-									if BuildTable[Value] then
-										BuildTable[Value] = false
-										pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
-										ChipSet_Connection:Disconnect()
-									end
-								else
-									ChipSet_Connection:Disconnect()
-								end
-							end
-						end)
-					end
+				for i in pairs(ChipSet_Options) do
+					TotalOptions = TotalOptions + 1
+					table.insert(Keys, i)
 				end
 
-				function ChipSetLibrary:GetOptions()
-					return ChipSet_Options
-				end
+				table.sort(Keys)
 
-				function ChipSetLibrary:SetState(Index, State)
-					for _,v in pairs(ChipSet:GetChildren()) do
-						if v:GetAttribute("Key") == Index then
-							BuildTable[Index] = State
-							local Enabled = BuildTable[Index]
-
-							TweenService:Create(v, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-							TweenService:Create(v.Shadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-							TweenService:Create(v.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
-							TweenService:Create(v.ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
-
-							pcall(ChipSet_Callback, Index, BuildTable[Index] , ChipSetLibrary)
-						end
-					end
-				end
-
-				function ChipSetLibrary:GetState(Index)
-					return BuildTable[Index]
-				end
-
-				function ChipSetLibrary:SetVisible(Visible)
-					ChipSet.Visible = (typeof(Visible) ~= "boolean" and ChipSet.Visible) or Visible
-				end
-
-				function ChipSetLibrary:GetVisible()
-					return ChipSet.Visible
-				end
-
-				function ChipSetLibrary:Destroy()
+				if ChipSet then
 					ChipSet:Destroy()
 				end
 
-				return ChipSetLibrary
-            end
-        end
+				Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
 
-        function OptionLibrary:DataTable(DataTableConfig)
-			DataTableConfig = (typeof(DataTableConfig) == "table" and DataTableConfig) or {}
+				ChipSet = Objects:New("Round")
+				ChipSet.Name = "ChipSet"
+				ChipSet.ImageColor3 = ThisTheme.ChipSet
+				ChipSet.ImageTransparency = 1
+				ChipSet.Size = Size
+				ChipSet.Visible = ChipSet_Visible
+				ChipSet.Parent = PageContentFrame
 
-			local DataTable_Disable = (typeof(DataTableConfig.Disable) ~= "boolean" and true) or DataTableConfig.Disable
-			local DataTable_Visible = (typeof(DataTableConfig.Visible) ~= "boolean" and true) or DataTableConfig.Visible
-            local DataTable_Callback = (typeof(DataTableConfig.Callback) == "function" and DataTableConfig.Callback) or function() end
-			local DataTable_Options = (typeof(DataTableConfig.Options) == "table" and DataTableConfig.Options) or {}
+				TweenService:Create(ChipSet, TweenInfo.new(0.15), {Size = Size}):Play()
+
+				ChipList = Objects:New("UIListLayout")
+				ChipList.SortOrder = Enum.SortOrder.LayoutOrder
+				ChipList.Padding = UDim.new(0, 5)
+				ChipList.Parent = ChipSet
+
+				ChipPadding = Objects:New("UIPadding")
+				ChipPadding.PaddingBottom = UDim.new(0, 5)
+				ChipPadding.PaddingTop = UDim.new(0, 5)
+				ChipPadding.PaddingRight= UDim.new(0, 5)
+				ChipPadding.PaddingLeft = UDim.new(0, 5)
+				ChipPadding.Parent = ChipSet
+
+				BuildTable = {}
+
+				for _,Value in pairs(Keys) do
+					if typeof(ChipSet_Options[Value]) == "table" then
+						BuildTable[Value] = ChipSet_Options[Value].Enabled
+					else
+						BuildTable[Value] = ChipSet_Options[Value]
+					end
+				end
+
+				TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
+
+				for _,Value in pairs(Keys) do
+					local ChipItem = Objects:New("SmoothButton")
+					ChipItem.Name = "ChipItem"
+					ChipItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
+					ChipItem.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
+					ChipItem.ImageTransparency = 1
+					ChipItem.Parent = ChipSet
+					ChipItem:SetAttribute("Key", Value)
+
+					local ChipShadow = Objects:New("Shadow")
+					ChipShadow.Name = "Shadow"
+					ChipShadow.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
+					ChipShadow.ImageTransparency = 1
+					ChipShadow.Parent = ChipItem
+
+					local Tick = Objects:New("Round")
+					Tick.Name = "Tick"
+					Tick.ScaleType = Enum.ScaleType.Stretch
+					Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
+					Tick.ImageColor3 = ThisTheme.ChipSetAccent
+					Tick.ImageTransparency = 1
+					Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(10, 10)
+					Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
+					Tick.Position = UDim2.fromOffset(5, 5)
+					Tick.Parent = ChipItem
+
+					local ChipLabel = Objects:New("Label")
+					ChipLabel.Name = "ChipLabel"
+					ChipLabel.Size = (BuildTable[Value] and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))
+					ChipLabel.Position = (BuildTable[Value] and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0)
+					ChipLabel.Text = Value
+					ChipLabel.Font = Enum.Font.Gotham
+					ChipLabel.TextSize = 12
+					ChipLabel.TextColor3 = (BuildTable[Value] and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet
+					ChipLabel.TextTransparency = 1
+					ChipLabel.Parent = ChipItem
+
+					TweenService:Create(ChipItem, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+					TweenService:Create(ChipShadow, TweenInfo.new(0.5), {ImageTransparency = 0.2}):Play()
+					TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = (BuildTable[Key] and 0) or 1}):Play()
+					TweenService:Create(ChipLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+
+					local ChipMenu
+
+					if typeof(ChipSet_Options[Value]) == "table" then
+						local Menu = ChipSet_Options[Value].Menu or {}
+						local MenuAdded, MenuButton = TryAddMenu(ChipItem, Menu, {})
+
+						MenuButton.ImageColor3 = BuildTable[Value] and ThisTheme.ChipSetAccent or ThisTheme.ChipSet
+
+						ChipMenu = MenuButton
+					end
+
+					ChipItem.MouseButton1Down:Connect(function()
+						BuildTable[Value] = not BuildTable[Value]
+						local Enabled = BuildTable[Value]
+
+						TweenService:Create(ChipItem, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+						TweenService:Create(ChipShadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+						TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
+						TweenService:Create(ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
+
+						if ChipMenu then
+							TweenService:Create(ChipMenu, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet}):Play()
+						end
+
+						pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
+					end)
+
+					local ChipSet_Connection
+					ChipSet_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+						if not NewInstance.Parent then
+							if ChipSet_Disable then
+								if BuildTable[Value] then
+									BuildTable[Value] = false
+									pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
+									ChipSet_Connection:Disconnect()
+								end
+							else
+								ChipSet_Connection:Disconnect()
+							end
+						end
+					end)
+				end
+			end
+
+			function ChipSetLibrary:GetOptions()
+				return ChipSet_Options
+			end
+
+			function ChipSetLibrary:SetState(Index, State)
+				for _,v in pairs(ChipSet:GetChildren()) do
+					if v:GetAttribute("Key") == Index then
+						BuildTable[Index] = State
+						local Enabled = BuildTable[Index]
+
+						TweenService:Create(v, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+						TweenService:Create(v.Shadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+						TweenService:Create(v.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
+						TweenService:Create(v.ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
+
+						pcall(ChipSet_Callback, Index, BuildTable[Index] , ChipSetLibrary)
+					end
+				end
+			end
+
+			function ChipSetLibrary:GetState(Index)
+				return BuildTable[Index]
+			end
+
+			function ChipSetLibrary:SetVisible(Visible)
+				ChipSet.Visible = typeof(Visible) ~= "boolean" and ChipSet.Visible or Visible
+			end
+
+			function ChipSetLibrary:GetVisible()
+				return ChipSet.Visible
+			end
+
+			function ChipSetLibrary:Destroy()
+				ChipSet:Destroy()
+			end
+
+			return ChipSetLibrary
+		end
+
+		function OptionLibrary:DataTable(DataConfig)
+			DataConfig = typeof(DataConfig) == "table" and DataConfig or {}
+
+			local DataTable_Text = typeof(DataConfig.Text) == "string" and DataConfig.Text or "DataTable"
+			local DataTable_XAlignment = typeof(DataConfig.XAlignment) == "string" and DataConfig.XAlignment ~= "Right" and DataConfig.XAlignment or "Left"
+			local DataTable_TextColor = typeof(DataConfig.TextColor) == "Color3" and DataConfig.TextColor or ThisTheme.DataTable
+			local DataTable_Font = typeof(DataConfig.Font) == "EnumItem" and DataConfig.Font or Enum.Font.GothamSemibold
+			local DataTable_Visible = typeof(DataConfig.Visible) ~= "boolean" and true or DataConfig.Visible
+			local DataTable_Options = typeof(DataConfig.Options) == "table" and DataConfig.Options or {}
+			local DataTable_Callback = typeof(DataConfig.Callback) == "function" and DataConfig.Callback or function() end
+
+			local DataTableLibrary = {}
 
 			local Keys = {}
-            local TotalOptions = 0
+			local TotalOptions = 0
 
 			for i in pairs(DataTable_Options) do
 				TotalOptions += 1
@@ -2722,41 +2802,234 @@ function Material:Load(Config)
 
 			table.sort(Keys)
 
-            if TotalOptions > 0 then
-				local DataTableLibrary = {}
+			local Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
 
-				local Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
+			local DataTable = Objects:New("Frame")
+			DataTable.Name = "DataTable"
+			DataTable.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
+			DataTable.Visible = DataTable_Visible
+			DataTable.Parent = PageContentFrame
 
-				local DataTable = Objects:New("Round")
-				DataTable.Name = "DataTable"
-				DataTable.Size = Size
-				DataTable.ImageColor3 = ThisTheme.DataTable
-				DataTable.ImageTransparency = 1
-				DataTable.Visible = DataTable_Visible
-				DataTable.Parent = PageContentFrame
+			local DataShadow = Objects:New("Shadow")
+			DataShadow.ImageColor3 = ThisTheme.DataTable
+			DataShadow.ImageTransparency = 1
+			DataShadow.Parent = DataTable
 
-				local DataShadow = Objects:New("Shadow")
-				DataShadow.ImageColor3 = ThisTheme.DataTable
-				DataShadow.ImageTransparency = 1
-				DataShadow.Parent = DataTable
+			local DataTableBar = Objects:New("Round")
+			DataTableBar.Name = "TitleBar"
+			DataTableBar.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
+			DataTableBar.ImageColor3 = ThisTheme.DataTableAccent
+			DataTableBar.ImageTransparency = 1
+			DataTableBar.Parent = DataTable
 
-				local DataContainer = Objects:New("Frame")
-				DataContainer.Name = "Container"
-				DataContainer.Parent = DataTable
+			local DataTableTitle = Objects:New("Button")
+			DataTableTitle.Name = "Title"
+			DataTableTitle.Font = DataTable_Font
+			DataTableTitle.TextXAlignment = DataTable_XAlignment
+			DataTableTitle.Text = DataTable_Text
+			DataTableTitle.TextColor3 = DataTable_TextColor
+			DataTableTitle.TextTransparency = 1
+			DataTableTitle.TextSize = 14
+			DataTableTitle.Parent = DataTableBar
 
-				local DataList = Objects:New("UIListLayout")
-				DataList.SortOrder = Enum.SortOrder.LayoutOrder
-				DataList.Padding = UDim.new(0, 5)
-				DataList.Parent = DataContainer
+			local DataTableToggle = Objects:New("Round")
+			DataTableToggle.Name = "Container"
+			DataTableToggle.Size = UDim2.fromOffset(24, 24)
+			DataTableToggle.Position = UDim2.fromScale(1, 0.5) - UDim2.fromOffset(27, 12)
+			DataTableToggle.ImageColor3 = ThisTheme.DataTable
+			DataTableToggle.ImageTransparency = 0.8
+			DataTableToggle.Parent = DataTableBar
 
-				local DataPadding = Objects:New("UIPadding")
+			local DataTableButton = Objects:New("Round")
+			DataTableButton.Name = "Drop"
+			DataTableButton.Image = "http://www.roblox.com/asset/?id=5574299686"
+			DataTableButton.ScaleType = Enum.ScaleType.Stretch
+			DataTableButton.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(4, 4)
+			DataTableButton.Position = UDim2.fromOffset(2, 2)
+			DataTableButton.ImageColor3 = ThisTheme.DataTable
+			DataTableButton.ImageTransparency = 1
+			DataTableButton.Parent = DataTableToggle
+
+			TweenService:Create(DataTableBar, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+			TweenService:Create(DataTableTitle, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+			TweenService:Create(DataTableToggle, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
+			TweenService:Create(DataTableButton, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+
+			local DataTableContent = Objects:New("Frame")
+			DataTableContent.Name = "Content"
+			DataTableContent.Size = UDim2.fromScale(1, 0)
+			DataTableContent.Position = UDim2.fromOffset(0, 35)
+			DataTableContent.ClipsDescendants = true
+			DataTableContent.Parent = DataTable
+
+			local DataTableList = Objects:New("UIListLayout")
+			DataTableList.SortOrder = Enum.SortOrder.LayoutOrder
+			DataTableList.Padding = UDim.new(0, 5)
+			DataTableList.Parent = DataTableContent
+
+			local DataPadding = Objects:New("UIPadding")
+			DataPadding.PaddingBottom = UDim.new(0, 5)
+			DataPadding.PaddingTop = UDim.new(0, 5)
+			DataPadding.PaddingRight= UDim.new(0, 5)
+			DataPadding.PaddingLeft = UDim.new(0, 5)
+			DataPadding.Parent = DataTableContent
+
+			local DropToggle = false
+
+			DataTableList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+				if DropToggle then
+					DataTableContent.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, DataTableList.AbsoluteContentSize.Y)
+					Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, DataTableList.AbsoluteContentSize.Y)
+				end
+			end)
+
+			DataTableTitle.MouseButton1Down:Connect(function()
+				DropToggle = not DropToggle
+
+				TweenService:Create(DataTableButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
+				TweenService:Create(DataTableContent, TweenInfo.new(0.15), {Size = DropToggle and Size or UDim2.fromScale(1, 0)}):Play()
+				TweenService:Create(DataTable, TweenInfo.new(0.15), {Size = DropToggle and (Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+			end)
+
+			local BuildTable = {}
+
+			for _,Value in pairs(Keys) do
+				if typeof(DataTable_Options[Value]) == "table" then
+					BuildTable[Value] = DataTable_Options[Value].Enabled
+				else
+					BuildTable[Value] = DataTable_Options[Value]
+				end
+			end
+
+			TweenService:Create(DataTable, TweenInfo.new(0.5), {BackgroundTransparency = 0.9}):Play()
+			TweenService:Create(DataShadow, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
+
+			for _,Value in ipairs(Keys) do
+				local DataItem = Objects:New("SmoothButton")
+				DataItem.Name = "DataItem"
+				DataItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
+				DataItem.ImageColor3 = (BuildTable[Value] and ThisTheme.DataTable) or ThisTheme.DataTableAccent
+				DataItem.ImageTransparency = 1
+				DataItem.Parent = DataTableContent
+				DataItem:SetAttribute("Key", Value)
+
+				local DataTracker = Objects:New("Round")
+				DataTracker.Name = "Tracker"
+				DataTracker.Size = UDim2.fromOffset(24, 24)
+				DataTracker.Position = UDim2.fromScale(0, 0.5) + UDim2.fromOffset(3, -12)
+				DataTracker.ImageColor3 = ThisTheme.DataTable
+				DataTracker.ImageTransparency = 1
+				DataTracker.Parent = DataItem
+
+				local Tick = Objects:New("Round")
+				Tick.Name = "Tick"
+				Tick.ScaleType = Enum.ScaleType.Stretch
+				Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
+				Tick.ImageColor3 = ThisTheme.DataTableAccent
+				Tick.ImageTransparency = 1
+				Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(4, 4)
+				Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
+				Tick.Position = UDim2.fromOffset(2, 2)
+				Tick.Parent = DataTracker
+
+				local DataLabel = Objects:New("Label")
+				DataLabel.Name = "Value"
+				DataLabel.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0)
+				DataLabel.Position = UDim2.fromOffset(30, 0) or UDim2.fromOffset(5, 0)
+				DataLabel.Text = Value
+				DataLabel.Font = Enum.Font.Gotham
+				DataLabel.TextSize = 14
+				DataLabel.TextColor3 = ThisTheme.DataTable
+				DataLabel.TextTransparency = 1
+				DataLabel.Parent = DataItem
+
+				TweenService:Create(DataItem, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0.8 or 0}):Play()
+				TweenService:Create(DataTracker, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0 or 0.8}):Play()
+				TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0 or 0.7}):Play()
+				TweenService:Create(DataLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+
+				local DataTableMenu
+
+				if typeof(DataTable_Options[Value]) == "table" then
+					local Menu = typeof(DataTable_Options[Value].Menu) == "table" and DataTable_Options[Value].Menu or {}
+
+					local MenuAdded, MenuButton = TryAddMenu(DataItem, Menu, {})
+
+					if MenuAdded then
+						MenuButton.ImageColor3 = ThisTheme.DataTable
+					end
+
+					DataTableMenu = MenuButton
+				end
+
+				DataItem.MouseButton1Down:Connect(function()
+					BuildTable[Value] = not BuildTable[Value]
+						local Enabled = BuildTable[Value]
+
+					TweenService:Create(DataItem, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
+					TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
+					TweenService:Create(DataTracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
+
+					pcall(DataTable_Callback, Value, BuildTable[Value], DataTableLibrary)
+				end)
+
+				local DataTable_Connection
+				DataTable_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+					if not NewInstance.Parent then
+						if DataTable_Disable then
+							if BuildTable[Value] then
+								BuildTable[Value] = false
+								pcall(DataTable_Callback, Value, BuildTable[Value], DataTableLibrary)
+								DataTable_Connection:Disconnect()
+							end
+						else
+							DataTable_Connection:Disconnect()
+						end
+					end
+				end)
+			end
+
+			function DataTableLibrary:SetOptions(NewTable)
+				DataTable_Options = typeof(NewTable) == "table" and NewTable or {}
+				
+				Keys = {}
+				TotalOptions = 0
+
+				for i in pairs(DataTable_Options) do
+					TotalOptions = TotalOptions + 1
+					table.insert(Keys, i)
+				end
+
+				table.sort(Keys)
+
+				if DataTableContent then
+					DataTableContent:Destroy()
+				end
+
+				Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
+
+				TweenService:Create(DataTable, TweenInfo.new(0.15), {Size = DropToggle and (Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+
+				DataTableContent = Objects:New("Frame")
+				DataTableContent.Name = "Content"
+				DataTableContent.Size = UDim2.fromScale(1, 0)
+				DataTableContent.Position = UDim2.fromOffset(0, 35)
+				DataTableContent.ClipsDescendants = true
+				DataTableContent.Parent = DataTable
+
+				DataTableList = Objects:New("UIListLayout")
+				DataTableList.SortOrder = Enum.SortOrder.LayoutOrder
+				DataTableList.Padding = UDim.new(0, 5)
+				DataTableList.Parent = DataTableContent
+
+				DataPadding = Objects:New("UIPadding")
 				DataPadding.PaddingBottom = UDim.new(0, 5)
 				DataPadding.PaddingTop = UDim.new(0, 5)
 				DataPadding.PaddingRight= UDim.new(0, 5)
 				DataPadding.PaddingLeft = UDim.new(0, 5)
-				DataPadding.Parent = DataContainer
+				DataPadding.Parent = DataTableContent
 
-				local BuildTable = {}
+				BuildTable = {}
 
 				for _,Value in pairs(Keys) do
 					if typeof(DataTable_Options[Value]) == "table" then
@@ -2766,16 +3039,13 @@ function Material:Load(Config)
 					end
 				end
 
-				TweenService:Create(DataTable, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
-				TweenService:Create(DataShadow, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
-
-				for _, Value in ipairs(Keys) do
+				for _,Value in ipairs(Keys) do
 					local DataItem = Objects:New("SmoothButton")
 					DataItem.Name = "DataItem"
 					DataItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 					DataItem.ImageColor3 = (BuildTable[Value] and ThisTheme.DataTable) or ThisTheme.DataTableAccent
 					DataItem.ImageTransparency = 1
-					DataItem.Parent = DataContainer
+					DataItem.Parent = DataTableContent
 					DataItem:SetAttribute("Key", Value)
 
 					local DataTracker = Objects:New("Round")
@@ -2799,7 +3069,7 @@ function Material:Load(Config)
 
 					local DataLabel = Objects:New("Label")
 					DataLabel.Name = "Value"
-					DataLabel.Size = (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))
+					DataLabel.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0)
 					DataLabel.Position = UDim2.fromOffset(30, 0) or UDim2.fromOffset(5, 0)
 					DataLabel.Text = Value
 					DataLabel.Font = Enum.Font.Gotham
@@ -2829,6 +3099,7 @@ function Material:Load(Config)
 
 					DataItem.MouseButton1Down:Connect(function()
 						BuildTable[Value] = not BuildTable[Value]
+						
 						local Enabled = BuildTable[Value]
 
 						TweenService:Create(DataItem, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
@@ -2853,45 +3124,45 @@ function Material:Load(Config)
 						end
 					end)
 				end
+			end
 
-				function DataTableLibrary:GetOptions()
-					return DataTable_Options
-				end
+			function DataTableLibrary:GetOptions()
+				return DataTable_Options
+			end
 
-				function DataTableLibrary:SetState(Index, State)
-					for _,v in pairs(DataContainer:GetChildren()) do
-						if v:GetAttribute("Key") == Index then
-							BuildTable[Index] = State
-							local Enabled = BuildTable[Index]
+			function DataTableLibrary:SetState(Index, State)
+				for _,v in pairs(DataTableContent:GetChildren()) do
+					if v:GetAttribute("Key") == Index then
+						BuildTable[Index] = State
+						local Enabled = BuildTable[Index]
 
-							TweenService:Create(v, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
-							TweenService:Create(v.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
-							TweenService:Create(v.Tracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
+						TweenService:Create(v, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
+						TweenService:Create(v.Tracker.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
+						TweenService:Create(v.Tracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
 
-							pcall(DataTable_Callback, Index, BuildTable[Index], DataTableLibrary)
-						end
+						pcall(DataTable_Callback, Index, BuildTable[Index], DataTableLibrary)
 					end
 				end
+			end
 
-                function DataTableLibrary:GetState(Key)
-					return BuildTable[Key]
-				end
+			function DataTableLibrary:GetState(Index)
+				return BuildTable[Index]
+			end
 
-                function DataTableLibrary:SetVisible(Visible)
-                    DataTable.Visible = (typeof(Visible) ~= "boolean" and DataTable.Visible) or Visible
-                end
+			function DataTableLibrary:SetVisible(Visible)
+				DataTable.Visible = typeof(Visible) ~= "boolean" and ChipSet.Visible or Visible
+			end
 
-                function DataTableLibrary:GetVisible()
-                    return DataTable.Visible
-                end
+			function DataTableLibrary:GetVisible()
+				return DataTable.Visible
+			end
 
-				function DataTableLibrary:Destroy()
-					DataTable:Destroy()
-				end
+			function DataTableLibrary:Destroy()
+				DataTable:Destroy()
+			end
 
-				return DataTableLibrary
-            end
-        end
+			return DataTableLibrary
+		end
 
         function OptionLibrary:ColorPicker(ColorPickerConfig)
 			ColorPickerConfig = typeof(ColorPickerConfig) == "table" and ColorPickerConfig or {}
@@ -3254,7 +3525,7 @@ function Material:Load(Config)
 			return ColorPickerLibrary
         end
 
-		function OptionLibrary:Bind(BindConfig)
+        function OptionLibrary:Bind(BindConfig)
 			BindConfig = typeof(BindConfig) == "table" and BindConfig or {}
 
 			local Bind_Text = typeof(BindConfig.Text) == "string" and BindConfig.Text or "Bind"
@@ -3535,11 +3806,10 @@ function Material:Load(Config)
 			return BindLibrary
 		end
 
-		function OptionLibrary:TextField(TextFieldConfig)
+        function OptionLibrary:TextField(TextFieldConfig)
 			TextFieldConfig = typeof(TextFieldConfig) == "table" and TextFieldConfig or {}
 
 			local TextField_Text = typeof(TextFieldConfig.Text) == "string" and TextFieldConfig.Text or "Bind"
-			local TextField_RichText = typeof(TextFieldConfig.RichText) == "boolean" and TextFieldConfig.RichText or false
 			local TextField_TextColor = typeof(TextFieldConfig.TextColor) == "Color3" and TextFieldConfig.TextColor or ThisTheme.TextFieldAccent
 			local TextField_Font = typeof(TextFieldConfig.Font) == "EnumItem" and TextFieldConfig.Font or Enum.Font.GothamSemibold
 			local TextField_Visible = typeof(TextFieldConfig.Visible) ~= "boolean" and true or TextFieldConfig.Visible
@@ -3637,11 +3907,19 @@ function Material:Load(Config)
 						return TextInput.Text
 					end
 				end,
-				SetTextColor = function(TextColor)
-					TextInput.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TextInput.TextColor3
+				SetTextColor = function(TextColor, Type)
+					Type = typeof(Type) == "string" and Type or "Title"
+					
+					if Type == "Title" then
+						TextInput.PlaceholderColor = typeof(TextColor) == "Color3" and TextColor or TextInput.PlaceholderColor
+					elseif Type == "Text" then
+						TextInput.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TextInput.TextColor3
+					end
 				end,
-				GetTextColor = function()
-					return TextInput.TextColor3
+				GetTextColor = function(Type)
+					Type = typeof(Type) == "string" and Type or "Title"
+					
+					return Type == "Title" and TextInput.PlaceholderColor or Type == "Text" and TextInput.TextColor3
 				end,
 				SetFont = function(Font)
 					TextInput.Font = typeof(Font) == "EnumItem" and Font or TextInput.Font
@@ -3693,12 +3971,20 @@ function Material:Load(Config)
 				end
 			end
 
-			function TextFieldLibrary:SetTextColor(TextColor)
-				TextInput.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TextInput.TextColor3
+			function TextFieldLibrary:SetTextColor(TextColor, Type)
+				Type = typeof(Type) == "string" and Type or "Title"
+					
+				if Type == "Title" then
+					TextInput.PlaceholderColor = typeof(TextColor) == "Color3" and TextColor or TextInput.PlaceholderColor
+				elseif Type == "Text" then
+					TextInput.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TextInput.TextColor3
+				end
 			end
 
-			function TextFieldLibrary:GetTextColor()
-				return TextInput.TextColor3
+			function TextFieldLibrary:GetTextColor(Type)
+				Type = typeof(Type) == "string" and Type or "Title"
+					
+				return Type == "Title" and TextInput.PlaceholderColor or Type == "Text" and TextInput.TextColor3
 			end
 
 			function TextFieldLibrary:SetFont(Font)
@@ -3793,24 +4079,36 @@ function Material:Load(Config)
 			return TextFieldLibrary
 		end
 
-		function OptionLibrary:GuiSettings(GuiConfig)
-			GuiConfig = typeof(GuiConfig) == "table" and GuiConfig or {}
+        function OptionLibrary:GuiSettings(GuiConfig)
+            GuiConfig = typeof(GuiConfig) == "table" and GuiConfig or {}
 
 			local _Options = typeof(GuiConfig.Options) ~= "boolean" and true or GuiConfig.Options
-			local Theme = typeof(GuiConfig.Theme) ~= "boolean" and true or GuiConfig.Theme
 			local Rejoin = typeof(GuiConfig.Rejoin) ~= "boolean" and true or GuiConfig.Rejoin
 
-			local ToggleGUI = OptionLibrary:Bind({
-				Text = "Toggle Gui",
-				Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind,
-				Callback = function(State)
-					TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = UDim2.new(State and -1 or 0.5, MainFrame.Position.X.Offset, 0.5, MainFrame.Position.Y.Offset)}):Play()
-				end
-			})
+            if not Load_Minimize then
+                ToggleGUI = OptionLibrary:Bind({
+                    Text = "Toggle Gui",
+                    Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind,
+                    Callback = function(State)
+                        TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = State and Position(Load_Position, MainFrame).Hide or Position(Load_Position, MainFrame).Position}):Play()
+                    end
+                })
+            else
+                OptionLibrary:Button({
+                    Text = "Destroy UI",
+                    Callback = function()
+						TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, 0)}):Play()
+						MainFrame.ClipsDescendants = true
+						task.wait(1)
+						NewInstance:Destroy()
+                    end
+                })
+            end
 
-			local GetTheme = OptionLibrary:Dropdown({
+            GetTheme = OptionLibrary:Dropdown({
 				Text = "Theme",
 				Hide = true,
+                Visible = Theme,
 				Default = Setting.Theme,
 				Options = {
 					"Light",
@@ -3821,23 +4119,30 @@ function Material:Load(Config)
 				}
 			})
 
-			if Rejoin then
+            if Rejoin then
 				OptionLibrary:Separator()
 
 				OptionLibrary:Button({
 					Text = "Rejoin",
 					Callback = function()
-						if table.maxn(Players:GetPlayers()) <= 1 then
-							Players.LocalPlayer:Kick("\nRejoining...")
-							TeleportService:Teleport(game.PlaceId)
-						else
-							TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
-						end
+                        if RobloxReplicatedStorage.GetServerType:InvokeServer() == "StandardServer" then
+                            if table.maxn(Players:GetPlayers()) <= 1 then
+                                Players.LocalPlayer:Kick("\nRejoining...")
+                                TeleportService:Teleport(game.PlaceId)
+                            else
+                                TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
+                            end
+                        else
+                            Material.Notification({
+                                Title = ("Can't rejoin, your current server type is %s"):format(RobloxReplicatedStorage.GetServerType:InvokeServer()),
+                                Duration = 5
+                            })
+                        end
 					end
 				})
 			end
 
-			if _Options then
+            if _Options then
 				OptionLibrary:ChipSet({
 					Callback = function(Selected, State)
 						if Selected == "Performace Stats" then
@@ -3855,106 +4160,74 @@ function Material:Load(Config)
 					}
 				})
 			end
+        end
 
-			Load_Menu["Restore Settings"] = function()
-				TabLibrary:Banner({
-					Text = "Do you want to restore your settings?",
-					Button = "Cancel",
-					Options = {
-						Restore = function(Self)
-							Setting = Default
-                            writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
+		Load_Menu["Restore Settings"] = function()
+			TabLibrary:Banner({
+				Text = "Do you want to restore your settings?",
+				Button = "Cancel",
+				Options = {
+					Restore = function(Self)
+						Setting = Default
+                        writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
 
+						if ToggleGUI then
 							ToggleGUI:SetBind(Setting.Keybind)
-							GetTheme:SetOption(Setting.Theme)
-
-							Self:SetText("Configuration restored!")
-							task.wait(0.15)
-							Self:Close()
 						end
-					}
-				})
-			end
 
-			local MenuAdded, MenuButton = TryAddMenu(TitleBar, Load_Menu, {})
+						if GetTheme then
+							GetTheme:SetOption(Setting.Theme)
+						end
 
-			if MenuAdded then
-				MenuButton.Position -= UDim2.fromOffset(31, 0)
-			end
+						Self:SetText("Configuration restored!")
+						task.wait(0.15)
+						Self:Close()
+					end
+				}
+			})
+		end
 
-			Players.LocalPlayer.Destroying:Connect(function()
+		local MenuAdded, MenuButton = TryAddMenu(TitleBar, Load_Menu, {})
+
+		if MenuAdded then
+			MenuButton.Position -= UDim2.fromOffset(31, 0)
+		end
+
+		Players.LocalPlayer.Destroying:Connect(function()
+			if ToggleGUI then
 				Setting.Keybind = ToggleGUI:GetBind()
+			end
+
+			if GetTheme then
 				Setting.Theme = GetTheme:GetOption()
-				Setting.Overrides = Load_Overrides
+			end
 
-				writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
-			end)
+			Setting.Overrides = Load_Overrides
+			writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
+		end)
 
-			NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
-				if not NewInstance.Parent then
+		NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+			if not NewInstance.Parent then
+				if ToggleGUI and GetTheme then
 					Setting.Keybind = ToggleGUI:GetBind()
 					Setting.Theme = GetTheme:GetOption()
-                    Setting.Overrides = Load_Overrides
-
-					writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
 				end
-			end)
-		end
 
-		function OptionLibrary:SetTitle(Text)
-			Button.Text = typeof(Text) == "string" and Text or Button.Text
-		end
+                Setting.Overrides = Load_Overrides
 
-		function OptionLibrary:GetTitle()
-			return Button.Text
-		end
-
-		function OptionLibrary:SetTextColor(TextColor)
-			Button.TextColor3 = typeof(TextColor) == "Color3" and TextColor or Button.TextColor3
-		end
-
-		function OptionLibrary:GetTextColor()
-			return Button.TextColor3
-		end
-
-		function OptionLibrary:SetFont(Font)
-			Button.Font = typeof(Font) == "EnumItem" and Font or Button.Font
-		end
-
-		function OptionLibrary:GetFont()
-			return Button.Font
-		end
-
-		function OptionLibrary:SetVisible(Visible)
-            Button.Visible = typeof(Visible) ~= "boolean" and Button.Visible or Visible
-        end
-
-        function OptionLibrary:GetVisible()
-            return Button.Visible
-        end
-
-		function OptionLibrary:SetImage(Image)
-			if Tab_ImageID ~= nil then
-				local FetchURL = ("rbxassetid://%s"):format(typeof(Image) == "number" and tostring(Image) or NewImage.Image)
-				NewImage.Image = (RunService:IsStudio() and "http://www.roblox.com/asset/?id=5472131383") or game:GetObjects(FetchURL)[1].Texture
+				writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
 			end
-		end
+		end)
 
-		function OptionLibrary:GetImage()
-			if Tab_ImageID ~= nil then
-				return NewImage.Image:match("%d+")
-			end
-		end
-
-        return OptionLibrary
-    end
+		return OptionLibrary
+	end
 
 	function TabLibrary:SetTitle(Text)
-        TitleText.Text = typeof(Text) == "string" and Text or TitleText.Text
-    end
+		TitleText.Text = typeof(Text) == "string" and Text or TitleText.Text
+	end
 
-    function TabLibrary:GetTitle()
-        return TitleText.Text
+	function TabLibrary:GetTitle()
+        return Tab_RichText and TitleText.ContentText or TitleText.Text
     end
 
 	function TabLibrary:SetTextColor(TextColor)
@@ -3973,13 +4246,7 @@ function Material:Load(Config)
 		return TitleText.Font
 	end
 
-    return TabLibrary
+	return TabLibrary
 end
-
-function Material:GetLoadedTime()
-    return ("The library has finished loading, it took: %.8f secs"):format(Loaded)
-end
-
-Loaded = os.clock() - Timer
 
 return Material
