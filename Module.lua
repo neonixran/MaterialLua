@@ -2177,16 +2177,13 @@ function Material:Load(Config)
 							if v.TextLabel.Text:lower():match(SearchInput.Text:lower()) then
 								v.ImageTransparency = 0
 								v.LayoutOrder = 1
-								v.Active = true
 							else
 								v.ImageTransparency = 0.55
 								v.LayoutOrder = 2
-								v.Active = false
 							end
 						else
 							v.ImageTransparency = 0
 							v.LayoutOrder = 0
-							v.Active = true
 						end
 					end
 				end
@@ -2199,17 +2196,19 @@ function Material:Load(Config)
 
 				NewButton.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
 				NewButton.MouseButton1Down:Connect(function()
-					DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
-					SearchInput.Text = ""
+					if NewButton.ImageTransparency == 0 then
+						DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
+						SearchInput.Text = ""
 
-					if Dropdown_Hide then
-						TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = 0}):Play()
-						TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0)}):Play()
-						TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+						if Dropdown_Hide then
+							TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = 0}):Play()
+							TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0)}):Play()
+							TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+						end
+
+						pcall(Dropdown_Callback, Value)
+						Dropdown:SetAttribute("Option", Value)
 					end
-
-					pcall(Dropdown_Callback, Value)
-					Dropdown:SetAttribute("Option", Value)
 				end)
 			end
 
@@ -2402,19 +2401,21 @@ function Material:Load(Config)
 
 					NewButton.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
 					NewButton.MouseButton1Down:Connect(function()
-						DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
-						SearchInput.Text = ""
+						if NewButton.ImageTransparency == 0 then
+							DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
+							SearchInput.Text = ""
 
-						if Dropdown_Hide then
-							DropToggle = not DropToggle
+							if Dropdown_Hide then
+								DropToggle = not DropToggle
 
-							TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
-							TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and Dropdown_Size or UDim2.fromScale(1, 0)}):Play()
-							TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (Dropdown_Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+								TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
+								TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and Dropdown_Size or UDim2.fromScale(1, 0)}):Play()
+								TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (Dropdown_Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+							end
+
+							pcall(Dropdown_Callback, Value, DropdownLibrary)
+							Dropdown:SetAttribute("Option", Value)
 						end
-
-						pcall(Dropdown_Callback, Value, DropdownLibrary)
-						Dropdown:SetAttribute("Option", Value)
 					end)
 				end
 			end
