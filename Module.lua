@@ -1637,8 +1637,8 @@ function Material:Load(Config)
 				pcall(Toggle_Callback, Toggle:GetAttribute("State"), ToggleLibrary)
 			end)
 
-			local Connection
-            Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+			local Toggle_Connection
+            Toggle_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 				if not NewInstance.Parent then
 					if Toggle_Disable then
 						if Toggle_Enabled then
