@@ -11,31 +11,52 @@ local UserInputService = game:GetService("UserInputService")
 local RobloxReplicatedStorage = game:GetService("RobloxReplicatedStorage")
 
 -- Variables
-local Load_Style
-local ToggleGUI
-local GetTheme
+local UI = nil
+local Style = nil
+local ThisTheme = nil
 local Mouse = Players.LocalPlayer:GetMouse()
 
--- Settings
+-- Options
+local File = "MaterialSettings"
+
 local Default = {
     Keybind = "RightControl",
     Theme = "Dark",
     Overrides = {
-        MainFrame = "191919"
+        MainFrame = Color3.fromRGB(25, 25, 25):ToHex()
     }
 }
 
-local Success, Setting = pcall(function()
-    return HttpService:JSONDecode(readfile("MaterialSettings.json"))
+local Loaded, Setting = pcall(function()
+    if readfile and writefile and isfile then
+        if isfile(("%s.json"):format(File)) then
+            return HttpService:JSONDecode(readfile(("%s.json"):format(File)))
+        else
+            writefile(("%s.json"):format(File), HttpService:JSONEncode(Default))
+            return Default
+        end
+    else
+        return Default
+    end
 end)
 
-if not Success then
-    Setting = Default
+if Loaded then
+    for i in pairs(Setting) do
+        if not Default[i] then
+            Setting[i] = nil
+        end
+    end
 
-    writefile("MaterialSettings.json", HttpService:JSONEncode(Default))
+    for i,v in pairs(Default) do
+        if not Setting[i] then
+            Setting[i] = v
+        end
+    end
+
+    writefile(("%s.json"):format(File), HttpService:JSONEncode(Setting))
 end
 
--- Functions
+-- Themes
 local Themes = {
 	Light = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
@@ -109,12 +130,6 @@ local Themes = {
 		MainFrame = Color3.fromRGB(255, 255, 255),
 		Minimise = Color3.fromRGB(219, 210, 202),
 		MinimiseAccent = Color3.fromRGB(219, 210, 202),
-		Maximise = Color3.fromRGB(189, 183, 177),
-		MaximiseAccent = Color3.fromRGB(189, 183, 177),
-		Minimise = Color3.fromRGB(219, 210, 202),
-		MinimiseAccent = Color3.fromRGB(219, 210, 202),
-		Maximise = Color3.fromRGB(189, 183, 177),
-		MaximiseAccent = Color3.fromRGB(189, 183, 177),
 		Close = Color3.fromRGB(192, 57, 43),
 		CloseAccent = Color3.fromRGB(231, 76, 60),
 		Maximise = Color3.fromRGB(189, 183, 177),
@@ -209,7 +224,113 @@ local Themes = {
 		TextField = Color3.fromRGB(219, 68, 103),
 		TextFieldAccent = Color3.fromRGB(255, 255, 255)
 	},
+	Elegant = {
+		MainFrame = Color3.fromRGB(36, 45, 61),
+		Minimise = Color3.fromRGB(92, 92, 92),
+		MinimiseAccent = Color3.fromRGB(166, 166, 166),
+		Maximise = Color3.fromRGB(217, 217, 217),
+		MaximiseAccent = Color3.fromRGB(245, 245, 245),
+		Close = Color3.fromRGB(192, 57, 43),
+		CloseAccent = Color3.fromRGB(231, 76, 60),
+		NavBar = Color3.fromRGB(36, 45, 61),
+		NavBarAccent = Color3.fromRGB(245, 245, 245),
+		NavBarInvert = Color3.fromRGB(255, 255, 255),
+		TitleBar = Color3.fromRGB(36, 45, 61),
+		TitleBarAccent = Color3.fromRGB(245, 245, 245),
+		Overlay = Color3.fromRGB(127, 127, 127),
+		Banner = Color3.fromRGB(255, 255, 255),
+		BannerAccent = Color3.fromRGB(36, 45, 61),
+		Content = Color3.fromRGB(255, 255, 255),
+		Button = Color3.fromRGB(36, 45, 61),
+		ButtonAccent = Color3.fromRGB(245, 245, 245),
+		ChipSet = Color3.fromRGB(85, 170, 204),
+		ChipSetAccent = Color3.fromRGB(125, 75, 20),
+		DataTable = Color3.fromRGB(34, 34, 51),
+		DataTableAccent = Color3.fromRGB(245, 245, 245),
+		Slider = Color3.fromRGB(36, 45, 61),
+		SliderAccent = Color3.fromRGB(245, 245, 245),
+		Toggle = Color3.fromRGB(51, 102, 153),
+		ToggleAccent = Color3.fromRGB(245, 245, 245),
+		Dropdown = Color3.fromRGB(36, 45, 61),
+		DropdownAccent = Color3.fromRGB(245, 245, 245),
+		ColorPicker = Color3.fromRGB(36, 45, 61),
+		ColorPickerAccent = Color3.fromRGB(245, 245, 245),
+		TextField = Color3.fromRGB(36, 45, 61),
+		TextFieldAccent = Color3.fromRGB(36, 45, 61),
+	},
+	Cute = {
+		MainFrame = Color3.fromRGB(255, 138, 147),
+		Minimise = Color3.fromRGB(255, 194, 194),
+		MinimiseAccent = Color3.fromRGB(249, 237, 205),
+		Maximise = Color3.fromRGB(255, 228, 179),
+		MaximiseAccent = Color3.fromRGB(255, 204, 213),
+		Close = Color3.fromRGB(255, 138, 147),
+		CloseAccent = Color3.fromRGB(255, 194, 194),
+		NavBar = Color3.fromRGB(249, 237, 205),
+		NavBarAccent = Color3.fromRGB(255, 228, 179),
+		NavBarInvert = Color3.fromRGB(255, 204, 213),
+		TitleBar = Color3.fromRGB(255, 138, 147),
+		TitleBarAccent = Color3.fromRGB(255, 194, 194),
+		Overlay = Color3.fromRGB(249, 237, 205),
+		Banner = Color3.fromRGB(255, 228, 179),
+		BannerAccent = Color3.fromRGB(255, 204, 213),
+		Content = Color3.fromRGB(255, 138, 147),
+		Button = Color3.fromRGB(255, 194, 194),
+		ButtonAccent = Color3.fromRGB(249, 237, 205),
+		ChipSet = Color3.fromRGB(255, 228, 179),
+		ChipSetAccent = Color3.fromRGB(255, 204, 213),
+		DataTable = Color3.fromRGB(255, 138, 147),
+		DataTableAccent = Color3.fromRGB(255, 194, 194),
+		Slider = Color3.fromRGB(249, 237, 205),
+		SliderAccent = Color3.fromRGB(255, 228, 179),
+		Toggle = Color3.fromRGB(255, 204, 213),
+		ToggleAccent = Color3.fromRGB(255, 138, 147),
+		Dropdown = Color3.fromRGB(255, 194, 194),
+		DropdownAccent = Color3.fromRGB(249, 237, 205),
+		ColorPicker = Color3.fromRGB(255, 228, 179),
+		ColorPickerAccent = Color3.fromRGB(255, 204, 213),
+		TextField = Color3.fromRGB(255, 138, 147),
+		TextFieldAccent = Color3.fromRGB(255, 194, 194),
+	},
+	EtherealGlow = {
+		MainFrame = Color3.fromRGB(253, 246, 235),
+		Minimise = Color3.fromRGB(33, 33, 48),
+		MinimiseAccent = Color3.fromRGB(0, 101, 210),
+		Maximise = Color3.fromRGB(86, 215, 249),
+		MaximiseAccent = Color3.fromRGB(253, 246, 235),
+		Close = Color3.fromRGB(253, 246, 235),
+		CloseAccent = Color3.fromRGB(33, 33, 48),
+		NavBar = Color3.fromRGB(0, 101, 210),
+		NavBarAccent = Color3.fromRGB(86, 215, 249),
+		NavBarInvert = Color3.fromRGB(253, 246, 235),
+		TitleBar = Color3.fromRGB(33, 33, 48),
+		TitleBarAccent = Color3.fromRGB(0, 101, 210),
+		Overlay = Color3.fromRGB(253, 246, 235),
+		Banner = Color3.fromRGB(86, 215, 249),
+		BannerAccent = Color3.fromRGB(0, 101, 210),
+		Content = Color3.fromRGB(33, 33, 48),
+		Button = Color3.fromRGB(253, 246, 235),
+		ButtonAccent = Color3.fromRGB(33, 33, 48),
+		ChipSet = Color3.fromRGB(0, 101, 210),
+		ChipSetAccent = Color3.fromRGB(86, 215, 249),
+		DataTable = Color3.fromRGB(253, 246, 235),
+		DataTableAccent = Color3.fromRGB(33, 33, 48),
+		Slider = Color3.fromRGB(0, 101, 210),
+		SliderAccent = Color3.fromRGB(86, 215, 249),
+		Toggle = Color3.fromRGB(253, 246, 235),
+		ToggleAccent = Color3.fromRGB(33, 33, 48),
+		Dropdown = Color3.fromRGB(0, 101, 210),
+		DropdownAccent = Color3.fromRGB(86, 215, 249),
+		ColorPicker = Color3.fromRGB(253, 246, 235),
+		ColorPickerAccent = Color3.fromRGB(33, 33, 48),
+		TextField = Color3.fromRGB(0, 101, 210),
+		TextFieldAccent = Color3.fromRGB(86, 215, 249),
+	}
 }
+
+-- Tables
+local Objects = {}
+local Styles = {"Normal", "Invert", "Sheets"}
 
 local Types = {
 	"RoundFrame",
@@ -333,105 +454,6 @@ local Properties = {
 		BorderSizePixel = 0
 	}
 }
-
-function FindType(String)
-	for _, Type in next, Types do
-		if Type:sub(1, #String):lower() == String:lower() then
-			return Type
-		end
-	end
-
-	return false
-end
-
-function IsKeyCode(Key)
-	local Success, KeyCode = pcall(function()
-		return Enum.KeyCode[Key]
-	end)
-
-	if Success then
-		return KeyCode
-	end
-end
-
-function Position(Current, Frame)
-	local X, Y = Frame and Frame.Position.X.Offset, Frame and Frame.Position.Y.Offset or 0
-
-    local Positions = {
-        Left = {
-            AnchorPoint = Vector2.new(0, 0.5),
-            Position = UDim2.new(0.005, X, 0.555, Y),--UDim2.new(0.005, X, 0.5, Y),
-            Hide = UDim2.new(-2, X, 0.555, Y),
-        },
-        Center = {
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            Position = UDim2.new(0.5, X, 0.5, Y),
-            Hide = UDim2.new(-2, X, 0.5, Y),
-        },
-        Right = {
-            AnchorPoint = Vector2.new(1, 0.5),
-            Position = UDim2.new(0.991, X, 0.5, Y),
-            Hide = UDim2.new(-2, X, 0.5, Y),
-        },
-        Bottom = {
-            AnchorPoint = Vector2.new(0.5, 1),
-            Position = UDim2.new(0.5, X, 0.967, Y),
-            Hide = UDim2.new(-2, X, 0.967, Y),
-        }
-    }
-
-    return Positions[Current]
-end
-
-local Objects = {}
-
-function Objects:New(Type)
-	local TargetType = FindType(Type)
-
-	if TargetType then
-		local NewImage = Instance.new(ActualTypes[TargetType])
-
-		if Properties[TargetType] then
-			for Property, Value in next, Properties[TargetType] do
-				NewImage[Property] = Value
-			end
-		end
-
-		return NewImage
-	else
-		return Instance.new(Type)
-	end
-end
-
-local function GetXY(GuiObject)
-	local Max, May = GuiObject.AbsoluteSize.X, GuiObject.AbsoluteSize.Y
-	local Px, Py = math.clamp(Mouse.X - GuiObject.AbsolutePosition.X, 0, Max), math.clamp(Mouse.Y - GuiObject.AbsolutePosition.Y, 0, May)
-
-    return Px / Max, Py / May
-end
-
-local function CircleAnim(GuiObject, EndColour, StartColour)
-	local PositionX, PositionY = GetXY(GuiObject)
-	local Circle = Objects:New("Circle")
-	Circle.Size = UDim2.fromScale(0, 0)
-	Circle.Position = UDim2.fromScale(PositionX, PositionY)
-	Circle.ImageColor3 = StartColour or GuiObject.ImageColor3
-	Circle.ZIndex = 200
-	Circle.Parent = GuiObject
-
-	local Size = GuiObject.AbsoluteSize.X
-
-	TweenService:Create(Circle, TweenInfo.new(1), {Position = UDim2.fromScale(PositionX, PositionY) - UDim2.fromOffset(Size / 2, Size / 2), ImageTransparency = 1, ImageColor3 = EndColour, Size = UDim2.fromOffset(Size, Size)}):Play()
-	task.delay(2, Circle.Destroy, Circle)
-end
-
--- Library
-local Material = {}
-Material.Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Notification.lua"), "Material Lua [Notification]")(Setting.Theme).Notify
-
-local MainGUI
-local ThisTheme
-local Styles = {"Normal", "Invert", "Sheets"}
 
 local NavBar = {
 	Normal = function()
@@ -650,13 +672,169 @@ local NavBar = {
 	end
 }
 
-function TryAddMenu(Object, Menu, ReturnTable)
-	ReturnTable.Object = Object
+-- Functions
+local function FindType(String)
+	for _, Type in next, Types do
+		if Type:sub(1, #String):lower() == String:lower() then
+			return Type
+		end
+	end
+
+	return false
+end
+
+local function IsKeyCode(Key)
+	local success, Keycode = pcall(function()
+		return Enum.KeyCode[Key]
+	end)
+
+	if success then
+		return true and Keycode
+	end
+
+	return false
+end
+
+local function CheckType(Object, Type, _Default)
+	if typeof(Object) == Type then
+		if Type == "EnumItem" then
+			for _, v in pairs(Enum[tostring(Object):split(".")[2]]:GetEnumItems()) do
+				if v.Name == Object.Name then
+					return v
+				end
+			end
+		else
+			return Object
+		end
+	end
+
+	return typeof(_Default) == Type and _Default or nil
+end
+
+function Objects:New(Type)
+	local Target = FindType(Type)
+
+	if Target then
+		local Image = Instance.new(ActualTypes[Target])
+
+		if Properties[Target] then
+			for Property, Value in pairs(Properties[Target]) do
+				Image[Property] = Value
+			end
+		end
+
+		return Image
+	else
+		return Instance.new(Type)
+	end
+end
+
+local function Position(Pos, Frame)
+    Pos = CheckType(Pos, "string", "Center")
+    Frame = Frame or nil
+
+    if Frame then
+        local X, Y = Frame.Position.X.Offset or 0, Frame.Position.Y.Offset or 0
+
+        local Positions = {
+            Left = {
+                AnchorPoint = Vector2.new(0, 0.5),
+                Position = UDim2.new(0.005, X, 0.555, Y),
+                Hide = UDim2.new(-2, X, 0.555, Y),
+            },
+            Center = {
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.new(0.5, X, 0.5, Y),
+                Hide = UDim2.new(-2, X, 0.5, Y),
+            },
+            Right = {
+                AnchorPoint = Vector2.new(1, 0.5),
+                Position = UDim2.new(0.991, X, 0.5, Y),
+                Hide = UDim2.new(-2, X, 0.5, Y),
+            },
+            Bottom = {
+                AnchorPoint = Vector2.new(0.5, 1),
+                Position = UDim2.new(0.5, X, 0.967, Y),
+                Hide = UDim2.new(-2, X, 0.967, Y),
+            },
+        }
+
+		return Positions[Pos]
+    end
+end
+
+local function GetXY(Object)
+	local MaX, MaY = Object.AbsoluteSize.X, Object.AbsoluteSize.Y
+	local PX, PY = math.clamp(Mouse.X - Object.AbsolutePosition.X, 0, MaX), math.clamp(Mouse.Y - Object.AbsolutePosition.Y, 0, MaY)
+
+	return PX / MaX, PY / MaY
+end
+
+local function CircleAnim(Object, EndColor, StartColor)
+	Object = Object or nil
+
+	if Object then
+		StartColor = StartColor or Object.ImageColor3
+		EndColor = EndColor or nil
+
+		local PosX, PosY = GetXY(Object)
+
+		local Circle = Objects:New("Circle")
+		Circle.Size = UDim2.fromScale(0, 0)
+		Circle.Position = UDim2.fromScale(PosX, PosY)
+		Circle.ImageColor3 = StartColor
+		Circle.ZIndex = 200
+		Circle.Parent = Object
+
+		local Size = Object.AbsoluteSize.X
+
+		TweenService:Create(Circle, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.fromScale(PosX, PosY) - UDim2.fromOffset(Size / 2, Size / 2), ImageTransparency = 1, ImageColor3 = EndColor, Size = UDim2.fromOffset(Size, Size)}):Play()
+		task.delay(2, Circle.Destroy, Circle)
+	end
+end
+
+local function CreateChangedEvent()
+	local Event = {
+		Callbacks = {}
+	}
+
+	function Event:Connect(Callback)
+		local Connection = {
+			Callback = Callback
+		}
+
+		table.insert(self.Callbacks, Connection)
+
+		return {
+			Disconnect = function()
+				for i,v in ipairs(self.Callbacks) do
+					if v == Connection then
+						table.remove(self.Callbacks, i)
+						break
+					end
+				end
+			end
+		}
+	end
+
+	function Event:Fire(Property, Value)
+		for _,Connection in ipairs(self.Callbacks) do
+			Connection.Callback(Property, Value)
+		end
+	end
+
+	return Event
+end
+
+local function TryAddMenu(Object, Menu, Return)
+	Return.Object = Object
 
 	local Total = 0
 
-	for _,Value in pairs(Menu) do
-		Total += ((typeof(Value) == "function") and 1 or 0)
+	for _,v in pairs(Menu) do
+		if typeof(v) == "function" then
+			Total = Total + 1
+		end
 	end
 
 	if Total > 0 then
@@ -668,7 +846,7 @@ function TryAddMenu(Object, Menu, ReturnTable)
 
 		TweenService:Create(MenuButton, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
 
-		local Size = Total * 30 + ((Total + 1) * 2)
+		local Size = Total * 30 + Total + 1 * 2
 
 		local MenuBuild = Objects:New("Round")
 		MenuBuild.Name = "Menu"
@@ -677,7 +855,7 @@ function TryAddMenu(Object, Menu, ReturnTable)
 		MenuBuild.Position = UDim2.fromOffset(MenuButton.AbsolutePosition.X, MenuButton.AbsolutePosition.Y) - UDim2.fromOffset(125, 5)
 		MenuBuild.ZIndex = 100
 		MenuBuild.ClipsDescendants = true
-		MenuBuild.Parent = MainGUI
+		MenuBuild.Parent = UI
 
 		MenuButton:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
 			MenuBuild.Position = UDim2.fromOffset(MenuButton.AbsolutePosition.X, MenuButton.AbsolutePosition.Y) - UDim2.fromOffset(125, 5)
@@ -703,19 +881,21 @@ function TryAddMenu(Object, Menu, ReturnTable)
 			TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = MenuToggle and UDim2.fromOffset(120, Size) or UDim2.fromOffset(120, 0)}):Play()
 		end)
 
-        if Load_Style == 3 then
-			local GetMain = MainGUI:FindFirstChild("MainFrame") or MainGUI:WaitForChild("MainFrame", 10)
+		if Style == 3 then
+			local MainFrame = UI:FindFirstChild("MainFrame") or UI:WaitForChild("MainFrame", 10)
 
-			if GetMain then
-				MainGUI.MainFrame.Overlay:GetPropertyChangedSignal("Visible"):Connect(function()
-					if MainGUI.MainFrame.Overlay.Visible then
+			if MainFrame then
+				UI.MainFrame.Overlay:GetPropertyChangedSignal("Visible"):Connect(function()
+					if UI.MainFrame.Overlay.Visible then
 						TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(120, 0)}):Play()
 					end
 				end)
 			end
-        end
+		end
 
-		local MenuLibrary = {}
+		local Menu_Data = {}
+
+		local _OptionValue = nil
 
 		for Option, Value in pairs(Menu) do
 			if typeof(Value) == "function" then
@@ -744,8 +924,10 @@ function TryAddMenu(Object, Menu, ReturnTable)
 				OptionValue.TextXAlignment = Enum.TextXAlignment.Right
 				OptionValue.Parent = MenuOption
 
+				_OptionValue = OptionValue
+
 				MenuOption.MouseButton1Down:Connect(function()
-					pcall(Value, ReturnTable, MenuLibrary)
+					Value(Return, Menu_Data)
 					MenuToggle = false
 					TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(120, 0)}):Play()
 				end)
@@ -759,42 +941,47 @@ function TryAddMenu(Object, Menu, ReturnTable)
 					TweenService:Create(MenuOption, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
 					TweenService:Create(OptionShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
 				end)
-
-				function MenuLibrary:SetText(Text)
-					OptionValue.Text = typeof(Text) == "string" and Text or OptionValue.Text
-				end
-
-				function MenuLibrary:GetText()
-					return OptionValue.Text
-				end
 			end
 		end
 
-		return true, MenuButton, MenuLibrary
+		return true, MenuButton, setmetatable(Menu_Data, {
+			__newindex = function(t, k, v)
+				if k == "Text" then
+					_OptionValue.Text = CheckType(v, "string", _OptionValue.Text)
+				end
+			end,
+			__index = function(t, k)
+				if k == "Text" then
+					return _OptionValue.Text
+				end
+			end
+		})
 	end
 
 	return false
 end
 
-function CreateNewButton(ButtonConfig, Parent)
-	ButtonConfig = (typeof(ButtonConfig) == "table" and ButtonConfig) or {}
+local function CreateNewButton(Button_Opt, Parent)
+	Button_Opt = CheckType(Button_Opt, "table", {})
 
-	local Button_Text = typeof(ButtonConfig.Text) == "string" and ButtonConfig.Text or "Button"
-	local Button_RichText = typeof(ButtonConfig.RichText) == "boolean" and ButtonConfig.RichText or false
-	local Button_TextColor = typeof(ButtonConfig.TextColor) == "Color3" and ButtonConfig.TextColor or ThisTheme.ButtonAccent
-	local Button_Font = typeof(ButtonConfig.Font) == "EnumItem" and ButtonConfig.Font or Enum.Font.GothamSemibold
-	local Button_Visible = typeof(ButtonConfig.Visible) ~= "boolean" and true or ButtonConfig.Visible
-	local Button_Callback = typeof(ButtonConfig.Callback) == "function" and ButtonConfig.Callback or function() end
+	Button_Opt.Text = CheckType(Button_Opt.Text, "string", "Button")
+	Button_Opt.TextColor = CheckType(Button_Opt.TextColor, "Color3", ThisTheme.ButtonAccent)
+	Button_Opt.RichText = CheckType(Button_Opt.RichText, "boolean", false)
+	Button_Opt.Font = CheckType(Button_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+	Button_Opt.Visible = CheckType(Button_Opt.Visible, "boolean", true)
+	Button_Opt.ReadOnly = CheckType(Button_Opt.ReadOnly, "boolean", false)
+	Button_Opt.Callback = CheckType(Button_Opt.Callback, "function", function() end)
 
-	local Button_Menu = typeof(ButtonConfig.Menu) == "table" and ButtonConfig.Menu or {}
+	Button_Opt.Menu = CheckType(Button_Opt.Menu, "table", {})
 
-	local ButtonLibrary = {}
+	local Button_Data = {}
+	local ChangedEvent = CreateChangedEvent()
 
 	local Button = Objects:New("SmoothButton")
 	Button.Name = "Button"
 	Button.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 	Button.ImageColor3 = ThisTheme.Button
-	Button.Visible = Button_Visible
+	Button.Visible = Button_Opt.Visible
 	Button.ImageTransparency = 1
 	Button.Parent = Parent
 
@@ -804,11 +991,11 @@ function CreateNewButton(ButtonConfig, Parent)
 	ButtonShadow.Parent = Button
 
 	local ButtonLabel = Objects:New("Label")
-	ButtonLabel.Text = Button_Text
-	ButtonLabel.TextColor3 = Button_TextColor
-	ButtonLabel.Font = Button_Font
+	ButtonLabel.Text = Button_Opt.Text
+	ButtonLabel.TextColor3 = Button_Opt.TextColor
+	ButtonLabel.Font = Button_Opt.Font
 	ButtonLabel.TextSize = 14
-    ButtonLabel.RichText = Button_RichText
+    ButtonLabel.RichText = Button_Opt.RichText
 	ButtonLabel.ClipsDescendants = true
 	ButtonLabel.TextTransparency = 1
 	ButtonLabel.Parent = Button
@@ -818,81 +1005,139 @@ function CreateNewButton(ButtonConfig, Parent)
 	TweenService:Create(ButtonLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
 	Button.MouseButton1Down:Connect(function()
-		CircleAnim(ButtonLabel, ThisTheme.ButtonAccent, ThisTheme.Button)
-		pcall(Button_Callback, ButtonLibrary)
+		if not Button_Opt.ReadOnly then
+			CircleAnim(ButtonLabel, ThisTheme.ButtonAccent, ThisTheme.Button)
+
+			Button_Opt.Callback(Button_Data)
+
+			ChangedEvent:Fire("Click", true)
+		end
 	end)
 
-	TryAddMenu(Button, Button_Menu, {
-		SetText = function(Text)
-			ButtonLabel.Text = typeof(Text) ~= "string" and ButtonLabel.Text or Text
-		end,
-		GetText = function()
-			return ButtonLabel.Text
-		end,
-		SetTextColor = function(TextColor)
-			ButtonLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ButtonLabel.TextColor3
-		end,
-		GetTextColor = function()
-			return ButtonLabel.TextColor3
-		end,
-		SetFont = function(Font)
-			ButtonLabel.Font = typeof(Font) == "EnumItem" and Font or ButtonLabel.Font
-		end,
-		GetFont = function()
-			return ButtonLabel.Font
-		end,
-		SetVisible = function(Visible)
-			Button.Visible = typeof(Visible) ~= "boolean" and ButtonLabel.Visible or Visible
-		end,
-		GetVisible = function()
-			return Button.Visible
-		end
-	})
+	local Funcs = {
+		__newindex = function(t, k, v)
+			if k == "Text" then
+				Button_Opt.Text = CheckType(v, "string", Button_Opt.Text)
 
-	return Button, ButtonLabel
+				if #Button_Opt.Text > 0 then
+					ButtonLabel.Text = Button_Opt.Text
+
+					ChangedEvent:Fire(k, Button_Opt.Text)
+				end
+			elseif k == "TextColor" then
+				Button_Opt.TextColor = CheckType(v, "Color3", Button_Opt.TextColor)
+
+				ButtonLabel.TextColor3 = Button_Opt.TextColor
+
+				ChangedEvent:Fire(k, Button_Opt.TextColor)
+			elseif k == "RichText" then
+				Button_Opt.RichText = CheckType(v, "boolean", Button_Opt.RichText)
+
+				ButtonLabel.RichText = Button_Opt.RichText
+
+				ChangedEvent:Fire(k, Button_Opt.RichText)
+			elseif k == "Font" then
+				Button_Opt.Font = CheckType(v, "EnumItem", Button_Opt.Font)
+				ButtonLabel.Font = Button_Opt.Font
+
+				ChangedEvent:Fire(k, Button_Opt.Font)
+			elseif k == "Visible" then
+				Button_Opt.Visible = CheckType(v, "boolean", Button_Opt.Visible)
+
+				Button.Visible = Button_Opt.Visible
+
+				ChangedEvent:Fire(k, Button_Opt.Visible)
+			elseif k == "ReadOnly" then
+				Button_Opt.ReadOnly = CheckType(v, "boolean", Button_Opt.ReadOnly)
+
+				ChangedEvent:Fire(k, Button_Opt.ReadOnly)
+			end
+		end,
+		__index = function(t, k)
+			if k == "Text" then
+				return ButtonLabel.ContentText
+			elseif k == "TextColor" then
+				return Button_Opt.TextColor
+			elseif k == "RichText" then
+				return Button_Opt.RichText
+			elseif k == "Font" then
+				return Button_Opt.Font
+			elseif k == "Visible" then
+				return Button_Opt.Visible
+			elseif k == "ReadOnly" then
+				return Button_Opt.ReadOnly
+			elseif k == "Changed" then
+				return ChangedEvent
+			elseif k == "Click" then
+				return function()
+					if not Button_Opt.ReadOnly then
+						Button_Opt.Callback(Button_Data)
+
+						ChangedEvent:Fire("Click", true)
+					end
+				end
+			elseif k == "Destroy" then
+				return function()
+					Button:Destroy()
+				end
+			end
+		end,
+		__call = function(Func, ...)
+			Func(Func, ...)
+		end,
+	}
+
+	TryAddMenu(Button, Button_Opt.Menu, setmetatable({}, Funcs))
+
+	return Button, ButtonLabel, Funcs
 end
 
-function Material:Load(Config)
-	Load_Style = typeof(Config.Style) == "number" and (Config.Style and math.clamp(Config.Style, 1, 3)) or 3
+-- Library
+local Material = {}
+Material.Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/neonixran/MaterialLua/master/Notification.lua"), "Material Lua [Notification]")(Setting.Theme).Notify
 
-	local Load_Title = typeof(Config.Title) == "string" and Config.Title or "Getting Started"
-	local Load_RichText = typeof(Config.RichText) == "boolean" and Config.RichText or false
-	local Load_Font = typeof(Config.Font) == "EnumItem" and Config.Font or Enum.Font.GothamSemibold
-	local Load_SizeX = typeof(Config.SizeX) == "number" and Config.SizeX or 255
-	local Load_Position = typeof(Config.Position) == "string" and Config.Position or "Center"
-	local Load_SizeY = typeof(Config.SizeY) == "number" and Config.SizeY or 350
-	local Load_Theme = typeof(Config.Theme) == "string" and Config.Theme or Setting.Theme
-	local Load_Minimize = typeof(Config.Minimize) == "boolean" and Config.Minimize or false
-	local Load_Overrides = typeof(Config.Overrides) == "table" and Config.Overrides or Setting.Overrides
-	local Load_UI = typeof(Config.UI) == "table" and Config.UI or {
-        CheckName = false,
-        DestroyOthers = true
-    }
+function Material:Load(Load_Opt)
+	Load_Opt = CheckType(Load_Opt, "table", {})
 
-	local Load_Menu = typeof(Config.Menu) == "table" and Config.Menu or {}
+	Style = math.clamp(CheckType(Load_Opt.Style, "number", 3), 1, 3)
+	Load_Opt.Title = CheckType(Load_Opt.Title, "string", "Material Lua")
+	Load_Opt.RichText = CheckType(Load_Opt.RichText, "boolean", false)
+	Load_Opt.Font = CheckType(Load_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+	Load_Opt.SizeX = CheckType(Load_Opt.SizeX, "number", 255)
+	Load_Opt.SizeY = CheckType(Load_Opt.SizeY, "number", 350)
+	Load_Opt.Position = CheckType(Load_Opt.Position, "string", "Center")
+	Load_Opt.Theme = CheckType(Load_Opt.Theme, "string", Setting.Theme)
+	Load_Opt.Minimize = CheckType(Load_Opt.Minimize, "boolean", false)
+	Load_Opt.Overrides = CheckType(Load_Opt.Overrides, "table", Setting.Overrides)
+
+	Load_Opt.UI = CheckType(Load_Opt.UI, "table", {})
+	Load_Opt.UI.CheckName = CheckType(Load_Opt.UI.CheckName, "boolean", false)
+	Load_Opt.UI.DestroyOthers = CheckType(Load_Opt.UI.DestroyOthers, "boolean", true)
+
+	Load_Opt.Menu = CheckType(Load_Opt.Menu, "table", {})
 
 	local Open = true
 
-	Setting.Theme = Load_Theme
+	Setting.Theme = Load_Opt.Theme
 	local Theme = Setting.Theme
 
-    Theme = Themes[Theme]
+	Theme = Themes[Theme]
 	ThisTheme = Theme
 
-    for KeyOverride, ValueOverride in next, Load_Overrides do
-		ThisTheme[KeyOverride] = (typeof(ValueOverride) == "string" and (ValueOverride):match("^%x%x%x%x%x%x$")) and Color3.fromHex(ValueOverride) or typeof(ValueOverride) == "Color3" and ValueOverride or ThisTheme[KeyOverride]
+	for KeyOverride, ValueOverride in pairs(Load_Opt.Overrides) do
+		ThisTheme[KeyOverride] = tostring(ValueOverride):match("^%x%x%x%x%x%x$") and Color3.fromHex(ValueOverride) or CheckType(ValueOverride, "Color3", ThisTheme[KeyOverride])
 	end
 
-	local Load_TextColor = typeof(Config.TextColor) == "Color3" and Config.TextColor or ThisTheme.TitleBarAccent
+	Load_Opt.TextColor = CheckType(Load_Opt.TextColor, "Color3", ThisTheme.TitleBarAccent)
 
 	pcall(function()
-		if Load_UI.CheckName and OldInstance.Name == Load_Title or Load_UI.DestroyOthers then
+		if Load_Opt.UI.CheckName and OldInstance.Name == Load_Opt.Title or Load_Opt.UI.DestroyOthers then
 			OldInstance:Destroy()
 		end
 	end)
 
 	local NewInstance = Objects:New("ScreenGui")
-	NewInstance.Name = Load_Title
+	NewInstance.Name = Load_Opt.Title
 
 	if gethui then
 		NewInstance.Parent = gethui()
@@ -905,64 +1150,64 @@ function Material:Load(Config)
 
 	getgenv().OldInstance = NewInstance
 
-	MainGUI = NewInstance
+	UI = NewInstance
 
 	local MainFrame = Objects:New("Round")
 	MainFrame.Name = "MainFrame"
-	MainFrame.AnchorPoint = Position(Load_Position, MainFrame).AnchorPoint
-	MainFrame.Position = Position(Load_Position, MainFrame).Position
-	MainFrame.Size = UDim2.fromOffset(0, Load_SizeY)
+	MainFrame.AnchorPoint = Position(Load_Opt.Position, MainFrame).AnchorPoint
+	MainFrame.Position = Position(Load_Opt.Position, MainFrame).Position
+	MainFrame.Size = UDim2.fromOffset(0, Load_Opt.SizeY)
 	MainFrame.ImageColor3 = ThisTheme.MainFrame
 	MainFrame.Parent = NewInstance
- 
-	TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, Load_SizeY)}):Play()
-	
+
+	TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_Opt.SizeX, Load_Opt.SizeY)}):Play()
+
 	task.wait(1)
- 
+
 	local MainShadow = Objects:New("Shadow")
 	MainShadow.ImageColor3 = ThisTheme.MainFrame
 	MainShadow.Parent = MainFrame
- 
+
 	local TitleBar = Objects:New("SmoothButton")
 	TitleBar.Name = "TitleBar"
 	TitleBar.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 	TitleBar.ImageColor3 = ThisTheme.TitleBar
 	TitleBar.ImageTransparency = 1
 	TitleBar.Parent = MainFrame
- 
+
 	local ExtraBar = Objects:New("Frame")
 	ExtraBar.Name = "Hidden"
 	ExtraBar.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 5)
 	ExtraBar.Position = UDim2.fromScale(0, 1) - UDim2.fromOffset(0, 5)
 	ExtraBar.BackgroundColor3 = ThisTheme.TitleBar
 	ExtraBar.Parent = TitleBar
- 
+
 	local TitleShadow = Objects:New("Shadow")
 	TitleShadow.ImageColor3 = ThisTheme.TitleBar
 	TitleShadow.ImageTransparency = 1
 	TitleShadow.Parent = TitleBar
- 
+
 	local TitleText = Objects:New("Button")
 	TitleText.Name = "Title"
-	TitleText.Text = Load_Title
-	TitleText.RichText = Load_RichText
-	TitleText.TextColor3 = Load_TextColor
+	TitleText.Text = Load_Opt.Title
+	TitleText.RichText = Load_Opt.RichText
+	TitleText.TextColor3 = Load_Opt.TextColor
 	TitleText.TextTransparency = 1
-	TitleText.Font = Load_Font
+	TitleText.Font = Load_Opt.Font
 	TitleText.Parent = TitleBar
- 
+
 	TitleText.MouseButton1Down:Connect(function()
 		local Mx, My = Mouse.X, Mouse.Y
 		local MouseMove, MouseKill
- 
+
 		MouseMove = Mouse.Move:Connect(function()
 			local nMx, nMy = Mouse.X, Mouse.Y
 			local Dx, Dy = nMx - Mx, nMy - My
-	
+
 			MainFrame.Position = MainFrame.Position + UDim2.fromOffset(Dx, Dy)
 			Mx, My = nMx, nMy
 		end)
- 
+
 		MouseKill = UserInputService.InputEnded:Connect(function(Input)
 			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				MouseMove:Disconnect()
@@ -970,22 +1215,22 @@ function Material:Load(Config)
 			end
 		end)
 	end)
- 
+
 	local CloseButton = Objects:New("SmoothButton")
 	CloseButton.Size = UDim2.fromOffset(20, 20)
 	CloseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-	CloseButton.ImageColor3 = Load_Minimize and ThisTheme.Minimise or ThisTheme.Close
+	CloseButton.ImageColor3 = Load_Opt.Minimize and ThisTheme.Minimise or ThisTheme.Close
 	CloseButton.ImageTransparency = 1
 	CloseButton.Parent = TitleBar
- 
+
 	local CloseShadow = Objects:New("Shadow")
-	CloseShadow.ImageColor3 = Load_Minimize and ThisTheme.MinimiseAccent or ThisTheme.CloseAccent
+	CloseShadow.ImageColor3 = Load_Opt.Minimize and ThisTheme.MinimiseAccent or ThisTheme.CloseAccent
 	CloseShadow.ImageTransparency = 1
 	CloseShadow.Parent = CloseButton
- 
+
 	CloseButton.MouseButton1Down:Connect(function()
-		if not Load_Minimize then
-			TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, 0)}):Play()
+		if not Load_Opt.Minimize then
+			TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_Opt.SizeX, 0)}):Play()
 			MainFrame.ClipsDescendants = true
 			task.wait(1)
 			NewInstance:Destroy()
@@ -993,7 +1238,7 @@ function Material:Load(Config)
 			Open = not Open
 
 			TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
-			TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(Load_SizeX, Load_SizeY) or UDim2.fromOffset(Load_SizeX, 30)}):Play()
+			TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(Load_Opt.SizeX, Load_Opt.SizeY) or UDim2.fromOffset(Load_Opt.SizeX, 30)}):Play()
 			TweenService:Create(CloseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
 			TweenService:Create(CloseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
 
@@ -1014,10 +1259,10 @@ function Material:Load(Config)
 	Content.Position = UDim2.fromOffset(5, 70)
 	Content.ImageTransparency = 1
 	Content.Parent = MainFrame
-	
-	local NavigationBar, NavigationBarContent, NavBarMenu, NavBarOverlay = NavBar[Styles[Load_Style]]()
+
+	local NavigationBar, NavigationBarContent, NavBarMenu, NavBarOverlay = NavBar[Styles[Style]]()
 	NavigationBar.Parent = MainFrame
-	
+
 	TweenService:Create(TitleBar, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(ExtraBar, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
 	TweenService:Create(TitleShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
@@ -1025,7 +1270,7 @@ function Material:Load(Config)
 	TweenService:Create(CloseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(CloseShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(Content, TweenInfo.new(1), {ImageTransparency = 0.8}):Play()
- 
+
 	task.wait(1)
 
 	if NavBarMenu then
@@ -1052,25 +1297,25 @@ function Material:Load(Config)
 		end)
 	end
 
-    local TabCount = 0
+	local TabCount = 0
 	local TabLibrary = {}
 
-	local ButtonTrack = {}
 	local PageTrack = {}
+	local ButtonTrack = {}
 
-	function TabLibrary:Banner(BannerConfig)
-		local Banner_Text = typeof(BannerConfig.Text) == "string" and BannerConfig.Text or "Banner"
-		local Banner_RichText = typeof(BannerConfig.RichText) == "boolean" and BannerConfig.RichText or false
-		local Banner_TextColor = typeof(BannerConfig.TextColor) == "Color3" and BannerConfig.TextColor or ThisTheme.BannerAccent
-		local Banner_Font = typeof(BannerConfig.Font) == "EnumItem" and BannerConfig.Font or Enum.Font.Gotham
-		local Banner_Duration = typeof(BannerConfig.Duration) == "number" and BannerConfig.Duration or nil
-		local Banner_Options = typeof(BannerConfig.Options) == "table" and BannerConfig.Options or {}
-		local Banner_Button = typeof(BannerConfig.Button) == "table" and BannerConfig.Button or {
-			Text = "Close",
-			Callback = function() end
-		}
+	function TabLibrary:Banner(Banner_Opt)
+		Banner_Opt.Text = CheckType(Banner_Opt.Text, "string", "Banner")
+		Banner_Opt.RichText = CheckType(Banner_Opt.RichText, "boolean", false)
+		Banner_Opt.TextColor = CheckType(Banner_Opt.TextColor, "Color3", ThisTheme.BannerAccent)
+		Banner_Opt.Font = CheckType(Banner_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+		Banner_Opt.Duration = CheckType(Banner_Opt.Duration, "number", 0)
+		Banner_Opt.Options = CheckType(Banner_Opt.Options, "table", {})
 
-		local BannerLibrary = {}
+		Banner_Opt.Button = CheckType(Banner_Opt.Button, "table", {})
+		Banner_Opt.Button.Text = CheckType(Banner_Opt.Button.Text, "string", "Close")
+		Banner_Opt.Button.Callback = CheckType(Banner_Opt.Button.Callback, "function", function() end)
+
+		local Banner_Data = {}
 
 		local ExistingBanner, ExistingBannerOverlay = MainFrame:FindFirstChild("BannerOverlay"), MainFrame:FindFirstChild("Banner")
 
@@ -1093,10 +1338,10 @@ function Material:Load(Config)
 		BannerOverlay.Visible = false
 		BannerOverlay.Parent = MainFrame
 
-        local Banner_TextSize = TextService:GetTextSize(Banner_Text, 12, Banner_Font, Vector2.new(0, 0)).X
+		local Banner_TextSize = TextService:GetTextSize(Banner_Opt.Text, 12, Banner_Opt.Font, Vector2.new(0, 0)).X
         local Lines = math.ceil((Banner_TextSize) / (MainFrame.AbsoluteSize.X - 10))
 
-        local Banner = Objects:New("Round")
+		local Banner = Objects:New("Round")
 		Banner.Name = "Banner"
 		Banner.ImageTransparency = 1
 		Banner.ImageColor3 = ThisTheme.Banner
@@ -1105,13 +1350,13 @@ function Material:Load(Config)
 		Banner.ZIndex = 80
 		Banner.Parent = MainFrame
 
-        local BannerLabel = Objects:New("Label")
+		local BannerLabel = Objects:New("Label")
 		BannerLabel.Name = "Value"
-		BannerLabel.Text = Banner_Text
-        BannerLabel.RichText = Banner_RichText
-		BannerLabel.TextColor3 = Banner_TextColor
+		BannerLabel.Text = Banner_Opt.Text
+        BannerLabel.RichText = Banner_Opt.RichText
+		BannerLabel.TextColor3 = Banner_Opt.TextColor
 		BannerLabel.TextSize = 12
-		BannerLabel.Font = Banner_Font
+		BannerLabel.Font = Banner_Opt.Font
 		BannerLabel.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-5, (Lines * 20) + 5)
 		BannerLabel.TextWrapped = true
 		BannerLabel.Position = UDim2.fromOffset(5, 0)
@@ -1140,17 +1385,17 @@ function Material:Load(Config)
 		BannerList.Padding = UDim.new(0, 5)
 		BannerList.Parent = BannerContainer
 
-		if Banner_Duration then
-			task.delay(Banner_Duration, function()
-				BannerLibrary:Close()
+		if Banner_Opt.Duration ~= 0 then
+			task.delay(Banner_Opt.Duration, function()
+				Banner_Data:Close()
 			end)
 		else
-			Banner_Options[Banner_Button.Text] = function()
-				BannerLibrary:Close()
-				pcall(Banner_Button.Callback, BannerLibrary)
+			Banner_Opt.Options[Banner_Opt.Button.Text] = function()
+				Banner_Data:Close()
+				Banner_Opt.Button.Callback(Banner_Data)
 			end
 
-			for Option, Callback in pairs(Banner_Options) do
+			for Option, Callback in pairs(Banner_Opt.Options) do
 				if typeof(Callback) == "function" then
 					local Option_TextSize = TextService:GetTextSize(Option, 12, Enum.Font.GothamBold, Vector2.new(0, 0)).X
 
@@ -1175,7 +1420,7 @@ function Material:Load(Config)
 
 					OptionItem.MouseButton1Down:Connect(function()
 						CircleAnim(OptionItem, ThisTheme.Banner)
-						pcall(Callback, BannerLibrary)
+						Callback(Banner_Data)
 					end)
 				end
 			end
@@ -1183,111 +1428,111 @@ function Material:Load(Config)
 
 		TweenService:Create(BannerContainer, TweenInfo.new(0.5), {Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-10, 30)}):Play()
 
-		function BannerLibrary:SetText(Value)
-			BannerLabel.Text = typeof(Value) == "string" and Value or BannerLabel.Text
-        end
-
-		function BannerLibrary:GetText()
-            return BannerLabel.Text
-        end
-
-		function BannerLibrary:SetTextColor(TextColor)
-			BannerLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or BannerLabel.TextColor3
-		end
-
-		function BannerLibrary:GetTextColor()
-			return BannerLabel.TextColor3
-		end
-
-		function BannerLibrary:SetFont(Font)
-			BannerLabel.Font = typeof(Font) == "EnumItem" and Font or BannerLabel.Font
-		end
-
-		function BannerLibrary:GetFont()
-			return BannerLabel.Font
-		end
-
-        function BannerLibrary:Close()
-            TweenService:Create(BannerContainer, TweenInfo.new(0.5), {Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-10, 0)}):Play()
+		function Banner_Data:Close()
+			TweenService:Create(BannerContainer, TweenInfo.new(0.5), {Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-10, 0)}):Play()
 			TweenService:Create(BannerOverlay, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
 			TweenService:Create(BannerOverlay, TweenInfo.new(0.5), {ImageTransparency = 1}):Play()
 			TweenService:Create(BannerOverlay, TweenInfo.new(0.5), {Visible = false}):Play()
 			TweenService:Create(Banner, TweenInfo.new(0.5), {ImageTransparency = 1}):Play()
 			TweenService:Create(BannerLabel, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-        end
+		end
 
-		return BannerLibrary
+		return setmetatable(Banner_Data, {
+			__newindex = function(t, k, v)
+				if k == "Text" then
+					Banner_Opt.Text = CheckType(v, "string", Banner_Opt.Text)
+
+					BannerLabel.Text = Banner_Opt.Text
+				elseif k == "TextColor" then
+					Banner_Opt.TextColor = CheckType(v, "Color3", BannerLabel.TextColor3)
+
+					BannerLabel.TextColor3 = Banner_Opt.TextColor
+				elseif k == "Font" then
+					Banner_Opt.Font = CheckType(v, "EnumItem", Banner_Opt.Font)
+
+					BannerLabel.Font = Banner_Opt.Font
+				elseif k == "RichText" then
+					Banner_Opt.RichText = CheckType(v, "boolean", Banner_Opt.RichText)
+
+					BannerLabel.RichText = Banner_Opt.RichText
+				end
+			end,
+			__index = function(t, k)
+				if k == "Text" then
+					return Banner_Opt.Text
+				elseif k == "TextColor" then
+					return Banner_Opt.TextColor
+				elseif k == "Font" then
+					return Banner_Opt.Font
+				elseif k == "RichText" then
+					return Banner_Opt.RichText
+				end
+			end
+		})
 	end
 
-	function TabLibrary:New(TabConfig)
-		local Tab_Title = typeof(TabConfig.Title) == "string" and TabConfig.Title or "Tab"
-		local Tab_RichText = typeof(TabConfig.RichText) == "boolean" and TabConfig.RichText or false
-		local Tab_TextColor = typeof(TabConfig.TextColor) == "Color3" and TabConfig.TextColor or Color3.fromRGB(255, 255, 255)
-		local Tab_Font = typeof(TabConfig.Font) == "EnumItem" and TabConfig.Font or Enum.Font.GothamBold
-		local Tab_Visible = typeof(TabConfig.Visible) ~= "boolean" and true or TabConfig.Visible
-		local Tab_ImageID = typeof(TabConfig.Image) == "number" and TabConfig.Image or nil
+	function TabLibrary:New(Tab_Opt)
+		Tab_Opt = CheckType(Tab_Opt, "table", {})
 
-		local Button
-		local NewImage
-        local Tab_Settings = {
-            TextSize = 12,
-            Font = Tab_Font,
-            Vector = Vector2.new(0, 0)
-        }
+		Tab_Opt.Title = CheckType(Tab_Opt.Title, "string", "Tab")
+		Tab_Opt.TextColor = CheckType(Tab_Opt.TextColor, "Color3", Color3.fromRGB(255, 255, 255))
+		Tab_Opt.RichText = CheckType(Tab_Opt.RichText, "boolean", false)
+		Tab_Opt.Font = CheckType(Tab_Opt.Font, "EnumItem", Enum.Font.GothamBold)
+		Tab_Opt.Visible = CheckType(Tab_Opt.Visible, "boolean", true)
+		Tab_Opt.Image = CheckType(Tab_Opt.Image, "number", 0)
+		Tab_Opt.ReadOnly = CheckType(Tab_Opt.ReadOnly, "boolean", false)
 
-        local Tab_TextSize = TextService:GetTextSize(Tab_Title, Tab_Settings.TextSize, Tab_Settings.Font, Tab_Settings.Vector).X
+		local Button, NewImage
+		local Tab_TextSize  = TextService:GetTextSize(Tab_Opt.Title, 12, Tab_Opt.Font, Vector2.new(0, 0)).X
 
-        if Tab_ImageID then
-            local FetchURL = ("rbxassetid://%s"):format(Tab_ImageID)
-            local Image = (RunService:IsStudio() and "http://www.roblox.com/asset/?id=5472131383") or game:GetObjects(FetchURL)[1].Texture
-
-            Button = Objects:New("Button")
-            Button.Name = Tab_Title
+		if Tab_Opt.Image ~= 0 then
+			Button = Objects:New("Button")
+            Button.Name = Tab_Opt.Title
             Button.TextXAlignment = Enum.TextXAlignment.Center
-            Button.TextSize = Tab_Settings.TextSize
-            Button.Font = Tab_Font
-            Button.Text = Tab_Title
-			Button.TextColor3 = Tab_TextColor
-			Button.Visible = Tab_Visible
-            Button.RichText = Tab_RichText
+            Button.TextSize = 12
+            Button.Font = Tab_Opt.Font
+            Button.Text = Tab_Opt.Title
+			Button.TextColor3 = Tab_Opt.TextColor
+			Button.Visible = Tab_Opt.Visible
+            Button.RichText = Tab_Opt.RichText
             Button.Size = UDim2.fromScale(0, 1) + UDim2.fromOffset(0, (Tab_TextSize + 35))
             Button.ZIndex = 200
             Button.TextTransparency = 1
 
-            NewImage = Objects:New(Button and "Round" or "SmoothButton")
-            NewImage.Name = Tab_ImageID
+			NewImage = Objects:New(Button and "Round" or "SmoothButton")
+            NewImage.Name = Tab_Opt.Image
             NewImage.BackgroundTransparency = 1
             NewImage.Size = UDim2.fromOffset(20, 20)
             NewImage.ScaleType = Enum.ScaleType.Stretch
-            NewImage.Image = Image
+            NewImage.Image = RunService:IsStudio() and "http://www.roblox.com/asset/?id=5472131383" or game:GetObjects(("rbxassetid://%s"):format(Tab_Opt.Image))[1].Texture
             NewImage.ZIndex = 200
             NewImage.ImageTransparency = 1
 
-            if Button then
-                NewImage.Position = UDim2.fromScale(0, 0.5) - UDim2.fromOffset(0, 10)
+			if Button then
+				NewImage.Position = UDim2.fromScale(0, 0.5) - UDim2.fromOffset(0, 10)
                 NewImage.Parent = Button
-            else
-                Button = NewImage
-            end
-        else
-            Button = Objects:New("Button")
-            Button.Name = Tab_Title
+			else
+				Button = NewImage
+			end
+		else
+			Button = Objects:New("Button")
+            Button.Name = Tab_Opt.Title
             Button.TextXAlignment = Enum.TextXAlignment.Center
-            Button.TextSize = Tab_Settings.TextSize
-            Button.Font = Tab_Font
-            Button.Text = Tab_Title
-			Button.TextColor3 = Tab_TextColor
-			Button.Visible = Tab_Visible
-            Button.RichText = Tab_RichText
+            Button.TextSize = 12
+            Button.Font = Tab_Opt.Font
+            Button.Text = Tab_Opt.Title
+			Button.TextColor3 = Tab_Opt.TextColor
+			Button.Visible = Tab_Opt.Visible
+            Button.RichText = Tab_Opt.RichText
             Button.Size = UDim2.fromScale(0, 1) + UDim2.fromOffset((Tab_TextSize + 10), 0)
             Button.ZIndex = 200
             Button.TextTransparency = 1
-        end
+		end
 
-        Button.Parent = NavigationBarContent
+		Button.Parent = NavigationBarContent
 
-        local PageContentFrame = Objects:New("Scroll")
-		PageContentFrame.Name = Tab_Title or Tab_ImageID
+		local PageContentFrame = Objects:New("Scroll")
+		PageContentFrame.Name = Tab_Opt.Title or Tab_Opt.Image
 		PageContentFrame.Visible = (TabCount == 0)
 		PageContentFrame.ZIndex = 50
 		PageContentFrame.BackgroundTransparency = 1
@@ -1300,26 +1545,28 @@ function Material:Load(Config)
 		table.insert(ButtonTrack, Button)
 		table.insert(PageTrack, PageContentFrame)
 
-		Button.MouseButton1Down:Connect(function()
-			for _, Track in next, ButtonTrack do
-				if not (Track == Button) then
+		Button.MouseButton1Down:Connect(function()	
+			for _,Track in pairs(ButtonTrack) do
+				if not Track == Button then
 					TweenService:Create(Track, TweenInfo.new(0.15), {TextTransparency = 0.5}):Play()
+
 					pcall(function()
 						TweenService:Create(Track:FindFirstChildWhichIsA("ImageLabel"), TweenInfo.new(0.15), {ImageTransparency = 0.5}):Play()
 					end)
 				else
-					TweenService:Create(Track, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+						TweenService:Create(Track, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+
 					pcall(function()
 						TweenService:Create(Track:FindFirstChildWhichIsA("ImageLabel"), TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
 					end)
 				end
 			end
 
-			for _, Track in next, PageTrack do
-				Track.Visible = (Track == PageContentFrame)
+			for _,Track in pairs(PageTrack) do
+				Track.Visible = Track == PageContentFrame
 			end
 
-			if Load_Style == 3 then
+			if Style == 3 then
 				NavigationBar.ClipsDescendants = true
 				TweenService:Create(NavigationBar, TweenInfo.new(0.15), {Size = (UDim2.fromScale(0, 1)) - UDim2.fromOffset(0, 30)}):Play()
 				TweenService:Create(NavBarOverlay, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
@@ -1328,7 +1575,7 @@ function Material:Load(Config)
 			end
 		end)
 
-        local PagePadding = Objects:New("UIPadding")
+		local PagePadding = Objects:New("UIPadding")
 		PagePadding.PaddingLeft = UDim.new(0, 5)
 		PagePadding.PaddingRight = UDim.new(0, 5)
 		PagePadding.PaddingTop = UDim.new(0, 5)
@@ -1346,239 +1593,204 @@ function Material:Load(Config)
 
         TabCount += 1
 
-		local OptionLibrary = {}
+		local Tab_Data = {}
 
-		function OptionLibrary:Separator()
-			SeparatorConfig = typeof(SeparatorConfig) == "table" and SeparatorConfig or {}
+		function Tab_Data:Separator(Separator_Opt)
+			Separator_Opt = CheckType(Separator_Opt, "table", {})
 
-			local Separator_Visible = typeof(SeparatorConfig.Visible) ~= "boolean" and true or SeparatorConfig.Visible
+			Separator_Opt.Visible = CheckType(Separator_Opt.Visible, "boolean", true)
 
 			local SeparatorContainer = Objects:New("Round")
 			SeparatorContainer.Name = "Separator"
 			SeparatorContainer.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 3)
 			SeparatorContainer.ImageColor3 = ThisTheme.Button
-			SeparatorContainer.Visible = Separator_Visible
+			SeparatorContainer.Visible = Separator_Opt.Visible
 			SeparatorContainer.Parent = PageContentFrame
 
-            local SeparatorLibrary = {}
+			local Separator_Data = {}
 
-            function SeparatorLibrary:SetVisible(Visible)
-                SeparatorContainer.Visible = typeof(Visible) ~= "boolean" and SeparatorContainer.Visible or Visible
-            end
+			return setmetatable(Separator_Data, {
+				__newindex = function(t, k, v)
+					if k == "Visible" then
+						Separator_Opt.Visible = CheckType(v, "boolean", Separator_Opt.Visible)
 
-            function SeparatorLibrary:GetVisible()
-                return SeparatorContainer.Visible
-            end
-
-			function SeparatorLibrary:Destroy()
-				SeparatorContainer:Destroy()
-			end
-
-            return SeparatorLibrary
+						SeparatorContainer.Visible = Separator_Opt.Visible
+					end
+				end,
+				__index = function(t, k)
+					if k == "Visible" then
+						return Separator_Opt.Visible
+					elseif k == "Destroy" then
+						return function()
+							SeparatorContainer:Destroy()
+						end
+					end
+				end,
+				__call = function(Func, ...)
+					return Func(Func, ...)
+				end
+			})
 		end
 
-		function OptionLibrary:Label(LabelConfig)
-			LabelConfig = typeof(LabelConfig) == "table" and LabelConfig or {}
+		function Tab_Data:Label(Label_Opt)
+			Label_Opt = CheckType(Label_Opt, "table", {})
 
-			local Label_Text = typeof(LabelConfig.Text) == "string" and LabelConfig.Text or "Label"
-			local Label_XAlignment = typeof(LabelConfig.XAlignment) == "string" and LabelConfig.XAlignment or "Left"
-			local Label_RichText = typeof(LabelConfig.RichText) == "boolean" and LabelConfig.RichText or false
-			local Label_TextColor = typeof(LabelConfig.TextColor) == "Color3" and LabelConfig.TextColor or ThisTheme.ChipSet
-			local Label_Font = typeof(LabelConfig.Font) == "EnumItem" and LabelConfig.Font or Enum.Font.GothamSemibold
-			local Label_Visible = typeof(LabelConfig.Visible) ~= "boolean" and true or LabelConfig.Visible
+			Label_Opt.Text = CheckType(Label_Opt.Text, "string", "Label")
+			Label_Opt.TextColor = CheckType(Label_Opt.TextColor, "Color3", ThisTheme.ChipSet)
+			Label_Opt.TextXAlignment = CheckType(table.find({"Left", "Center"}, Label_Opt.TextXAlignment) and Label_Opt.TextXAlignment, "string", "Left")
+			Label_Opt.RichText = CheckType(Label_Opt.RichText, "boolean", false)
+			Label_Opt.Font = CheckType(Label_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			Label_Opt.Visible = CheckType(Label_Opt.Visible, "boolean", true)
 
-			local Label_MouseEnter = typeof(LabelConfig.MouseEnter) == "function" and LabelConfig.MouseEnter or nil
-			local Label_MouseLeave = typeof(LabelConfig.MouseLeave) == "function" and LabelConfig.MouseLeave or nil
+			Label_Opt.Menu = CheckType(Label_Opt.Menu, "table", {})
 
-			local Label_Menu = typeof(LabelConfig.Menu) == "table" and LabelConfig.Menu or {}
+			Label_Opt.MouseEnter = CheckType(Label_Opt.MouseEnter, "function", nil)
+			Label_Opt.MouseLeave = CheckType(Label_Opt.MouseLeave, "function", nil)
 
-			local LabelLibrary = {}
+			local Label_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
 			local LabelContainer = Objects:New("Round")
 			LabelContainer.Name = "Label"
-			LabelContainer.Visible = Label_Visible
+			LabelContainer.Visible = Label_Opt.Visible
 			LabelContainer.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
 			LabelContainer.ImageColor3 = ThisTheme.MainFrame
 			LabelContainer.Parent = PageContentFrame
 
 			local LabelContent = Objects:New("Label")
-			LabelContent.TextColor3 = Label_TextColor
-			LabelContent.Text = Label_Text
-            LabelContent.RichText = Label_RichText
+			LabelContent.TextColor3 = Label_Opt.TextColor
+			LabelContent.Text = Label_Opt.Text
+            LabelContent.RichText = Label_Opt.RichText
 			LabelContent.TextSize = 12
-			LabelContent.Font = Label_Font
+			LabelContent.Font = Label_Opt.Font
 			LabelContent.Size = UDim2.fromScale(1, 1) + UDim2.fromOffset(-5, 0)
 			LabelContent.Position = UDim2.fromOffset(5, 0)
 			LabelContent.TextWrapped = true
-			LabelContent.TextXAlignment = Enum.TextXAlignment[Label_XAlignment]
+			LabelContent.TextXAlignment = Enum.TextXAlignment[Label_Opt.TextXAlignment]
 			LabelContent.TextYAlignment = Enum.TextYAlignment.Center
             LabelContent.Parent = LabelContainer
 
-			if Label_MouseEnter then
-				local EnterConnection
-				EnterConnection = LabelContent.MouseEnter:Connect(function()
-					pcall(Label_MouseEnter, LabelLibrary, EnterConnection)
+			if Label_Opt.MouseEnter then
+				local Connection
+				Connection = LabelContent.MouseEnter:Connect(function()
+					Label_Opt.MouseEnter(Label_Data, Connection)
 				end)
 			end
 
-			if Label_MouseLeave then
-				local LeaveConnection
-				LeaveConnection = LabelContent.MouseLeave:Connect(function()
-					pcall(Label_MouseLeave, LabelLibrary, LeaveConnection)
+			if Label_Opt.MouseLeave then
+				local Connection
+				Connection = LabelContent.MouseLeave:Connect(function()
+					Label_Opt.MouseLeave(Label_Data, Connection)
 				end)
 			end
 
-            TryAddMenu(LabelContainer, Label_Menu, {
-				SetText = function(Text)
-					LabelContent.Text = typeof(Text) == "string" and Text or LabelContent.Text
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						Label_Opt.Text = CheckType(v, "string", Label_Opt.Text)
+
+						if #Label_Opt.Text > 0 then
+							LabelContent.Text = Label_Opt.Text
+
+							ChangedEvent:Fire(k, Label_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						Label_Opt.TextColor = CheckType(v, "Color3", Label_Opt.TextColor)
+
+						LabelContent.TextColor3 = Label_Opt.TextColor
+
+						ChangedEvent:Fire(k, Label_Opt.TextColor)
+					elseif k == "TextXAlignment" then
+						Label_Opt.TextXAlignment = CheckType(table.find({"Left", "Center"}, v) and v, "string", Label_Opt.TextXAlignment)
+
+						LabelContent.TextXAlignment = Label_Opt.TextXAlignment
+
+						ChangedEvent:Fire(k, Label_Opt.TextXAlignment)
+					elseif k == "RichText" then
+						Label_Opt.RichText = CheckType(v, "boolean", Label_Opt.RichText)
+
+						LabelContent.RichText = Label_Opt.RichText
+
+						ChangedEvent:Fire(k, Label_Opt.RichText)
+					elseif k == "Font" then
+						Label_Opt.Font = CheckType(v, "EnumItem", Label_Opt.Font)
+
+						LabelContent.Font = Label_Opt.Font
+
+						ChangedEvent:Fire(k, Label_Opt.Font)
+					elseif k == "Visible" then
+						Label_Opt.Visible = CheckType(v, "boolean", Label_Opt.Visible)
+
+						LabelContainer.Visible = Label_Opt.Visible
+
+						ChangedEvent:Fire(k, Label_Opt.Visible)
+					end
 				end,
-				GetText = function()
-					return Label_RichText and LabelContent.ContentText or LabelContent.Text
+				__index = function(t, k)
+					if k == "Text" then
+						return LabelContent.ContentText
+					elseif k == "TextColor" then
+						return Label_Opt.TextColor
+					elseif k == "TextXAlignment" then
+						return Label_Opt.TextXAlignment
+					elseif k == "RichText" then
+						return Label_Opt.RichText
+					elseif k == "Font" then
+						return Label_Opt.Font
+					elseif k == "Visible" then
+						return Label_Opt.Visible
+					elseif k == "Changed" then
+						return ChangedEvent
+					elseif k == "Destroy" then
+						return function()
+							LabelContainer:Destroy()
+						end
+					end
 				end,
-				SetAlignment = function(Alignment)
-					LabelContent.TextXAlignment = typeof(Alignment) == "string" and Enum.TextXAlignment[Alignment] or LabelContent.TextXAlignment
-				end,
-				GetAlignment = function()
-					return LabelContent.TextXAlignment.Name
-				end,
-				SetTextColor = function(TextColor)
-					LabelContent.TextColor3 = typeof(TextColor) == "Color3" and TextColor or LabelContent.TextColor3
-				end,
-				GetTextColor = function()
-					return LabelContent.TextColor3
-				end,
-				SetFont = function(Font)
-					LabelContent.Font = typeof(Font) == "EnumItem" and Font or LabelContent.Font
-				end,
-				GetFont = function()
-					return LabelContent.Font
-				end,
-				SetVisible = function(Visible)
-					LabelContainer.Visible = typeof(Visible) ~= "boolean" and LabelContainer.Visible or Visible
-				end,
-				GetVisible = function()
-					return LabelContainer.Visible
+				__call = function(Func, ...)
+					return Func(Func, ...)
 				end
-			})
+			}
 
-			function LabelLibrary:SetText(Text)
-				LabelContent.Text = typeof(Text) == "string" and Text or LabelContent.Text
-			end
+			TryAddMenu(LabelContainer, Label_Opt.Menu, setmetatable({}, Funcs))
 
-			function LabelLibrary:GetText()
-				return Label_RichText and LabelContent.ContentText or LabelContent.Text
-			end
-
-			function LabelLibrary:SetAlignment(Alignment)
-				LabelContent.TextXAlignment = typeof(Alignment) == "string" and Enum.TextXAlignment[Alignment] or LabelContent.TextXAlignment
-			end
-
-			function LabelLibrary:GetAlignment()
-				return LabelContent.TextXAlignment.Name
-			end
-
-			function LabelLibrary:SetTextColor(TextColor)
-				LabelContent.TextColor3 = typeof(TextColor) == "Color3" and TextColor or LabelContent.TextColor3
-			end
-
-			function LabelLibrary:GetTextColor()
-				return LabelContent.TextColor3
-			end
-
-			function LabelLibrary:SetFont(Font)
-				LabelContent.Font = typeof(Font) == "EnumItem" and Font or LabelContent.Font
-			end
-
-			function LabelLibrary:GetFont()
-				return LabelContent.Font
-			end
-
-			function LabelLibrary:SetVisible(Visible)
-				LabelContainer.Visible = typeof(Visible) ~= "boolean" and LabelContainer.Visible or Visible
-			end
-
-			function LabelLibrary:GetVisible()
-				return LabelContainer.Visible
-			end
-
-			function LabelLibrary:Destroy()
-				LabelContainer:Destroy()
-			end
-
-			return LabelLibrary
+			return setmetatable(Label_Data, Funcs)
 		end
 
-		function OptionLibrary:Button(ButtonConfig)
-			local NewButton, ButtonLabel, ButtonCallback = CreateNewButton(ButtonConfig, PageContentFrame)
+		function Tab_Data:Button(Button_Opt)
+			local NewButton, ButtonLabel, Funcs = CreateNewButton(Button_Opt, PageContentFrame)
 
-			local ButtonLibrary = {}
+			local Button_Data = {}
 
-			function ButtonLibrary:SetText(Text)
-				ButtonLabel.Text = typeof(Text) == "string" and Text or ButtonLabel.Text
-			end
-
-			function ButtonLibrary:GetText()
-				return ButtonLabel.RichText and LabelContent.ContentText or LabelContent.Text
-			end
-
-			function ButtonLibrary:SetTextColor(TextColor)
-				ButtonLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ButtonLabel.TextColor3
-			end
-
-			function ButtonLibrary:GetTextColor()
-				return ButtonLabel.TextColor3
-			end
-
-			function ButtonLibrary:SetFont(Font)
-				ButtonLabel.Font = typeof(Font) == "EnumItem" and Font or ButtonLabel.Font
-			end
-
-			function ButtonLibrary:GetFont()
-				return ButtonLabel.Font
-			end
-
-			function ButtonLibrary:SetVisible(Visible)
-				NewButton.Visible = typeof(Visible) ~= "boolean" and NewButton.Visible or Visible
-			end
-
-			function ButtonLibrary:GetVisible()
-				return NewButton.Visible
-			end
-
-			function ButtonLibrary:Click()
-				pcall(ButtonCallback, ButtonLibrary)
-			end
-
-			function ButtonLibrary:Destroy()
-				NewButton:Destroy()
-			end
-
-			return ButtonLibrary
+			return setmetatable(Button_Data, Funcs)
 		end
 
-		function OptionLibrary:Toggle(ToggleConfig)
-			ToggleConfig = typeof(ToggleConfig) == "table" and ToggleConfig or {}
+		function Tab_Data:Toggle(Toggle_Opt)
+			Toggle_Opt = CheckType(Toggle_Opt, "table", {})
 
-			local Toggle_Text = typeof(ToggleConfig.Text) == "string" and ToggleConfig.Text or "Toggle"
-			local Toggle_RichText = typeof(ToggleConfig.RichText) == "boolean" and ToggleConfig.RichText or false				local Toggle_TextColor = typeof(ToggleConfig.TextColor) == "Color3" and ToggleConfig.TextColor or ThisTheme.Toggle
-			local Toggle_Font = typeof(ToggleConfig.Font) == "EnumItem" and ToggleConfig.Font or Enum.Font.GothamSemibold
-			local Toggle_Visible = typeof(ToggleConfig.Visible) ~= "boolean" and true or ToggleConfig.Visible
-			local Toggle_Enabled = typeof(ToggleConfig.Enabled) == "boolean" and ToggleConfig.Enabled or false
-			local Toggle_Disable = typeof(ToggleConfig.Disable) ~= "boolean" and true or ToggleConfig.Disable
-			local Toggle_Callback = typeof(ToggleConfig.Callback) == "function" and ToggleConfig.Callback or function() end
+			Toggle_Opt.Text = CheckType(Toggle_Opt.Text, "string", "Toggle")
+			Toggle_Opt.TextColor = CheckType(Toggle_Opt.TextColor, "Color3", ThisTheme.Toggle)
+			Toggle_Opt.RichText = CheckType(Toggle_Opt.RichText, "boolean", false)
+			Toggle_Opt.Font = CheckType(Toggle_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			Toggle_Opt.Visible = CheckType(Toggle_Opt.Visible, "boolean", true)
+			Toggle_Opt.ReadOnly = CheckType(Toggle_Opt.ReadOnly, "boolean", false)
 
-			local Toggle_Menu = typeof(ToggleConfig.Menu) == "table" and ToggleConfig.Menu or {}
+			Toggle_Opt.Enabled = CheckType(Toggle_Opt.Enabled, "boolean", false)
+			Toggle_Opt.Disable = CheckType(Toggle_Opt.Disable, "boolean", true)
+			Toggle_Opt.Callback = CheckType(Toggle_Opt.Callback, "function", function() end)
 
-			local ToggleLibrary = {}
+			Toggle_Opt.Menu = CheckType(Toggle_Opt.Menu, "table", {})
+
+			local Toggle_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
 			local Toggle = Objects:New("SmoothButton")
 			Toggle.Name = "Toggle"
 			Toggle.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 			Toggle.ImageColor3 = ThisTheme.Toggle
 			Toggle.ImageTransparency = 1
-			Toggle.Visible = Toggle_Visible
+			Toggle.Visible = Toggle_Opt.Visible
 			Toggle.Parent = PageContentFrame
-			Toggle:SetAttribute("State", Toggle_Enabled)
 
 			local ToggleTracker = Objects:New("Round")
 			ToggleTracker.Name = "Tracker"
@@ -1610,11 +1822,11 @@ function Material:Load(Config)
 			DotShadow.Parent = Dot
 
             local ToggleLabel = Objects:New("Label")
-			ToggleLabel.Font = Toggle_Font
+			ToggleLabel.Font = Toggle_Opt.Font
 			ToggleLabel.TextSize = 14
-			ToggleLabel.Text = Toggle_Text
-            ToggleLabel.RichText = Toggle_RichText
-			ToggleLabel.TextColor3 = Toggle_TextColor
+			ToggleLabel.Text = Toggle_Opt.Text
+            ToggleLabel.RichText = Toggle_Opt.RichText
+			ToggleLabel.TextColor3 = Toggle_Opt.TextColor
 			ToggleLabel.TextTransparency = 1
 			ToggleLabel.ClipsDescendants = true
 			ToggleLabel.Parent = Toggle
@@ -1625,183 +1837,180 @@ function Material:Load(Config)
 			TweenService:Create(DotShadow, TweenInfo.new(0.5), {ImageTransparency = 0.5}):Play()
 			TweenService:Create(ToggleLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
-			TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
+			TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Opt.Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Opt.Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
 
 			Toggle.MouseButton1Down:Connect(function()
-				Toggle_Enabled = not Toggle_Enabled
+				if not Toggle_Opt.ReadOnly then
+					Toggle_Opt.Enabled = not Toggle_Opt.Enabled
 
-				Toggle:SetAttribute("State", Toggle_Enabled)
+					TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Opt.Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Opt.Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
+					CircleAnim(ToggleLabel, ThisTheme.ToggleAccent, ThisTheme.Toggle)
 
-				TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
-				CircleAnim(ToggleLabel, ThisTheme.ToggleAccent, ThisTheme.Toggle)
-				pcall(Toggle_Callback, Toggle:GetAttribute("State"), ToggleLibrary)
+					Toggle_Opt.Callback(Toggle_Opt.Enabled, Toggle_Data)
+
+					ChangedEvent:Fire("State", Toggle_Opt.Enabled)
+				end
 			end)
 
-			local Toggle_Connection
-            Toggle_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+			local Connection
+			Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 				if not NewInstance.Parent then
-					if Toggle_Disable then
-						if Toggle_Enabled then
-							Toggle_Enabled = false
-							pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
-							Toggle_Connection:Disconnect()
+					if Toggle_Opt.Disable then
+						if Toggle_Opt.Enabled then
+							Toggle_Opt.Enabled = false
+							Toggle_Opt.Callback(Toggle_Opt.Enabled, Toggle_Data)
+
+							Connection:Disconnect()
 						end
 					else
-						Toggle_Connection:Disconnect()
+						Connection:Disconnect()
 					end
 				end
 			end)
 
-			if Toggle_Enabled then
-				pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
+			if Toggle_Opt.Enabled and not Toggle_Opt.ReadOnly then
+				Toggle_Opt.Callback(Toggle_Opt.Enabled, Toggle_Data)
+
+				ChangedEvent:Fire("State", Toggle_Opt.Enabled)
 			end
 
-			local MenuAdded, MenuButton = TryAddMenu(Toggle, Toggle_Menu, {
-				SetText = function(Text)
-					ToggleLabel.Text = typeof(Text) == "string" and Text or ToggleLabel.Text
-				end,
-				GetText = function()
-					return Toggle_RichText and ToggleLabel.ContentText or ToggleLabel.Text
-				end,
-				SetTextColor = function(TextColor)
-					ToggleLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ToggleLabel.TextColor3
-				end,
-				GetTextColor = function()
-					return ToggleLabel.TextColor3
-				end,
-				SetFont = function(Font)
-					ToggleLabel.Font = typeof(Font) == "EnumItem" and Font or ToggleLabel.Font
-				end,
-				GetFont = function()
-					return ToggleLabel.Font
-				end,
-				SetVisible = function(Visible)
-					Toggle.Visible = typeof(Visible) ~= "boolean" and Toggle.Visible or Visible
-				end,
-				GetVisible = function()
-					return Toggle.Visible
-				end,
-				SetState = function(State)
-					Toggle_Enabled = typeof(State) ~= "boolean" and Toggle_Enabled or State
-					TweenService:Create(Dot, TweenInfo.new(0.15), {Position = ((Toggle_Enabled and UDim2.fromScale(1, 0.5)) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = (Toggle_Enabled and ThisTheme.Toggle) or ThisTheme.ToggleAccent}):Play()
-					pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
-				end,
-				GetState = function()
-					return Toggle_Enabled
-				end,
-				SetDisable = function(Disable)
-					Toggle_Disable = typeof(Disable) ~= "boolean" and Toggle_Disable or Disable
-				end,
-				GetDisable = function()
-					return Toggle_Disable
-				end
-			})
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						Toggle_Opt.Text = CheckType(v, "string", Toggle_Opt.Text)
 
-            if MenuAdded then
+						if #Toggle_Opt.Text > 0 then
+							ToggleLabel.Text = Toggle_Opt.Text
+
+							ChangedEvent:Fire(k, Toggle_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						Toggle_Opt.TextColor = CheckType(v, "Color3", Toggle_Opt.TextColor)
+
+						ToggleLabel.TextColor3 = Toggle_Opt.TextColor
+
+						ChangedEvent:Fire(k, Toggle_Opt.TextColor)
+					elseif k == "RichText" then
+						Toggle_Opt.RichText = CheckType(v, "boolean", Toggle_Opt.RichText)
+
+						ToggleLabel.RichText = Toggle_Opt.RichText
+
+						ChangedEvent:Fire(k, Toggle_Opt.RichText)
+					elseif k == "Font" then
+						Toggle_Opt.Font = CheckType(v, "EnumItem", Toggle_Opt.Font)
+
+						ToggleLabel.Font = Toggle_Opt.Font
+
+						ChangedEvent:Fire(k, Toggle_Opt.Font)
+					elseif k == "Visible" then
+						Toggle_Opt.Visible = CheckType(v, "boolean", Toggle_Opt.Visible)
+
+						Toggle.Visible = Toggle_Opt.Visible
+
+						ChangedEvent:Fire(k, Toggle_Opt.Visible)
+					elseif k == "ReadOnly" then
+						Toggle_Opt.ReadOnly = CheckType(v, "boolean", Toggle_Opt.ReadOnly)
+
+						ChangedEvent:Fire(k, Toggle_Opt.ReadOnly)
+					elseif k == "State" then
+						if not Toggle_Opt.ReadOnly then
+							local NewState = CheckType(v, "boolean", Toggle_Opt.Enabled)
+
+							if NewState ~= Toggle_Opt.Enabled then
+								Toggle_Opt.Enabled = NewState
+
+								TweenService:Create(Dot, TweenInfo.new(0.15), {Position = (Toggle_Opt.Enabled and UDim2.fromScale(1, 0.5) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = Toggle_Opt.Enabled and ThisTheme.Toggle or ThisTheme.ToggleAccent}):Play()
+								Toggle_Opt.Callback(Toggle_Opt.Enabled, Toggle_Data)
+
+								ChangedEvent:Fire(k, Toggle_Opt.Enabled)
+							end
+						end
+					elseif k == "Disable" then
+						Toggle_Opt.Disable = CheckType(v, "boolean", Toggle_Opt.Disable)
+
+						ChangedEvent:Fire(k, Toggle_Opt.Disable)
+					end
+				end,
+				__index = function(t, k)
+					if k == "Text" then
+						return ToggleLabel.ContentText
+					elseif k == "TextColor" then
+						return Toggle_Opt.TextColor
+					elseif k == "RichText" then
+						return Toggle_Opt.RichText
+					elseif k == "Font" then
+						return Toggle_Opt.Font
+					elseif k == "Visible" then
+						return Toggle_Opt.Visible
+					elseif k == "ReadOnly" then
+						return Toggle_Opt.ReadOnly
+					elseif k == "State" then
+						return Toggle_Opt.Enabled
+					elseif k == "Disable" then
+						return Toggle_Opt.Disable
+					elseif k == "Changed" then
+						return ChangedEvent
+					elseif k == "Destroy" then
+						return function()
+							Toggle:Destroy()
+
+							if Toggle_Opt.Enabled then
+								Toggle_Opt.Enabled = false
+
+								Toggle_Opt.Callback(Toggle_Opt.Enabled, Toggle_Data)
+							end
+						end
+					end
+				end,
+				__call = function(Func, ...)
+					Func(Func, ...)
+				end
+			}
+
+			local MenuAdded, MenuButton = TryAddMenu(Toggle, Toggle_Opt.Menu, setmetatable({}, Funcs))
+
+			if MenuAdded then
 				ToggleTracker.Position -= UDim2.fromOffset(15, 0)
 				MenuButton.ImageColor3 = ThisTheme.Toggle
 			end
 
-			function ToggleLibrary:SetText(Text)
-				ToggleLabel.Text = typeof(Text) == "string" and Text or ToggleLabel.Text
-			end
-
-			function ToggleLibrary:GetText()
-				return Toggle_RichText and ToggleLabel.ContentText or ToggleLabel.Text
-			end
-
-			function ToggleLibrary:SetTextColor(TextColor)
-				ToggleLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ToggleLabel.TextColor3
-			end
-
-			function ToggleLibrary:GetTextColor()
-				return ToggleLabel.TextColor3
-			end
-
-			function ToggleLibrary:SetFont(Font)
-				ToggleLabel.Font = typeof(Font) == "EnumItem" and Font or ToggleLabel.Font
-			end
-
-			function ToggleLibrary:GetFont()
-				return ToggleLabel.Font
-			end
-
-			function ToggleLibrary:SetVisible(Visible)
-				Toggle.Visible = typeof(Visible) ~= "boolean" and Toggle.Visible or Visible
-			end
-
-			function ToggleLibrary:GetVisible()
-				return Toggle.Visible
-			end
-
-			function ToggleLibrary:SetState(State)
-				Toggle_Enabled = typeof(State) ~= "boolean" and Toggle_Enabled or State
-				TweenService:Create(Dot, TweenInfo.new(0.15), {Position = ((Toggle_Enabled and UDim2.fromScale(1, 0.5)) or UDim2.fromScale(0, 0.5)) - UDim2.fromOffset(8, 8), ImageColor3 = (Toggle_Enabled and ThisTheme.Toggle) or ThisTheme.ToggleAccent}):Play()
-				pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
-			end
-
-			function ToggleLibrary:GetState()
-				return Toggle_Enabled
-			end
-
-			function ToggleLibrary:SetDisable(Disable)
-				Toggle_Disable = typeof(Disable) ~= "boolean" and Toggle_Disable or Disable
-			end
-
-			function ToggleLibrary:GetDisable()
-				return Toggle_Disable
-			end
-
-			function ToggleLibrary:GetStateChanged(Callback)
-				local Connection
-				Connection = Toggle:GetAttributeChangedSignal("State"):Connect(function()
-					pcall(Callback, Toggle:GetAttribute("State"), Connection)
-				end)
-			end
-
-			function ToggleLibrary:Destroy()
-				Toggle:Destroy()
-
-				if Toggle_Enabled then
-					Toggle_Enabled = false
-					pcall(Toggle_Callback, Toggle_Enabled, ToggleLibrary)
-				end
-			end
-
-			return ToggleLibrary
+			return setmetatable(Toggle_Data, Funcs)
 		end
 
-		function OptionLibrary:Slider(SliderConfig)
-			SliderConfig = typeof(SliderConfig) == "table" and SliderConfig or {}
+		function Tab_Data:Slider(Slider_Opt)
+			Slider_Opt = CheckType(Slider_Opt, "table", {})
 
-   			local Slider_Text = typeof(SliderConfig.Text) == "string" and SliderConfig.Text or "Slider"
-			local Slider_Visible = typeof(SliderConfig.Visible) ~= "boolean" and true or SliderConfig.Visible
-            local Slider_RichText = typeof(SliderConfig.RichText) == "boolean" and SliderConfig.RichText or false
-			local Slider_TextColor = typeof(SliderConfig.TextColor) == "Color3" and SliderConfig.TextColor or ThisTheme.SliderAccent
-			local Slider_Font = typeof(SliderConfig.Font) == "EnumItem" and SliderConfig.Font or Enum.Font.GothamSemibold
-            local Slider_Callback = typeof(SliderConfig.Callback) == "function" and SliderConfig.Callback or function() end
-            local Slider_Min = typeof(SliderConfig.Min) == "number" and SliderConfig.Min or 0
-            local Slider_Max = typeof(SliderConfig.Max) == "number" and SliderConfig.Max or 100
-            local Slider_Precision = typeof(SliderConfig.Precision) == "number" and SliderConfig.Precision or 0
+			Slider_Opt.Text = CheckType(Slider_Opt.Text, "string", "Slider")
+			Slider_Opt.TextColor = CheckType(Slider_Opt.TextColor, "Color3", ThisTheme.SliderAccent)
+			Slider_Opt.RichText = CheckType(Slider_Opt.RichText, "boolean", false)
+			Slider_Opt.Font = CheckType(Slider_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			Slider_Opt.Visible = CheckType(Slider_Opt.Visible, "boolean", true)
+			Slider_Opt.ReadOnly = CheckType(Slider_Opt.ReadOnly, "boolean", false)
 
-            local Slider_Menu = typeof(SliderConfig.Menu) == "table" and SliderConfig.Menu or {}
+			Slider_Opt.Min = CheckType(Slider_Opt.Min, "number", 0)
+			Slider_Opt.Max = CheckType(Slider_Opt.Max, "number", 100)
+			Slider_Opt.Default = math.clamp(CheckType(Slider_Opt.Default, "number", 50), Slider_Opt.Min, Slider_Opt.Max)
+			Slider_Opt.Precision = CheckType(Slider_Opt.Precision, "number", 0)
+			Slider_Opt.Callback = CheckType(Slider_Opt.Callback, "function", function() end)
 
-			local SliderLibrary = {}
+			Slider_Opt.Menu = CheckType(Slider_Opt.Menu, "table", {})
 
-            if Slider_Min > Slider_Max then
-                local Value_Before = Slider_Min
-                Slider_Min, Slider_Max = Slider_Max, Value_Before
-            end
+			local Slider_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
-			local SliderDefault = typeof(SliderConfig.Default) == "number" and math.clamp(SliderConfig.Default, Slider_Min, Slider_Max) or math.clamp(50, Slider_Min, Slider_Max)
-            local DefaultScale = (SliderDefault - Slider_Min) / (Slider_Max - Slider_Min)
+			if Slider_Opt.Min > Slider_Opt.Max then
+				local Before = Slider_Opt.Min
+				Slider_Opt.Min, Slider_Opt.Max = Slider_Opt.Max, Before
+			end
+
+			local DefaultScale = Slider_Opt.ReadOnly and 0 or (Slider_Opt.Default - Slider_Opt.Min) / (Slider_Opt.Max - Slider_Opt.Min)
 
 			local Slider = Objects:New("Round")
             Slider.Name = "Slider"
             Slider.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 35)
             Slider.ImageColor3 = ThisTheme.Slider
             Slider.ImageTransparency = 1
-			Slider.Visible = Slider_Visible
+			Slider.Visible = Slider_Opt.Visible
             Slider.Parent = PageContentFrame
 
             local SliderShadow = Objects:New("Shadow")
@@ -1810,24 +2019,24 @@ function Material:Load(Config)
             SliderShadow.Parent = Slider
 
             local SliderTitle = Objects:New("Label")
-            SliderTitle.TextColor3 = Slider_TextColor
-            SliderTitle.Text = Slider_Text
+            SliderTitle.TextColor3 = Slider_Opt.TextColor
+            SliderTitle.Text = Slider_Opt.Text
             SliderTitle.TextSize = 14
-            SliderTitle.RichText = Slider_RichText
-            SliderTitle.Font = Slider_Font
+            SliderTitle.RichText = Slider_Opt.RichText
+            SliderTitle.Font = Slider_Opt.Font
             SliderTitle.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-5, 25)
             SliderTitle.TextTransparency = 1
             SliderTitle.Parent = Slider
 
             local SliderValue = Objects:New("Label")
-            SliderValue.Text = tostring(SliderDefault)
-            SliderValue.TextColor3 = Slider_TextColor
+            SliderValue.Text = Slider_Opt.ReadOnly and "0" or tostring(Slider_Opt.Default)
+            SliderValue.TextColor3 = Slider_Opt.TextColor
             SliderValue.TextTransparency = 1
             SliderValue.TextSize = 14
             SliderValue.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(-5, 25)
             SliderValue.Position = UDim2.fromScale(0, 0)
             SliderValue.TextXAlignment = Enum.TextXAlignment.Right
-            SliderValue.Font = Slider_Font
+            SliderValue.Font = Slider_Opt.Font
             SliderValue.Parent = Slider
 
             local SliderTracker = Objects:New("Frame")
@@ -1843,13 +2052,12 @@ function Material:Load(Config)
             SliderFill.Size = UDim2.fromScale(DefaultScale, 1)
             SliderFill.Parent = SliderTracker
 
-			local Min_Size = 10
-            local Max_Size = 36
+			local MinSize, MaxSize = 10, 36
 
-            local SizeFromScale = (Min_Size + (Max_Size - Min_Size)) * DefaultScale
-            SizeFromScale -= SizeFromScale % 2
+			local SizeFromScale = (Slider_Opt.Min + (MaxSize - MinSize)) * DefaultScale
+            SizeFromScale = SizeFromScale - SizeFromScale % 2
 
-            local SliderDot = Objects:New("CircleButton")
+			local SliderDot = Objects:New("CircleButton")
             SliderDot.Size = UDim2.fromOffset(10, 10)
             SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(5, 5)
             SliderDot.ImageColor3 = ThisTheme.SliderAccent
@@ -1874,208 +2082,182 @@ function Material:Load(Config)
             TweenService:Create(SliderDot, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
 
 			SliderDot.MouseButton1Down:Connect(function()
-                TweenService:Create(SliderFadedDot, TweenInfo.new(0.15), {ImageTransparency = 0.8}):Play()
-                local MouseMove, MouseKill
+				if not Slider_Opt.ReadOnly then
+					TweenService:Create(SliderFadedDot, TweenInfo.new(0.15), {ImageTransparency = 0.8}):Play()
+					
+					local MouseMove, MouseKill
 
-                MouseMove = Mouse.Move:Connect(function()
-					local Px = GetXY(SliderTracker)
-					SizeFromScale = (Min_Size +  (Max_Size - Min_Size)) * Px
-					local Power = 10 ^ Slider_Precision
-					local Value = math.floor((Slider_Min + ((Slider_Max - Slider_Min) * Px)) * Power) / Power
+					MouseMove = Mouse.Move:Connect(function()
+						local Px = GetXY(SliderTracker)
+						SizeFromScale = (Slider_Opt.Min + (MaxSize - MinSize)) * Px
+						
+						local Power = 10 ^ Slider_Opt.Precision
+						local Value = math.floor((Slider_Opt.Min + ((Slider_Opt.Max - Slider_Opt.Min) * Px)) * Power) / Power
 
-					SizeFromScale = SizeFromScale - (SizeFromScale % 2)
-					TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(Px, 0.5) - UDim2.fromOffset(5, 5)}):Play()
-					TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(Px, 1)}):Play()
+						SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+						TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(Px, 0.5) - UDim2.fromOffset(5, 5)}):Play()
+						TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(Px, 1)}):Play()
 
-					SliderFadedDot.Size = UDim2.fromOffset(SizeFromScale, SizeFromScale)
-					SliderFadedDot.Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
-					SliderValue.Text = tostring(Value)
-					pcall(Slider_Callback, Value, SliderLibrary)
-                end)
+						SliderFadedDot.Size = UDim2.fromOffset(SizeFromScale, SizeFromScale)
+						SliderFadedDot.Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
+						SliderValue.Text = tostring(Value)
 
-                MouseKill = UserInputService.InputEnded:Connect(function(Input)
-                    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-                        TweenService:Create(SliderFadedDot, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
-                        MouseMove:Disconnect()
-                        MouseKill:Disconnect()
-                    end
-                end)
-            end)
+						Slider_Opt.Callback(Value, Slider_Data)
 
-			local MenuAdded, MenuButton = TryAddMenu(Slider, Slider_Menu, {
-				SetText = function(Text)
-					SliderTitle.Text = typeof(Text) == "string" and Text or SliderTitle.Text
-				end,
-				GetText = function()
-					return Slider_RichText and SliderTitle.ContentText or SliderTitle.Text
-				end,
-				SetTextColor = function(TextColor)
-					SliderTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or SliderTitle.TextColor3
-				end,
-				GetTextColor = function()
-					return SliderTitle.TextColor3
-				end,
-				SetFont = function(Font)
-					SliderTitle.Font = typeof(Font) == "EnumItem" and Font or SliderTitle.Font
-				end,
-				GetFont = function()
-					return SliderTitle.Font
-				end,
-				SetVisible = function(Visible)
-					Slider.Visible = typeof(Visible) ~= "boolean" and Slider.Visible or Visible
-				end,
-				GetVisible = function()
-					return Slider.Visible
-				end,
-				SetMin = function(Min)
-					Slider_Min = typeof(Min) == "number" and Min or Slider_Min
-					SliderDefault = math.clamp(SliderConfig.Default, Slider_Min, Slider_Max) or math.clamp(50, Slider_Min, Slider_Max)
-					DefaultScale =  (SliderDefault - Slider_Min) / (Slider_Max - Slider_Min)
+						ChangedEvent:Fire("Value", Value)
+					end)
 
-					SizeFromScale -= (SizeFromScale % 2)
-					SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
-				end,
-				GetMin = function()
-					return Slider_Min
-				end,
-				SetMax = function(Max)
-					Slider_Max = typeof(Max) == "number" and Max or Slider_Max
-					SliderDefault = math.clamp(SliderConfig.Def, Slider_Min, Slider_Max) or math.clamp(50, Slider_Min, Slider_Max)
-					DefaultScale =  (SliderDefault - Slider_Min) / (Slider_Max - Slider_Min)
-
-					SizeFromScale -= (SizeFromScale % 2)
-					SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
-				end,
-				GetMax = function()
-					return Slider_Max
-				end,
-				SetValue = function(Value)
-					Value = typeof(Value) == "number" and math.clamp(Value, Slider_Min, Slider_Max)
-
-					DefaultScale = (Value - Slider_Min) / (Slider_Max - Slider_Min)
-					TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(5, 5)}):Play()
-					TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(DefaultScale, 1)}):Play()
-
-					SliderValue.Text = Value
-					pcall(Slider_Callback, Value, SliderLibrary)
-				end,
-				GetValue = function()
-					return tonumber(SliderValue.Text)
+					MouseKill = UserInputService.InputEnded:Connect(function(Input)
+						if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType.Touch then
+							TweenService:Create(SliderFadedDot, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+							MouseMove:Disconnect()
+							MouseKill:Disconnect()
+						end
+					end)
 				end
-            })
+			end)
 
-            if MenuAdded then
-                SliderValue.Position = SliderValue.Position - UDim2.fromOffset(25, 0)
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						Slider_Opt.Text = CheckType(v, "string", Slider_Opt.Text)
+
+						SliderTitle.Text = Slider_Opt.Text
+
+						ChangedEvent:Fire(k, Slider_Opt.Text)
+					elseif k == "TextColor" then
+						Slider_Opt.TextColor = CheckType(v, "Color3", Slider_Opt.TextColor)
+
+						SliderTitle.TextColor3 = Slider_Opt.TextColor
+						SliderValue.TextColor3 = Slider_Opt.TextColor
+
+						ChangedEvent:Fire(k, Slider_Opt.TextColor)
+					elseif k == "RichText" then
+						Slider_Opt.RichText = CheckType(v, "boolean", Slider_Opt.RichText)
+
+						SliderTitle.RichText = Slider_Opt.RichText
+
+						ChangedEvent:Fire(k, Slider_Opt.RichText)
+					elseif k == "Font" then
+						Slider_Opt.Font = CheckType(v, "EnumItem", Slider_Opt.Font)
+
+						SliderTitle.Font = Slider_Opt.Font
+						SliderValue.Font = Slider_Opt.Font
+
+						ChangedEvent:Fire(k, Slider_Opt.Font)
+					elseif k == "Visible" then
+						Slider_Opt.Visible = CheckType(v, "boolean", Slider_Opt.Visible)
+						
+						Slider.Visible = Slider_Opt.Visible
+
+						ChangedEvent:Fire(k, Slider_Opt.Visible)
+					elseif k == "ReadOnly" then
+						Slider_Opt.ReadOnly = CheckType(Slider_Opt.ReadOnly, "boolean", Slider_Opt.ReadOnly)
+					elseif k == "Min" then
+						Slider_Opt.Min = CheckType(v, "number", Slider_Opt.Min)
+
+						SliderDefault = math.clamp(Slider_Opt.Default, Slider_Opt.Min, Slider_Opt.Max) or math.clamp(50, Slider_Opt.Min, Slider_Opt.Max)
+						DefaultScale =  (Slider_Opt.Default - Slider_Opt.Min) / (Slider_Opt.Max - Slider_Opt.Min)
+
+						SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+						SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
+
+						ChangedEvent:Fire(k, Slider_Opt.Min)
+					elseif k == "Max" then
+						Slider_Opt.Max = CheckType(v, "number", Slider_Opt.Max)
+
+						SliderDefault = math.clamp(Slider_Opt.Default, Slider_Opt.Min, Slider_Opt.Max) or math.clamp(50, Slider_Opt.Min, Slider_Opt.Max)
+						DefaultScale =  (Slider_Opt.Default - Slider_Opt.Min) / (Slider_Opt.Max - Slider_Opt.Min)
+
+						SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+						SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
+
+						ChangedEvent:Fire(k, Slider_Opt.Max)
+					elseif k == "Value" then
+						if not Slider_Opt.ReadOnly then
+							v = math.clamp(CheckType(v, "number", tonumber(SliderValue)), Slider_Opt.Min, Slider_Opt.Max)
+
+							DefaultScale = (v - Slider_Opt.Min) / (Slider_Opt.Max - Slider_Opt.Min)
+							TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(5, 5)}):Play()
+							TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(DefaultScale, 1)}):Play()
+
+							SliderValue.Text = tostring(v)
+							Slider_Opt.Callback(v, Slider_Data)
+
+							ChangedEvent:Fire(k, v)
+						end
+					end
+				end,
+				__index = function(t, k, v)
+					if k == "Text" then
+						return SliderTitle.ContentText
+					elseif k == "TextColor" then
+						return Slider_Opt.TextColor
+					elseif k == "RichText" then
+						return Slider_Opt.RichText
+					elseif k == "Font" then
+						return Slider_Opt.Font
+					elseif k == "Visible" then
+						return Slider_Opt.Visible
+					elseif k == "ReadOnly" then
+						return Slider_Opt.ReadOnly
+					elseif k == "Min" then
+						return Slider_Opt.Min
+					elseif k == "Max" then
+						return Slider_Opt.Max
+					elseif k == "Value" then
+						return tonumber(SliderValue.Text)
+					elseif k == "Destroy" then
+						return function()
+							Slider:Destroy()
+						end
+					elseif k == "Changed" then
+						return ChangedEvent
+					end
+				end,
+				__call = function(Func, ...)
+					Func(Func, ...)
+				end
+			}
+
+			local MenuAdded, MenuButton = TryAddMenu(Slider, Slider_Opt.Menu, setmetatable({}, Funcs))
+
+			if MenuAdded then
+				SliderValue.Position = SliderValue.Position - UDim2.fromOffset(25, 0)
                 SliderTracker.Size = SliderTracker.Size - UDim2.fromOffset(20, 0)
                 MenuButton.ImageColor3 = ThisTheme.SliderAccent
-            end
-
-			function SliderLibrary:SetText(Text)
-				SliderTitle.Text = typeof(Text) == "string" and Text or SliderTitle.Text
 			end
 
-			function SliderLibrary:GetText()
-				return Slider_RichText and SliderTitle.ContentText or SliderTitle.Text
-			end
-
-			function SliderLibrary:SetTextColor(TextColor)
-				SliderTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or SliderTitle.TextColor3
-			end
-
-			function SliderLibrary:GetTextColor()
-				return SliderTitle.TextColor3
-			end
-
-			function SliderLibrary:SetFont(Font)
-				SliderTitle.Font = typeof(Font) == "EnumItem" and Font or SliderTitle.Font
-			end
-
-			function SliderLibrary:GetFont()
-				return SliderTitle.Font
-			end
-
-			function SliderLibrary:SetVisible(Visible)
-				Slider.Visible = typeof(Visible) ~= "boolean" and Slider.Visible or Visible
-			end
-
-			function SliderLibrary:GetVisible()
-				return Slider.Visible
-			end
-
-			function SliderLibrary:SetMin(Min)
-				Slider_Min = typeof(Min) == "number" and Min or Slider_Min
-				SliderDefault = math.clamp(SliderConfig.Default, Slider_Min, Slider_Max) or math.clamp(50, Slider_Min, Slider_Max)
-				DefaultScale =  (SliderDefault - Slider_Min) / (Slider_Max - Slider_Min)
-
-				SizeFromScale -= (SizeFromScale % 2)
-				SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
-			end
-
-			function SliderLibrary:GetMin()
-				return Slider_Min
-			end
-
-			function SliderLibrary:SetMax(Max)
-				Slider_Max = typeof(Max) == "number" and Max or Slider_Max
-				SliderDefault = math.clamp(SliderConfig.Def, Slider_Min, Slider_Max) or math.clamp(50, Slider_Min, Slider_Max)
-				DefaultScale =  (SliderDefault - Slider_Min) / (Slider_Max - Slider_Min)
-
-				SizeFromScale -= (SizeFromScale % 2)
-				SliderDot.Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(SizeFromScale / 2, SizeFromScale / 2)
-			end
-
-			function SliderLibrary:GetMax()
-				return Slider_Max
-			end
-
-			function SliderLibrary:SetValue(Value)
-				Value = typeof(Value) == "number" and math.clamp(Value, Slider_Min, Slider_Max)
-
-				DefaultScale = (Value - Slider_Min) / (Slider_Max - Slider_Min)
-				TweenService:Create(SliderDot, TweenInfo.new(0.15), {Position = UDim2.fromScale(DefaultScale, 0.5) - UDim2.fromOffset(5, 5)}):Play()
-				TweenService:Create(SliderFill, TweenInfo.new(0.15), {Size = UDim2.fromScale(DefaultScale, 1)}):Play()
-
-				SliderValue.Text = Value
-				pcall(Slider_Callback, Value, SliderLibrary)
-			end
-
-			function SliderLibrary:GetValue()
-				return tonumber(SliderValue.Text)
-			end
-
-			function SliderLibrary:Destroy()
-				Slider:Destroy()
-			end
-
-			return SliderLibrary
+			return setmetatable(Slider_Data, Funcs)
 		end
 
-		function OptionLibrary:Dropdown(DropdownConfig)
-			DropdownConfig = typeof(DropdownConfig) == "table" and DropdownConfig or {}
+		function Tab_Data:Dropdown(Dropdown_Opt)
+			Dropdown_Opt = CheckType(Dropdown_Opt, "table", {})
 
-			local Dropdown_Text = typeof(DropdownConfig.Text) == "string" and DropdownConfig.Text or "Dropdown"
-			local Dropdown_XAlignment = typeof(DropdownConfig.XAlignment) == "string" and DropdownConfig.XAlignment ~= "Right" and DropdownConfig.XAlignment or "Left"
-			local Dropdown_TextColor = typeof(DropdownConfig.TextColor) == "Color3" and DropdownConfig.TextColor or ThisTheme.DropdownAccent
-			local Dropdown_Font = typeof(DropdownConfig.Font) == "EnumItem" and DropdownConfig.Font or Enum.Font.GothamSemibold
-			local Dropdown_Visible = typeof(DropdownConfig.Visible) ~= "boolean" and true or DropdownConfig.Visible
-			local Dropdown_Hide = typeof(DropdownConfig.Hide) ~= "boolean" and true or DropdownConfig.Hide
-			local Dropdown_Options = typeof(DropdownConfig.Options) == "table" and DropdownConfig.Options or {}
-			local Dropdown_Default = typeof(DropdownConfig.Default) == "string" and table.find(Dropdown_Options, DropdownConfig.Default) and DropdownConfig.Default or ""
-			local Dropdown_Search = typeof(DropdownConfig.Search) == "boolean" and DropdownConfig.Search or false
-			local Dropdown_Callback = typeof(DropdownConfig.Callback) == "function" and DropdownConfig.Callback or function() end
+			Dropdown_Opt.Text = CheckType(Dropdown_Opt.Text, "string", "Dropdown")
+			Dropdown_Opt.TextColor = CheckType(Dropdown_Opt.TextColor, "Color3", ThisTheme.DropdownAccent)
+			Dropdown_Opt.TextXAlignment = CheckType(table.find({"Left", "Right"}, Dropdown_Opt.TextXAlignment), "string", "Left")
+			Dropdown_Opt.RichText = CheckType(Dropdown_Opt.RichText, "boolean", false)
+			Dropdown_Opt.Font = CheckType(Dropdown_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			Dropdown_Opt.Visible = CheckType(Dropdown_Opt.Visible, "boolean", true)
+			Dropdown_Opt.ReadOnly = CheckType(Dropdown_Opt.ReadOnly, "boolean", false)
 
-			local Dropdown_Menu = typeof(DropdownConfig.Menu) == "table" and DropdownConfig.Menu or {}
+			Dropdown_Opt.Hide = CheckType(Dropdown_Opt.Hide, "boolean", true)
+			Dropdown_Opt.Options = CheckType(Dropdown_Opt.Options, "table", {})
+			Dropdown_Opt.Default = CheckType(table.find(Dropdown_Opt.Options, Dropdown_Opt.Default), "string", "")
+			Dropdown_Opt.Search = CheckType(Dropdown_Opt.Search, "boolean", false)
+			Dropdown_Opt.Callback = CheckType(Dropdown_Opt.Callback, "function", function() end)
 
-			local DropdownLibrary = {}
+			Dropdown_Opt.Menu = CheckType(Dropdown_Opt.Menu, "table", {})
+
+			local Dropdown_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
 			local Dropdown = Objects:New("Frame")
 			Dropdown.Name = "Dropdown"
 			Dropdown.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-			Dropdown.Visible = Dropdown_Visible
+			Dropdown.Visible = Dropdown_Opt.Visible
 			Dropdown.Parent = PageContentFrame
-
-			Dropdown:SetAttribute("Title", Dropdown_Text)
-			Dropdown:SetAttribute("Option", Dropdown_Default)
 
 			local DropdownBar = Objects:New("Round")
 			DropdownBar.Name = "TitleBar"
@@ -2086,10 +2268,10 @@ function Material:Load(Config)
 
             local DropdownTitle = Objects:New("Button")
 			DropdownTitle.Name = "Title"
-			DropdownTitle.Font = Dropdown_Font
-			DropdownTitle.TextXAlignment = Dropdown_XAlignment
-			DropdownTitle.Text = ("%s: %s"):format(Dropdown_Text, Dropdown_Default)
-			DropdownTitle.TextColor3 = Dropdown_TextColor
+			DropdownTitle.Font = Dropdown_Opt.Font
+			DropdownTitle.TextXAlignment = Dropdown_Opt.TextXAlignment
+			DropdownTitle.Text = ("%s: %s"):format(Dropdown_Opt.Text, Dropdown_Opt.Default)
+			DropdownTitle.TextColor3 = Dropdown_Opt.TextColor
 			DropdownTitle.TextTransparency = 1
 			DropdownTitle.TextSize = 14
 			DropdownTitle.Parent = DropdownBar
@@ -2124,11 +2306,11 @@ function Material:Load(Config)
 			DropdownContent.ClipsDescendants = true
 			DropdownContent.Parent = Dropdown
 
-            local DropToggle = false
-            local NumberOfOptions = table.maxn(Dropdown_Options) + (Dropdown_Search and 1 or 0)
-            local Dropdown_Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (NumberOfOptions * 20) + ((NumberOfOptions - 1) * 5))
+			local DropToggle = false
+			local NumberOfOptions = #Dropdown_Opt.Options + (Dropdown_Opt.Search and 1 or 0)
+			local DropdownSize = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (NumberOfOptions * 20) + ((NumberOfOptions - 1) * 5))
 
-            local DropdownList = Objects:New("UIListLayout")
+			local DropdownList = Objects:New("UIListLayout")
 			DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
 			DropdownList.Padding = UDim.new(0, 5)
 			DropdownList.Parent = DropdownContent
@@ -2136,7 +2318,7 @@ function Material:Load(Config)
             DropdownList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 				if DropToggle then
 					DropdownContent.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, DropdownList.AbsoluteContentSize.Y)
-					Dropdown_Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, DropdownList.AbsoluteContentSize.Y)
+					DropdownSize = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, DropdownList.AbsoluteContentSize.Y)
 				end
 			end)
 
@@ -2145,7 +2327,7 @@ function Material:Load(Config)
 			Search.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
 			Search.ImageColor3 = ThisTheme.TextField
 			Search.ImageTransparency = 0.8
-			Search.Visible = Dropdown_Search
+			Search.Visible = Dropdown_Opt.Search
 			Search.Parent = DropdownContent
 
 			local SearchInput = Objects:New("Box")
@@ -2171,311 +2353,282 @@ function Material:Load(Config)
 			end)
 
 			SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
-				for _,v in ipairs(DropdownContent:GetChildren()) do
+				for _, v in ipairs(DropdownContent:GetDescendants()) do
 					if v.Name == "Button" then
 						if SearchInput.Text ~= "" then
-							if v.TextLabel.Text:lower():match(SearchInput.Text:lower()) then
-								v.ImageTransparency = 0
-								v.LayoutOrder = 1
+							if v.TextLabel.Text:lower():find(SearchInput:lower()) then
+								v.Visible = true
 							else
-								v.ImageTransparency = 0.55
-								v.LayoutOrder = 2
+								v.Visible = false
 							end
 						else
-							v.ImageTransparency = 0
-							v.LayoutOrder = 0
+							v.Visible = true
 						end
 					end
 				end
 			end)
 
-			for _, Value in pairs(Dropdown_Options) do
+			for _,v in ipairs(Dropdown_Opt.Options) do
 				local NewButton = CreateNewButton({
-					Text = Value
+					Text = v
 				}, DropdownContent)
 
 				NewButton.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
 				NewButton.MouseButton1Down:Connect(function()
-					if NewButton.ImageTransparency == 0 then
-						DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
-						SearchInput.Text = ""
+					if not Dropdown_Opt.ReadOnly then
+						if NewButton.ImageTransparency == 0 then
+							DropdownTitle.Text = ("%s: %s"):format(Dropdown_Opt.Text, v)
+							SearchInput.Text = ""
 
-						if Dropdown_Hide then
-							TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = 0}):Play()
-							TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0)}):Play()
-							TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+							if Dropdown_Opt.Hide then
+								TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = 0}):Play()
+								TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0)}):Play()
+								TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+							end
+
+							Dropdown_Opt.Callback(v, Dropdown_Data)
+
+							ChangedEvent:Fire("Option", v)
 						end
-
-						pcall(Dropdown_Callback, Value)
-						Dropdown:SetAttribute("Option", Value)
 					end
 				end)
 			end
 
-            DropdownTitle.MouseButton1Down:Connect(function()
-				DropToggle = not DropToggle
+			DropdownTitle.MouseButton1Down:Connect(function()
+				if not Dropdown_Opt.ReadOnly then
+					DropToggle = not DropToggle
 
-				TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
-				TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and Dropdown_Size or UDim2.fromScale(1, 0)}):Play()
-				TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (Dropdown_Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+					TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
+					TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and DropdownSize or UDim2.fromScale(1, 0)}):Play()
+					TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (DropdownSize + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+				else
+					TabLibrary:Banner({
+						Text = "This is read-only!",
+						Duration = 3
+					})
+				end
 			end)
 
-            local MenuAdded, MenuButton = TryAddMenu(DropdownBar, Dropdown_Menu, {
-				SetText = function(Text)
-					Text = typeof(Text) == "string" and Text or Dropdown:GetAttribute("Title")
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						Dropdown_Opt.Text = CheckType(v, "string", Dropdown_Opt.Text)
 
-					DropdownTitle.Text = ("%s: %s"):format(Text, Dropdown:GetAttribute("Option"))
-					Dropdown:SetAttribute("Title", Text)
-				end,
-				GetText = function()
-					return Dropdown:GetAttribute("Title")
-				end,
-				SetAlignment = function(Alignment)
-					DropdownTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or DropdownTitle.TextXAlignment
-				end,
-				GetAlignment = function()
-					return DropdownTitle.TextXAlignment.Name
-				end,
-				SetTextColor = function(TextColor)
-					DropdownTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or DropdownTitle.TextColor3
-				end,
-				GetTextColor = function()
-					return DropdownTitle.TextColor3
-				end,
-				SetFont = function(Font)
-					DropdownTitle.Font = typeof(Font) == "EnumItem" and Font or DropdownTitle.Font
-				end,
-				GetFont = function()
-					return DropdownTitle.Font
-				end,
-				SetVisible = function(Visible)
-					Dropdown.Visible = typeof(Visible) ~= "boolean" and Dropdown.Visible or Visible
-				end,
-				GetVisible = function()
-					return Dropdown.Visible
-				end,
-				GetOptions = function()
-					return Dropdown_Options
-				end,
-				SetOption = function(Option)
-					Option = typeof(Option) == "string" and Option or Dropdown:GetAttribute("Option")
+						if #Dropdown_Opt.Text > 0 then
+							DropdownTitle.Text = DropdownTitle.Text:gsub(DropdownTitle:match("^(.-):"), Dropdown_Opt.Text)
 
-					if table.find(Dropdown_Options, Option) or Option == "" then
-						DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Option)
-						Dropdown:SetAttribute("Option", Option)
+							ChangedEvent:Fire(k, Dropdown_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						Dropdown_Opt.TextColor = CheckType(v, "Color3", Dropdown_Opt.TextColor)
 
-						if Option ~= "" then
-							pcall(Dropdown_Callback, Option)
+						DropdownTitle.TextColor3 = Dropdown_Opt.TextColor
+
+						ChangedEvent:Fire(k, Dropdown_Opt.TextColor)
+					elseif k == "TextXAlignment" then
+						Dropdown_Opt.TextXAlignment = CheckType(table.find({"Left", "Right"}, v), "string", Dropdown_Opt.TextXAlignment)
+					elseif k == "RichText" then
+						Dropdown_Opt.RichText = CheckType(v, "boolean", Dropdown_Opt.RichText)
+
+						DropdownTitle.RichText = Dropdown_Opt.RichText
+
+						ChangedEvent:Fire(k, Dropdown_Opt.RichText)
+					elseif k == "Font" then
+						Dropdown_Opt.Font = CheckType(v, "EnumItem", Dropdown_Opt.Font)
+
+						DropdownTitle.Font = Dropdown_Opt.Font
+
+						ChangedEvent:Fire(k, Dropdown_Opt.Font)
+					elseif k == "Visible" then
+						Dropdown_Opt.Visible = CheckType(v, "boolean", Dropdown_Opt.Visible)
+
+						Dropdown.Visible = Dropdown_Opt.Visible
+
+						ChangedEvent:Fire(k, Dropdown_Opt.Visible)
+					elseif k == "ReadOnly" then
+						Dropdown_Opt.ReadOnly = CheckType(v, "boolean", Dropdown_Opt.ReadOnly)
+					elseif k == "Hide" then
+						Dropdown_Opt.Hide = CheckType(v, "boolean", Dropdown_Opt.Hide)
+
+						ChangedEvent:Fire(k, Dropdown_Opt.Hide)
+					elseif k == "Options" then
+						if not Dropdown_Opt.ReadOnly then
+							Dropdown_Opt.Options = CheckType(v, "table", Dropdown_Opt.Options)
+							NumberOfOptions = #Dropdown_Opt.Options + (Dropdown_Opt.Search and 1 or 0)
+							DropdownSize = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (NumberOfOptions * 20) + ((NumberOfOptions - 1) * 5))
+
+							if DropdownContent then
+								DropdownContent:Destroy()
+							end
+
+							TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (DropdownSize + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+
+							DropdownContent = Objects:New("Frame")
+							DropdownContent.Name = "Content"
+							DropdownContent.Size = (DropToggle and DropdownSize) or UDim2.fromScale(1, 0)
+							DropdownContent.Position = UDim2.fromOffset(0, 35)
+							DropdownContent.ClipsDescendants = true
+							DropdownContent.Parent = Dropdown
+
+							DropdownList = Objects:New("UIListLayout")
+							DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
+							DropdownList.Padding = UDim.new(0, 5)
+							DropdownList.Parent = DropdownContent
+
+							Search = Objects:New("Round")
+							Search.Name = "SearchBar"
+							Search.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
+							Search.ImageColor3 = ThisTheme.TextField
+							Search.ImageTransparency = 0.8
+							Search.Visible = Dropdown_Opt.Search
+							Search.Parent = DropdownContent
+
+							SearchInput = Objects:New("Box")
+							SearchInput.Name = "Value"
+							SearchInput.PlaceholderText = "Search..."
+							SearchInput.PlaceholderColor3 = ThisTheme.TextFieldAccent
+							SearchInput.TextColor3 = ThisTheme.TextFieldAccent
+							SearchInput.Text = ""
+							SearchInput.Font = Enum.Font.GothamSemibold
+							SearchInput.TextSize = 14
+							SearchInput.TextTransparency = 0.5
+							SearchInput.TextTruncate = Enum.TextTruncate.AtEnd
+							SearchInput.Parent = Search
+
+							SearchInput.Focused:Connect(function()
+								TweenService:Create(Search, TweenInfo.new(0.5), {ImageTransparency = 0.7}):Play()
+								TweenService:Create(SearchInput, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+							end)
+
+							SearchInput.FocusLost:Connect(function()
+								TweenService:Create(Search, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
+								TweenService:Create(SearchInput, TweenInfo.new(0.5), {TextTransparency = 0.5}):Play()
+							end)
+
+							SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
+								for _, v in ipairs(DropdownContent:GetDescendants()) do
+									if v.Name == "Button" then
+										if SearchInput.Text ~= "" then
+											if v.TextLabel.Text:lower():find(SearchInput:lower()) then
+												v.Visible = true
+											else
+												v.Visible = false
+											end
+										else
+											v.Visible = true
+										end
+									end
+								end
+							end)
+
+							for _,v in pairs(Dropdown_Opt.Options) do
+								local NewButton = CreateNewButton({
+									Text = v
+								}, DropdownContent)
+
+								NewButton.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
+								NewButton.MouseButton1Down:Connect(function()
+									if NewButton.ImageTransparency == 0 then
+										DropdownTitle.Text = ("%s: %s"):format(Dropdown_Opt.Text, v)
+										SearchInput.Text = ""
+
+										if Dropdown_Opt.Hide then
+											TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = 0}):Play()
+											TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0)}):Play()
+											TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+										end
+
+										Dropdown_Opt.Callback(v, Dropdown_Data)
+
+										ChangedEvent:Fire("Option", v)
+									end
+								end)
+							end
+						end
+					elseif k == "Option" then
+						v = CheckType(v, "string", DropdownTitle.Text:match(":%s*(%a+)"))
+
+						if not Dropdown_Opt.ReadOnly then
+							if #v > 0 and table.find(Dropdown_Opt.Options, v) or v == "" then
+								DropdownTitle.Text = DropdownTitle.Text:gsub(DropdownTitle.Text:match(":%s*(%a+)"), v)
+
+								if v ~= "" then
+									Dropdown_Opt.Callback(v)
+								end
+
+								ChangedEvent:Fire(k, v)
+							end
+						end
+					elseif k == "Search" then
+						Dropdown_Opt.Search = CheckType(v, "boolean", Dropdown_Opt.Search)
+
+						ChangedEvent:Fire(k, Dropdown_Opt.Search)	
+					end
+				end,
+				__index = function(t, k)
+					if k == "Text" then
+						return DropdownTitle.ContentText
+					elseif k == "TextColor" then
+						return Dropdown_Opt.TextColor
+					elseif k == "RichText" then
+						return Dropdown_Opt.RichText
+					elseif k == "Font" then
+						return Dropdown_Opt.Font
+					elseif k == "Visible" then
+						return Dropdown_Opt.Visible
+					elseif k == "ReadOnly" then
+						return Dropdown_Opt.ReadOnly	
+					elseif k == "Hide" then
+						return Dropdown_Opt.Hide
+					elseif k == "Options" then
+						return Dropdown_Opt.Options
+					elseif k == "Option" then
+						return DropdownTitle.Text:match(":%s*(%a+)")
+					elseif k == "Search" then
+						return Dropdown_Opt.Search
+					elseif k == "Changed" then
+						return ChangedEvent
+					elseif k == "Destroy" then
+						return function()
+							Dropdown:Destroy()
 						end
 					end
 				end,
-				GetOption = function()
-					return Dropdown:GetAttribute("Option")
+				__call = function(Func, ...)
+					Func(Func, ...)
 				end
-			})
+			}
 
-            if MenuAdded then
+			local MenuAdded, MenuButton = TryAddMenu(DropdownBar, Dropdown_Opt.Menu, setmetatable({}, Funcs))
+			
+			if MenuAdded then
 				DropdownToggle.Position = DropdownToggle.Position - UDim2.fromOffset(25, 0)
 				MenuButton.ImageColor3 = ThisTheme.DropdownAccent
 			end
 
-            function DropdownLibrary:SetText(Text)
-				Text = typeof(Text) == "string" and Text or Dropdown:GetAttribute("Title")
-
-				DropdownTitle.Text = ("%s: %s"):format(Text, Dropdown:GetAttribute("Option"))
-				Dropdown:SetAttribute("Title", Text)
-            end
-
-            function DropdownLibrary:GetText()
-                return Dropdown:GetAttribute("Title")
-            end
-
-			function DropdownLibrary:SetAlignment(Alignment)
-				DropdownTitle.TextXAlignment = typeof(Alignment) == "string" and Alignment ~= "Right" and Alignment or DropdownTitle.TextXAlignment
-			end
-
-			function DropdownLibrary:GetAlignment()
-				return DropdownTitle.TextXAlignment.Name
-			end
-
-			function DropdownLibrary:SetTextColor(TextColor)
-				DropdownTitle.TextColor3 = typeof(TextColor) == "Color3" and TextColor or DropdownTitle.TextColor3
-			end
-
-			function DropdownLibrary:GetTextColor()
-				return DropdownTitle.TextColor3
-			end
-
-			function DropdownLibrary:SetFont(Font)
-				DropdownTitle.Font = typeof(Font) == "EnumItem" and Font or DropdownTitle.Font
-			end
-
-			function DropdownLibrary:GetFont()
-				return DropdownTitle.Font
-			end
-
-			function DropdownLibrary:SetVisible(Visible)
-				Dropdown.Visible = typeof(Visible) ~= "boolean" and Dropdown.Visible or Visible
-			end
-
-			function DropdownLibrary:GetVisible()
-				return Dropdown.Visible
-			end
-
-			function DropdownLibrary:SetOptions(Table)
-				Dropdown_Options = typeof(Table) == "table" and Table or {}
-				NumberOfOptions = table.maxn(Dropdown_Options) + (Dropdown_Search and 1 or 0)
-				Dropdown_Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (NumberOfOptions * 20) + ((NumberOfOptions - 1) * 5))
-
-				if DropdownContent then
-					DropdownContent:Destroy()
-				end
-
-				TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (Dropdown_Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
-
-				DropdownContent = Objects:New("Frame")
-				DropdownContent.Name = "Content"
-				DropdownContent.Size = (DropToggle and Dropdown_Size) or UDim2.fromScale(1, 0)
-				DropdownContent.Position = UDim2.fromOffset(0, 35)
-				DropdownContent.ClipsDescendants = true
-				DropdownContent.Parent = Dropdown
-
-				DropdownList = Objects:New("UIListLayout")
-				DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
-				DropdownList.Padding = UDim.new(0, 5)
-				DropdownList.Parent = DropdownContent
-
-				Search = Objects:New("Round")
-				Search.Name = "SearchBar"
-				Search.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
-				Search.ImageColor3 = ThisTheme.TextField
-				Search.ImageTransparency = 0.8
-				Search.Visible = Dropdown_Search
-				Search.Parent = DropdownContent
-
-				SearchInput = Objects:New("Box")
-				SearchInput.Name = "Value"
-				SearchInput.PlaceholderText = "Search..."
-				SearchInput.PlaceholderColor3 = ThisTheme.TextFieldAccent
-				SearchInput.TextColor3 = ThisTheme.TextFieldAccent
-				SearchInput.Text = ""
-				SearchInput.Font = Enum.Font.GothamSemibold
-				SearchInput.TextSize = 14
-				SearchInput.TextTransparency = 0.5
-				SearchInput.TextTruncate = Enum.TextTruncate.AtEnd
-				SearchInput.Parent = Search
-
-				SearchInput.Focused:Connect(function()
-					TweenService:Create(Search, TweenInfo.new(0.5), {ImageTransparency = 0.7}):Play()
-					TweenService:Create(SearchInput, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-				end)
-
-				SearchInput.FocusLost:Connect(function()
-					TweenService:Create(Search, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
-					TweenService:Create(SearchInput, TweenInfo.new(0.5), {TextTransparency = 0.5}):Play()
-				end)
-
-				SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
-					for _,v in ipairs(DropdownContent:GetChildren()) do
-						if v.Name == "Button" then
-							if SearchInput.Text ~= "" then
-								if v.TextLabel.Text:lower():match(SearchInput.Text:lower()) then
-									v.ImageTransparency = 0
-									v.LayoutOrder = 1
-								else
-									v.ImageTransparency = 0.55
-									v.LayoutOrder = 2
-								end
-							else
-								v.ImageTransparency = 0
-								v.LayoutOrder = 0
-							end
-						end
-					end
-				end)
-
-				for _,Value in ipairs(Dropdown_Options) do
-					local NewButton = CreateNewButton({
-						Text = Value
-					}, DropdownContent)
-
-					NewButton.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
-					NewButton.MouseButton1Down:Connect(function()
-						if NewButton.ImageTransparency == 0 then
-							DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Value)
-							SearchInput.Text = ""
-
-							if Dropdown_Hide then
-								DropToggle = not DropToggle
-
-								TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
-								TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and Dropdown_Size or UDim2.fromScale(1, 0)}):Play()
-								TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (Dropdown_Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
-							end
-
-							pcall(Dropdown_Callback, Value, DropdownLibrary)
-							Dropdown:SetAttribute("Option", Value)
-						end
-					end)
-				end
-			end
-
-			function DropdownLibrary:GetOptions()
-				return Dropdown_Options
-			end
-
-			function DropdownLibrary:SetOption(Option)
-				Option = typeof(Option) == "string" and Option or Dropdown:GetAttribute("Option")
-
-				if table.find(Dropdown_Options, Option) or Option == "" then
-					DropdownTitle.Text = ("%s: %s"):format(Dropdown:GetAttribute("Title"), Option)
-					Dropdown:SetAttribute("Option", Option)
-
-					if Option ~= "" then
-						pcall(Dropdown_Callback, Option)
-					end
-				end
-			end
-
-			function DropdownLibrary:GetOption()
-				return Dropdown:GetAttribute("Option")
-			end
-
-			function DropdownLibrary:GetChanged(SignalConfig)
-				local Option = typeof(SignalConfig.Type) == "string" and SignalConfig.Type or "Option"
-				local Callback = typeof(SignalConfig.Callback) == "function" and SignalConfig.Callback or function() end
-
-				local Connection
-				Connection = Dropdown:GetAttributeChangedSignal(Option):Connect(function()
-					pcall(Callback, Dropdown:GetAttribute(Option), Connection)
-				end)
-			end
-
-			function DropdownLibrary:Destroy()
-				Dropdown:Destroy()
-			end
-
-			return DropdownLibrary
+			return setmetatable(Dropdown_Data, Funcs)
 		end
 
-		function OptionLibrary:ChipSet(ChipSetConfig)
-			ChipSetConfig = typeof(ChipSetConfig) == "table" and ChipSetConfig or {}
+		function Tab_Data:ChipSet(ChipSet_Opt)
+			ChipSet_Opt = CheckType(ChipSet_Opt, "table", {})
 
-			local ChipSet_Disable = typeof(ChipSetConfig.Disable) ~= "boolean" and true or ChipSetConfig.Disable
-			local ChipSet_Style = typeof(ChipSetConfig.Style) == "number" and ChipSetConfig.Style or 1
-			local ChipSet_Visible = typeof(ChipSetConfig.Visible) ~= "boolean" and true or ChipSetConfig.Visible
-            local ChipSet_Callback = typeof(ChipSetConfig.Callback) == "function" and ChipSetConfig.Callback or function() end
-            local ChipSet_Options = typeof(ChipSetConfig.Options) == "table" and ChipSetConfig.Options or {}
+			ChipSet_Opt.Disable = CheckType(ChipSet_Opt.Disable, "boolean", true)
+			ChipSet_Opt.Visible = CheckType(ChipSet_Opt.Visible, "boolean", true)
+			ChipSet_Opt.ReadOnly = CheckType(ChipSet_Opt.ReadOnly, "boolean", false)
 
-			local ChipSetLibrary = {}
+			ChipSet_Opt.Options = CheckType(ChipSet_Opt.Options, "table", {})
+			ChipSet_Opt.Callback = CheckType(ChipSet_Opt.Callback, "function", function() end)
+
+			local ChipSet_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
 			local Keys = {}
 			local TotalOptions = 0
 
-			for i,v in pairs(ChipSet_Options) do
-                TotalOptions += 1
-                table.insert(Keys, i)
-            end
+			for i,v in pairs(ChipSet_Opt.Options) do
+				TotalOptions = TotalOptions + 1
+				table.insert(Keys, i)
+			end
 
 			table.sort(Keys)
 
@@ -2483,7 +2636,7 @@ function Material:Load(Config)
 			ChipSet.Name = "ChipSet"
 			ChipSet.ImageColor3 = ThisTheme.ChipSet
 			ChipSet.ImageTransparency = 1
-			ChipSet.Visible = ChipSet_Visible
+			ChipSet.Visible = ChipSet_Opt.Visible
 			ChipSet.Parent = PageContentFrame
 
 			if TotalOptions > 0 then
@@ -2503,30 +2656,30 @@ function Material:Load(Config)
 				ChipPadding.PaddingLeft = UDim.new(0, 5)
 				ChipPadding.Parent = ChipSet
 
-				local BuildTable = {}
+				local Build = {}
 
 				for Key, Value in pairs(Keys) do
-					if typeof(ChipSet_Options[Value]) == "table" then
-						BuildTable[Value] = ChipSet_Options[Value].Enabled
+					if typeof(ChipSet_Opt.Options[Value]) == "table" then
+						Build[Value] = ChipSet_Opt.Options[Value].Enabled
 					else
-						BuildTable[Value] = ChipSet_Options[Value]
+						Build[Value] = ChipSet_Opt.Options[Value]
 					end
 				end
 
 				TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
 
-				for _,Value in pairs(Keys) do
+				for _, Value in pairs(Keys) do
 					local ChipItem = Objects:New("SmoothButton")
 					ChipItem.Name = "ChipItem"
 					ChipItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-					ChipItem.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
+					ChipItem.ImageColor3 = (Build[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
 					ChipItem.ImageTransparency = 1
 					ChipItem.Parent = ChipSet
 					ChipItem:SetAttribute("Key", Value)
 
 					local ChipShadow = Objects:New("Shadow")
 					ChipShadow.Name = "Shadow"
-					ChipShadow.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
+					ChipShadow.ImageColor3 = (Build[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
 					ChipShadow.ImageTransparency = 1
 					ChipShadow.Parent = ChipItem
 
@@ -2543,261 +2696,280 @@ function Material:Load(Config)
 
 					local ChipLabel = Objects:New("Label")
 					ChipLabel.Name = "ChipLabel"
-					ChipLabel.Size = (BuildTable[Value] and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))
-					ChipLabel.Position = (BuildTable[Value] and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0)
+					ChipLabel.Size = (Build[Value] and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))
+					ChipLabel.Position = (Build[Value] and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0)
 					ChipLabel.Text = Value
 					ChipLabel.Font = Enum.Font.Gotham
 					ChipLabel.TextSize = 12
-					ChipLabel.TextColor3 = (BuildTable[Value] and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet
+					ChipLabel.TextColor3 = (Build[Value] and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet
 					ChipLabel.TextTransparency = 1
 					ChipLabel.Parent = ChipItem
 
 					TweenService:Create(ChipItem, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
 					TweenService:Create(ChipShadow, TweenInfo.new(0.5), {ImageTransparency = 0.2}):Play()
-					TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = (BuildTable[Value] and 0) or 1}):Play()
-					TweenService:Create(ChipLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-
-                    local ChipMenu
-
-					if typeof(ChipSet_Options[Value]) == "table" then
-						local Menu = ChipSet_Options[Value].Menu or {}
-
-						local MenuAdded, MenuButton = TryAddMenu(ChipItem, Menu, {})
-
-						MenuButton.ImageColor3 = BuildTable[Value] and ThisTheme.ChipSetAccent or ThisTheme.ChipSet
-
-						ChipMenu = MenuButton
-					end
-
-					ChipItem.MouseButton1Down:Connect(function()
-						BuildTable[Value] = not BuildTable[Value]
-						local Enabled = BuildTable[Value]
-
-						TweenService:Create(ChipItem, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-						TweenService:Create(ChipShadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-						TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
-						TweenService:Create(ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
-
-                        if ChipMenu then
-							TweenService:Create(ChipMenu, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet}):Play()
-						end
-
-						pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
-					end)
-
-					local ChipSet_Connection
-					ChipSet_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
-						if not NewInstance.Parent then
-							if ChipSet_Disable then
-								if BuildTable[Value] then
-									BuildTable[Value] = false
-									pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
-									ChipSet_Connection:Disconnect()
-								end
-							else
-								ChipSet_Connection:Disconnect()
-							end
-						end
-					end)
-				end
-			end
-
-			function ChipSetLibrary:SetOptions(NewMenu)
-				ChipSet_Options = typeof(NewMenu) == "table" and NewMenu or {}
-
-				Keys = {}
-				TotalOptions = 0
-
-				for i in pairs(ChipSet_Options) do
-					TotalOptions = TotalOptions + 1
-					table.insert(Keys, i)
-				end
-
-				table.sort(Keys)
-
-				if ChipSet then
-					ChipSet:Destroy()
-				end
-
-				Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
-
-				ChipSet = Objects:New("Round")
-				ChipSet.Name = "ChipSet"
-				ChipSet.ImageColor3 = ThisTheme.ChipSet
-				ChipSet.ImageTransparency = 1
-				ChipSet.Size = Size
-				ChipSet.Visible = ChipSet_Visible
-				ChipSet.Parent = PageContentFrame
-
-				TweenService:Create(ChipSet, TweenInfo.new(0.15), {Size = Size}):Play()
-
-				ChipList = Objects:New("UIListLayout")
-				ChipList.SortOrder = Enum.SortOrder.LayoutOrder
-				ChipList.Padding = UDim.new(0, 5)
-				ChipList.Parent = ChipSet
-
-				ChipPadding = Objects:New("UIPadding")
-				ChipPadding.PaddingBottom = UDim.new(0, 5)
-				ChipPadding.PaddingTop = UDim.new(0, 5)
-				ChipPadding.PaddingRight= UDim.new(0, 5)
-				ChipPadding.PaddingLeft = UDim.new(0, 5)
-				ChipPadding.Parent = ChipSet
-
-				BuildTable = {}
-
-				for _,Value in pairs(Keys) do
-					if typeof(ChipSet_Options[Value]) == "table" then
-						BuildTable[Value] = ChipSet_Options[Value].Enabled
-					else
-						BuildTable[Value] = ChipSet_Options[Value]
-					end
-				end
-
-				TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
-
-				for _,Value in pairs(Keys) do
-					local ChipItem = Objects:New("SmoothButton")
-					ChipItem.Name = "ChipItem"
-					ChipItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-					ChipItem.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
-					ChipItem.ImageTransparency = 1
-					ChipItem.Parent = ChipSet
-					ChipItem:SetAttribute("Key", Value)
-
-					local ChipShadow = Objects:New("Shadow")
-					ChipShadow.Name = "Shadow"
-					ChipShadow.ImageColor3 = (BuildTable[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
-					ChipShadow.ImageTransparency = 1
-					ChipShadow.Parent = ChipItem
-
-					local Tick = Objects:New("Round")
-					Tick.Name = "Tick"
-					Tick.ScaleType = Enum.ScaleType.Stretch
-					Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
-					Tick.ImageColor3 = ThisTheme.ChipSetAccent
-					Tick.ImageTransparency = 1
-					Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(10, 10)
-					Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
-					Tick.Position = UDim2.fromOffset(5, 5)
-					Tick.Parent = ChipItem
-
-					local ChipLabel = Objects:New("Label")
-					ChipLabel.Name = "ChipLabel"
-					ChipLabel.Size = (BuildTable[Value] and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))
-					ChipLabel.Position = (BuildTable[Value] and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0)
-					ChipLabel.Text = Value
-					ChipLabel.Font = Enum.Font.Gotham
-					ChipLabel.TextSize = 12
-					ChipLabel.TextColor3 = (BuildTable[Value] and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet
-					ChipLabel.TextTransparency = 1
-					ChipLabel.Parent = ChipItem
-
-					TweenService:Create(ChipItem, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
-					TweenService:Create(ChipShadow, TweenInfo.new(0.5), {ImageTransparency = 0.2}):Play()
-					TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = (BuildTable[Key] and 0) or 1}):Play()
+					TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = (Build[Value] and 0) or 1}):Play()
 					TweenService:Create(ChipLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
 					local ChipMenu
 
-					if typeof(ChipSet_Options[Value]) == "table" then
-						local Menu = ChipSet_Options[Value].Menu or {}
-						local MenuAdded, MenuButton = TryAddMenu(ChipItem, Menu, {})
+					if typeof(ChipSet_Opt.Options[Value]) == "table" then
+						ChipSet_Opt.Options[Value].Menu = CheckType(ChipSet_Opt.Options[Value].Menu, "table", {})
 
-						MenuButton.ImageColor3 = BuildTable[Value] and ThisTheme.ChipSetAccent or ThisTheme.ChipSet
+						local MenuAdded, MenuButton = TryAddMenu(ChipItem, ChipSet_Opt.Options[Value].Menu, {})
+
+						MenuButton.ImageColor3 = Build[Value] and ThisTheme.ChipSetAccent or ThisTheme.ChipSet
 
 						ChipMenu = MenuButton
 					end
 
 					ChipItem.MouseButton1Down:Connect(function()
-						BuildTable[Value] = not BuildTable[Value]
-						local Enabled = BuildTable[Value]
+						if not ChipSet_Opt.ReadOnly then
+							Build[Value] = not Build[Value]
+							local Enabled = Build[Value]
 
-						TweenService:Create(ChipItem, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-						TweenService:Create(ChipShadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-						TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
-						TweenService:Create(ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
+							TweenService:Create(ChipItem, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+							TweenService:Create(ChipShadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+							TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
+							TweenService:Create(ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
+						
+							if ChipMenu then
+								TweenService:Create(ChipMenu, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet}):Play()
+							end
 
-						if ChipMenu then
-							TweenService:Create(ChipMenu, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet}):Play()
+							ChipSet_Opt.Callback(Value, Enabled, ChipSet_Data)
+
+							ChangedEvent:Fire("State", {Index = Value, State = Enabled})
 						end
-
-						pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
 					end)
 
-					local ChipSet_Connection
-					ChipSet_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+					local Connection
+					Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 						if not NewInstance.Parent then
-							if ChipSet_Disable then
-								if BuildTable[Value] then
-									BuildTable[Value] = false
-									pcall(ChipSet_Callback, Value, BuildTable[Value], ChipSetLibrary)
-									ChipSet_Connection:Disconnect()
+							if ChipSet_Opt.Disable then
+								if Build[Value] then
+									Build[Value] = false
+
+									ChipSet_Opt.Callback(Value, Build[Value], ChipSet_Data)
+
+									Connection:Disconnect()
 								end
 							else
-								ChipSet_Connection:Disconnect()
+								Connection:Disconnect()
 							end
 						end
 					end)
+
+					return setmetatable(ChipSet_Data, {
+						__newindex = function(t, k, v)
+							if k == "Options" then
+								ChipSet_Opt.Options = CheckType(v, "table", ChipSet_Opt.Options)
+
+								Keys = {}
+								TotalOptions = 0
+								
+								for i in pairs(ChipSet_Opt.Options) do
+									TotalOptions = TotalOptions + 1
+									table.insert(Keys, i)
+								end
+
+								table.sort(Keys)
+
+								if ChipSet then
+									ChipSet:Destroy()
+								end
+
+								Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
+
+								ChipSet = Objects:New("Round")
+								ChipSet.Name = "ChipSet"
+								ChipSet.ImageColor3 = ThisTheme.ChipSet
+								ChipSet.ImageTransparency = 1
+								ChipSet.Size = Size
+								ChipSet.Visible = ChipSet_Visible
+								ChipSet.Parent = PageContentFrame
+
+								TweenService:Create(ChipSet, TweenInfo.new(0.15), {Size = Size}):Play()
+
+								ChipList = Objects:New("UIListLayout")
+								ChipList.SortOrder = Enum.SortOrder.LayoutOrder
+								ChipList.Padding = UDim.new(0, 5)
+								ChipList.Parent = ChipSet
+
+								ChipPadding = Objects:New("UIPadding")
+								ChipPadding.PaddingBottom = UDim.new(0, 5)
+								ChipPadding.PaddingTop = UDim.new(0, 5)
+								ChipPadding.PaddingRight= UDim.new(0, 5)
+								ChipPadding.PaddingLeft = UDim.new(0, 5)
+								ChipPadding.Parent = ChipSet
+
+								Build = {}
+
+								for _,Value in pairs(Keys) do
+									if typeof(ChipSet_Opt.Options[Value]) == "table" then
+										Build[Value] = ChipSet_Opt.Options[Value].Enabled
+									else
+										Build[Value] = ChipSet_Opt.Options[Value]
+									end
+								end
+
+								for _,Value in pairs(Keys) do
+									local ChipItem = Objects:New("SmoothButton")
+									ChipItem.Name = "ChipItem"
+									ChipItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
+									ChipItem.ImageColor3 = (Build[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
+									ChipItem.ImageTransparency = 1
+									ChipItem.Parent = ChipSet
+									ChipItem:SetAttribute("Key", Value)
+
+									local ChipShadow = Objects:New("Shadow")
+									ChipShadow.Name = "Shadow"
+									ChipShadow.ImageColor3 = (Build[Value] and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent
+									ChipShadow.ImageTransparency = 1
+									ChipShadow.Parent = ChipItem
+
+									local Tick = Objects:New("Round")
+									Tick.Name = "Tick"
+									Tick.ScaleType = Enum.ScaleType.Stretch
+									Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
+									Tick.ImageColor3 = ThisTheme.ChipSetAccent
+									Tick.ImageTransparency = 1
+									Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(10, 10)
+									Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
+									Tick.Position = UDim2.fromOffset(5, 5)
+									Tick.Parent = ChipItem
+
+									local ChipLabel = Objects:New("Label")
+									ChipLabel.Name = "ChipLabel"
+									ChipLabel.Size = (Build[Value] and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))
+									ChipLabel.Position = (Build[Value] and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0)
+									ChipLabel.Text = Value
+									ChipLabel.Font = Enum.Font.Gotham
+									ChipLabel.TextSize = 12
+									ChipLabel.TextColor3 = (Build[Value] and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet
+									ChipLabel.TextTransparency = 1
+									ChipLabel.Parent = ChipItem
+
+									TweenService:Create(ChipItem, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+									TweenService:Create(ChipShadow, TweenInfo.new(0.5), {ImageTransparency = 0.2}):Play()
+									TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = (Build[Key] and 0) or 1}):Play()
+									TweenService:Create(ChipLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+								end
+
+								TweenService:Create(ChipSet, TweenInfo.new(0.5), {ImageTransparency = 0.9}):Play()
+
+								local ChipMenu
+
+								if typeof(ChipSet_Opt.Options[Value]) == "table" then
+									local Menu = ChipSet_Opt.Options[Value].Menu or {}
+									local MenuAdded, MenuButton = TryAddMenu(ChipItem, Menu, {})
+
+									MenuButton.ImageColor3 = Build[Value] and ThisTheme.ChipSetAccent or ThisTheme.ChipSet
+
+									ChipMenu = MenuButton
+								end
+
+								ChipItem.MouseButton1Down:Connect(function()
+									if not ChipSet_Opt.ReadOnly then
+										Build[Value] = not Build[Value]
+										local Enabled = Build[Value]
+
+										TweenService:Create(ChipItem, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+										TweenService:Create(ChipShadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+										TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
+										TweenService:Create(ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
+
+										if ChipMenu then
+											TweenService:Create(ChipMenu, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet}):Play()
+										end
+
+										ChipSet_Opt.Options.Callback(Value, Enabled, ChipSet_Data)
+
+										ChangedEvent:Fire("State", {Index = Value, State = Enabled})
+									end
+								end)
+							elseif k == "Visible" then
+								ChipSet_Opt.Visible = CheckType(v, "boolean", ChipSet_Opt.Visible)
+
+								ChipSet.Visible = ChipSet_Opt.Visible
+
+								ChangedEvent:Fire(k, ChipSet_Opt.Visible)
+							elseif k == "ReadOnly" then
+								ChipSet_Opt.ReadOnly = CheckType(v, "boolean", ChipSet_Opt.ReadOnly)
+
+								ChangedEvent:Fire(k, ChipSet_Opt.ReadOnly)
+							end
+						end,
+						__index = function(t, k)
+							if k == "Options" then
+								return ChipSet_Opt.Options
+							elseif k == "State" then
+								return {
+									Set = function(Func, Index, State)
+										for _,v in pairs(ChipSet:GetChildren()) do
+											if v:GetAttribute("Key") == Index then
+												Build[Index] = State
+
+												local Enabled = Build[Index]
+
+												TweenService:Create(v, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+												TweenService:Create(v.Shadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
+												TweenService:Create(v.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
+												TweenService:Create(v.ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
+
+												ChipSet_Opt.Callback(Index, Enabled, ChipSet_Data)
+
+												ChangedEvent:Fire("State", {Index = Index, State = Enabled})
+											end
+
+											break
+										end
+									end,
+									Get = function(Func, Index)
+										return Build[Index]
+									end
+								}
+							elseif k == "Visible" then
+								return ChipSet_Opt.Visible
+							elseif k == "ReadOnly" then
+								return ChipSet_Opt.ReadOnly
+							elseif k == "Changed" then
+								return ChangedEvent
+							elseif k == "Destroy" then
+								return function()
+									ChipSet:Destroy()
+								end
+							end
+						end,
+						__call = function(Func, ...)
+							Func(Func, ...)
+						end
+					})
 				end
 			end
-
-			function ChipSetLibrary:GetOptions()
-				return ChipSet_Options
-			end
-
-			function ChipSetLibrary:SetState(Index, State)
-				for _,v in pairs(ChipSet:GetChildren()) do
-					if v:GetAttribute("Key") == Index then
-						BuildTable[Index] = State
-						local Enabled = BuildTable[Index]
-
-						TweenService:Create(v, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-						TweenService:Create(v.Shadow, TweenInfo.new(0.15), {ImageColor3 = (Enabled and ThisTheme.ChipSet) or ThisTheme.ChipSetAccent}):Play()
-						TweenService:Create(v.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 1}):Play()
-						TweenService:Create(v.ChipLabel, TweenInfo.new(0.15), {TextColor3 = (Enabled and ThisTheme.ChipSetAccent) or ThisTheme.ChipSet, Position = (Enabled and UDim2.fromOffset(30, 0)) or UDim2.fromOffset(5, 0), Size = (Enabled and (UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0))) or (UDim2.fromScale(1, 1) - UDim2.fromOffset(5, 0))}):Play()
-
-						pcall(ChipSet_Callback, Index, BuildTable[Index] , ChipSetLibrary)
-					end
-				end
-			end
-
-			function ChipSetLibrary:GetState(Index)
-				return BuildTable[Index]
-			end
-
-			function ChipSetLibrary:SetVisible(Visible)
-				ChipSet.Visible = typeof(Visible) ~= "boolean" and ChipSet.Visible or Visible
-			end
-
-			function ChipSetLibrary:GetVisible()
-				return ChipSet.Visible
-			end
-
-			function ChipSetLibrary:Destroy()
-				ChipSet:Destroy()
-			end
-
-			return ChipSetLibrary
 		end
 
-		function OptionLibrary:DataTable(DataConfig)
-			DataConfig = typeof(DataConfig) == "table" and DataConfig or {}
+		function Tab_Data:DataTable(DataTable_Opt)
+			DataTable_Opt = CheckType(DataTable_Opt, "table", {})
 
-			local DataTable_Text = typeof(DataConfig.Text) == "string" and DataConfig.Text or "DataTable"
-			local DataTable_XAlignment = typeof(DataConfig.XAlignment) == "string" and DataConfig.XAlignment ~= "Right" and DataConfig.XAlignment or "Left"
-			local DataTable_TextColor = typeof(DataConfig.TextColor) == "Color3" and DataConfig.TextColor or ThisTheme.DataTable
-			local DataTable_Font = typeof(DataConfig.Font) == "EnumItem" and DataConfig.Font or Enum.Font.GothamSemibold
-			local DataTable_Visible = typeof(DataConfig.Visible) ~= "boolean" and true or DataConfig.Visible
-			local DataTable_Options = typeof(DataConfig.Options) == "table" and DataConfig.Options or {}
-			local DataTable_Callback = typeof(DataConfig.Callback) == "function" and DataConfig.Callback or function() end
+			DataTable_Opt.Text = CheckType(DataTable_Opt.Text, "string", "DataTable")
+			DataTable_Opt.TextColor = CheckType(DataTable_Opt.TextColor, "Color3", ThisTheme.DataTable)
+			DataTable_Opt.TextXAlignment = CheckType(table.find({"Right", "Left"}, DataTable_Opt.TextXAlignment) and DataTable_Opt.TextXAlignment, "string", "Left")
+			DataTable_Opt.Font = CheckType(DataTable_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			DataTable_Opt.Visible = CheckType(DataTable_Opt.Visible, "boolean", true)
+			DataTable_Opt.ReadOnly = CheckType(DataTable_Opt.ReadOnly, "boolean", false)
 
-			local DataTableLibrary = {}
+			DataTable_Opt.Options = CheckType(DataTable_Opt.Options, "table", {})
+			DataTable_Opt.Disable = CheckType(DataTable_Opt.Disable, "boolean", true)
+			DataTable_Opt.Callback = CheckType(DataTable_Opt.Callback, "function", function() end)
+
+			local DataTable_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
 			local Keys = {}
 			local TotalOptions = 0
 
-			for i in pairs(DataTable_Options) do
-				TotalOptions += 1
+			for i in pairs(DataTable_Opt.Options) do
+				TotalOptions = TotalOptions + 1
 				table.insert(Keys, i)
 			end
 
@@ -2808,7 +2980,7 @@ function Material:Load(Config)
 			local DataTable = Objects:New("Frame")
 			DataTable.Name = "DataTable"
 			DataTable.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-			DataTable.Visible = DataTable_Visible
+			DataTable.Visible = DataTable_Opt.Visible
 			DataTable.Parent = PageContentFrame
 
 			local DataShadow = Objects:New("Shadow")
@@ -2825,10 +2997,10 @@ function Material:Load(Config)
 
 			local DataTableTitle = Objects:New("Button")
 			DataTableTitle.Name = "Title"
-			DataTableTitle.Font = DataTable_Font
-			DataTableTitle.TextXAlignment = DataTable_XAlignment
-			DataTableTitle.Text = DataTable_Text
-			DataTableTitle.TextColor3 = DataTable_TextColor
+			DataTableTitle.Font = DataTable_Opt.Font
+			DataTableTitle.TextXAlignment = Enum.TextXAlignment[DataTable_Opt.TextXAlignment]
+			DataTableTitle.Text = DataTable_Opt.Text
+			DataTableTitle.TextColor3 = DataTable_Opt.TextColor
 			DataTableTitle.TextTransparency = 1
 			DataTableTitle.TextSize = 14
 			DataTableTitle.Parent = DataTableBar
@@ -2885,20 +3057,22 @@ function Material:Load(Config)
 			end)
 
 			DataTableTitle.MouseButton1Down:Connect(function()
-				DropToggle = not DropToggle
+				if not DataTable_Opt.ReadOnly then
+					DropToggle = not DropToggle
 
-				TweenService:Create(DataTableButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
-				TweenService:Create(DataTableContent, TweenInfo.new(0.15), {Size = DropToggle and Size or UDim2.fromScale(1, 0)}):Play()
-				TweenService:Create(DataTable, TweenInfo.new(0.15), {Size = DropToggle and (Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+					TweenService:Create(DataTableButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
+					TweenService:Create(DataTableContent, TweenInfo.new(0.15), {Size = DropToggle and Size or UDim2.fromScale(1, 0)}):Play()
+					TweenService:Create(DataTable, TweenInfo.new(0.15), {Size = DropToggle and (Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+				end
 			end)
 
-			local BuildTable = {}
+			local Build = {}
 
 			for _,Value in pairs(Keys) do
-				if typeof(DataTable_Options[Value]) == "table" then
-					BuildTable[Value] = DataTable_Options[Value].Enabled
+				if typeof(DataTable_Opt.Options[Value]) == "table" then
+					Build[Value] = DataTable_Opt.Options[Value].Enabled
 				else
-					BuildTable[Value] = DataTable_Options[Value]
+					Build[Value] = DataTable_Opt.Options[Value]
 				end
 			end
 
@@ -2909,7 +3083,7 @@ function Material:Load(Config)
 				local DataItem = Objects:New("SmoothButton")
 				DataItem.Name = "DataItem"
 				DataItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-				DataItem.ImageColor3 = (BuildTable[Value] and ThisTheme.DataTable) or ThisTheme.DataTableAccent
+				DataItem.ImageColor3 = (Build[Value] and ThisTheme.DataTable) or ThisTheme.DataTableAccent
 				DataItem.ImageTransparency = 1
 				DataItem.Parent = DataTableContent
 				DataItem:SetAttribute("Key", Value)
@@ -2944,15 +3118,15 @@ function Material:Load(Config)
 				DataLabel.TextTransparency = 1
 				DataLabel.Parent = DataItem
 
-				TweenService:Create(DataItem, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0.8 or 0}):Play()
-				TweenService:Create(DataTracker, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0 or 0.8}):Play()
-				TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0 or 0.7}):Play()
+				TweenService:Create(DataItem, TweenInfo.new(0.5), {ImageTransparency = Build[Value] and 0.8 or 0}):Play()
+				TweenService:Create(DataTracker, TweenInfo.new(0.5), {ImageTransparency = Build[Value] and 0 or 0.8}):Play()
+				TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = Build[Value] and 0 or 0.7}):Play()
 				TweenService:Create(DataLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
 				local DataTableMenu
 
-				if typeof(DataTable_Options[Value]) == "table" then
-					local Menu = typeof(DataTable_Options[Value].Menu) == "table" and DataTable_Options[Value].Menu or {}
+				if typeof(DataTable_Opt.Options[Value]) == "table" then
+					local Menu = typeof(DataTable_Opt.Options[Value].Menu) == "table" and DataTable_Options[Value].Menu or {}
 
 					local MenuAdded, MenuButton = TryAddMenu(DataItem, Menu, {})
 
@@ -2964,225 +3138,286 @@ function Material:Load(Config)
 				end
 
 				DataItem.MouseButton1Down:Connect(function()
-					BuildTable[Value] = not BuildTable[Value]
-						local Enabled = BuildTable[Value]
+					Build[Value] = not Build[Value]
+					local Enabled = Build[Value]
 
 					TweenService:Create(DataItem, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
 					TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
 					TweenService:Create(DataTracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
 
-					pcall(DataTable_Callback, Value, BuildTable[Value], DataTableLibrary)
+					DataTable_Opt.Callback(Value, Enabled, DataTable_Data)
+
+					ChangedEvent:Fire("State", {Index = Value, State = Enabled})
 				end)
 
-				local DataTable_Connection
-				DataTable_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+				local Connection
+				Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
 					if not NewInstance.Parent then
-						if DataTable_Disable then
-							if BuildTable[Value] then
-								BuildTable[Value] = false
-								pcall(DataTable_Callback, Value, BuildTable[Value], DataTableLibrary)
-								DataTable_Connection:Disconnect()
+						if DataTable_Opt.Disable then
+							if Build[Value] then
+								Build[Value] = false
+
+								DataTable_Opt.Callback(Value, Build[Value], DataTableLibrary)
+
+								ChangedEvent:Fire("State", {Index = Value, State = false})
+
+								Connection:Disconnect()
 							end
 						else
-							DataTable_Connection:Disconnect()
+							Connection:Disconnect()
 						end
 					end
 				end)
 			end
 
-			function DataTableLibrary:SetOptions(NewTable)
-				DataTable_Options = typeof(NewTable) == "table" and NewTable or {}
-				
-				Keys = {}
-				TotalOptions = 0
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						DataTable_Opt.Text = CheckType(v, "string", DataTable_Opt.Text)
 
-				for i in pairs(DataTable_Options) do
-					TotalOptions = TotalOptions + 1
-					table.insert(Keys, i)
-				end
+						if #DataTable_Opt.Text > 0 then
+							DataTableTitle.Text = DataTable_Opt.Text
 
-				table.sort(Keys)
+							ChangedEvent:Fire(k, DataTable_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						DataTable_Opt.TextColor = CheckType(v, "Color3", DataTable_Opt.TextColor)
 
-				if DataTableContent then
-					DataTableContent:Destroy()
-				end
+						DataTableTitle.TextColor3 = DataTable_Opt.TextColor
 
-				Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
+						ChangedEvent:Fire(k, DataTable_Opt.TextColor)
+					elseif k == "TextXAlignment" then
+						DataTable_Opt.TextXAlignment = CheckType(table.find({"Right", "Left"}, v) and v, "string", DataTable_Opt.TextXAlignment)
 
-				TweenService:Create(DataTable, TweenInfo.new(0.15), {Size = DropToggle and (Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
+						DataTableTitle.TextXAlignment = Enum.TextXAlignment[DataTable_Opt.TextXAlignment]
 
-				DataTableContent = Objects:New("Frame")
-				DataTableContent.Name = "Content"
-				DataTableContent.Size = UDim2.fromScale(1, 0)
-				DataTableContent.Position = UDim2.fromOffset(0, 35)
-				DataTableContent.ClipsDescendants = true
-				DataTableContent.Parent = DataTable
+						ChangedEvent:Fire(k, DataTable_Opt.TextXAlignment)
+					elseif k == "Font" then
+						DataTable_Opt.Font = CheckType(v, "EnumItem", DataTable_Opt.Font)
 
-				DataTableList = Objects:New("UIListLayout")
-				DataTableList.SortOrder = Enum.SortOrder.LayoutOrder
-				DataTableList.Padding = UDim.new(0, 5)
-				DataTableList.Parent = DataTableContent
+						DataTableTitle.Font = DataTable_Opt.Font
 
-				DataPadding = Objects:New("UIPadding")
-				DataPadding.PaddingBottom = UDim.new(0, 5)
-				DataPadding.PaddingTop = UDim.new(0, 5)
-				DataPadding.PaddingRight= UDim.new(0, 5)
-				DataPadding.PaddingLeft = UDim.new(0, 5)
-				DataPadding.Parent = DataTableContent
+						ChangedEvent:Fire(k, DataTable_Opt.Font)
+					elseif k == "Visible" then
+						DataTable_Opt.Visible = CheckType(v, "boolean", DataTable_Opt.Visible)
 
-				BuildTable = {}
+						DataTable.Visible = DataTable_Opt.Visible
 
-				for _,Value in pairs(Keys) do
-					if typeof(DataTable_Options[Value]) == "table" then
-						BuildTable[Value] = DataTable_Options[Value].Enabled
-					else
-						BuildTable[Value] = DataTable_Options[Value]
-					end
-				end
+						ChangedEvent:Fire(k, DataTable_Opt.Visible)
+					elseif k == "ReadOnly" then
+						DataTable_Opt.ReadOnly = CheckType(v, "boolean", DataTable_Opt.ReadOnly)
 
-				for _,Value in ipairs(Keys) do
-					local DataItem = Objects:New("SmoothButton")
-					DataItem.Name = "DataItem"
-					DataItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
-					DataItem.ImageColor3 = (BuildTable[Value] and ThisTheme.DataTable) or ThisTheme.DataTableAccent
-					DataItem.ImageTransparency = 1
-					DataItem.Parent = DataTableContent
-					DataItem:SetAttribute("Key", Value)
+						ChangedEvent:Fire(k, DataTable_Opt.ReadOnly)
+					elseif k == "Options" then
+						DataTable_Opt.Options = CheckType(v, "table", DataTable_Opt.Options)
 
-					local DataTracker = Objects:New("Round")
-					DataTracker.Name = "Tracker"
-					DataTracker.Size = UDim2.fromOffset(24, 24)
-					DataTracker.Position = UDim2.fromScale(0, 0.5) + UDim2.fromOffset(3, -12)
-					DataTracker.ImageColor3 = ThisTheme.DataTable
-					DataTracker.ImageTransparency = 1
-					DataTracker.Parent = DataItem
+						Keys = {}
+						TotalOptions = 0
 
-					local Tick = Objects:New("Round")
-					Tick.Name = "Tick"
-					Tick.ScaleType = Enum.ScaleType.Stretch
-					Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
-					Tick.ImageColor3 = ThisTheme.DataTableAccent
-					Tick.ImageTransparency = 1
-					Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(4, 4)
-					Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
-					Tick.Position = UDim2.fromOffset(2, 2)
-					Tick.Parent = DataTracker
-
-					local DataLabel = Objects:New("Label")
-					DataLabel.Name = "Value"
-					DataLabel.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0)
-					DataLabel.Position = UDim2.fromOffset(30, 0) or UDim2.fromOffset(5, 0)
-					DataLabel.Text = Value
-					DataLabel.Font = Enum.Font.Gotham
-					DataLabel.TextSize = 14
-					DataLabel.TextColor3 = ThisTheme.DataTable
-					DataLabel.TextTransparency = 1
-					DataLabel.Parent = DataItem
-
-					TweenService:Create(DataItem, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0.8 or 0}):Play()
-					TweenService:Create(DataTracker, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0 or 0.8}):Play()
-					TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = BuildTable[Value] and 0 or 0.7}):Play()
-					TweenService:Create(DataLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-
-					local DataTableMenu
-
-					if typeof(DataTable_Options[Value]) == "table" then
-						local Menu = typeof(DataTable_Options[Value].Menu) == "table" and DataTable_Options[Value].Menu or {}
-
-						local MenuAdded, MenuButton = TryAddMenu(DataItem, Menu, {})
-
-						if MenuAdded then
-							MenuButton.ImageColor3 = ThisTheme.DataTable
+						for i in pairs(DataTable_Opt.Options) do
+							TotalOptions = TotalOptions + 1
+							table.insert(Keys, i)
 						end
 
-						DataTableMenu = MenuButton
-					end
+						table.sort(Keys)
 
-					DataItem.MouseButton1Down:Connect(function()
-						BuildTable[Value] = not BuildTable[Value]
+						Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, (TotalOptions * 30) + ((TotalOptions + 1) * 5))
+
+						TweenService:Create(DataTable, TweenInfo.new(0.15), {Size = DropToggle and (Size + UDim2.fromOffset(0, 35)) or (UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30))}):Play()
 						
-						local Enabled = BuildTable[Value]
+						DataTableContent = Objects:New("Frame")
+						DataTableContent.Name = "Content"
+						DataTableContent.Size = UDim2.fromScale(1, 0)
+						DataTableContent.Position = UDim2.fromOffset(0, 35)
+						DataTableContent.ClipsDescendants = true
+						DataTableContent.Parent = DataTable
 
-						TweenService:Create(DataItem, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
-						TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
-						TweenService:Create(DataTracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
+						DataTableList = Objects:New("UIListLayout")
+						DataTableList.SortOrder = Enum.SortOrder.LayoutOrder
+						DataTableList.Padding = UDim.new(0, 5)
+						DataTableList.Parent = DataTableContent
 
-						pcall(DataTable_Callback, Value, BuildTable[Value], DataTableLibrary)
-					end)
+						DataPadding = Objects:New("UIPadding")
+						DataPadding.PaddingBottom = UDim.new(0, 5)
+						DataPadding.PaddingTop = UDim.new(0, 5)
+						DataPadding.PaddingRight= UDim.new(0, 5)
+						DataPadding.PaddingLeft = UDim.new(0, 5)
+						DataPadding.Parent = DataTableContent
 
-					local DataTable_Connection
-					DataTable_Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
-						if not NewInstance.Parent then
-							if DataTable_Disable then
-								if BuildTable[Value] then
-									BuildTable[Value] = false
-									pcall(DataTable_Callback, Value, BuildTable[Value], DataTableLibrary)
-									DataTable_Connection:Disconnect()
-								end
+						Build = {}
+
+						for _,Value in pairs(Keys) do
+							if typeof(DataTable_Opt.Options[Value]) == "table" then
+								Build[Value] = DataTable_Opt.Options[Value].Enabled
 							else
-								DataTable_Connection:Disconnect()
+								Build[Value] = DataTable_Opt.Options[Value]
 							end
 						end
-					end)
-				end
-			end
 
-			function DataTableLibrary:GetOptions()
-				return DataTable_Options
-			end
+						for _,Value in ipairs(Keys) do
+							local DataItem = Objects:New("SmoothButton")
+							DataItem.Name = "DataItem"
+							DataItem.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
+							DataItem.ImageColor3 = (Build[Value] and ThisTheme.DataTable) or ThisTheme.DataTableAccent
+							DataItem.ImageTransparency = 1
+							DataItem.Parent = DataTableContent
+							DataItem:SetAttribute("Key", Value)
 
-			function DataTableLibrary:SetState(Index, State)
-				for _,v in pairs(DataTableContent:GetChildren()) do
-					if v:GetAttribute("Key") == Index then
-						BuildTable[Index] = State
-						local Enabled = BuildTable[Index]
+							local DataTracker = Objects:New("Round")
+							DataTracker.Name = "Tracker"
+							DataTracker.Size = UDim2.fromOffset(24, 24)
+							DataTracker.Position = UDim2.fromScale(0, 0.5) + UDim2.fromOffset(3, -12)
+							DataTracker.ImageColor3 = ThisTheme.DataTable
+							DataTracker.ImageTransparency = 1
+							DataTracker.Parent = DataItem
 
-						TweenService:Create(v, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
-						TweenService:Create(v.Tracker.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
-						TweenService:Create(v.Tracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
+							local Tick = Objects:New("Round")
+							Tick.Name = "Tick"
+							Tick.ScaleType = Enum.ScaleType.Stretch
+							Tick.Image = "http://www.roblox.com/asset/?id=5554953789"
+							Tick.ImageColor3 = ThisTheme.DataTableAccent
+							Tick.ImageTransparency = 1
+							Tick.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(4, 4)
+							Tick.SizeConstraint = Enum.SizeConstraint.RelativeYY
+							Tick.Position = UDim2.fromOffset(2, 2)
+							Tick.Parent = DataTracker
 
-						pcall(DataTable_Callback, Index, BuildTable[Index], DataTableLibrary)
+							local DataLabel = Objects:New("Label")
+							DataLabel.Name = "Value"
+							DataLabel.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(30, 0)
+							DataLabel.Position = UDim2.fromOffset(30, 0) or UDim2.fromOffset(5, 0)
+							DataLabel.Text = Value
+							DataLabel.Font = Enum.Font.Gotham
+							DataLabel.TextSize = 14
+							DataLabel.TextColor3 = ThisTheme.DataTable
+							DataLabel.TextTransparency = 1
+							DataLabel.Parent = DataItem
+
+							TweenService:Create(DataItem, TweenInfo.new(0.5), {ImageTransparency = Build[Value] and 0.8 or 0}):Play()
+							TweenService:Create(DataTracker, TweenInfo.new(0.5), {ImageTransparency = Build[Value] and 0 or 0.8}):Play()
+							TweenService:Create(Tick, TweenInfo.new(0.5), {ImageTransparency = Build[Value] and 0 or 0.7}):Play()
+							TweenService:Create(DataLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+
+							local DataTableMenu
+
+							if typeof(DataTable_Opt.Options[Value]) == "table" then
+								local Menu = typeof(DataTable_Opt.Options[Value].Menu) == "table" and DataTable_Options[Value].Menu or {}
+
+								local MenuAdded, MenuButton = TryAddMenu(DataItem, Menu, {})
+
+								if MenuAdded then
+									MenuButton.ImageColor3 = ThisTheme.DataTable
+								end
+
+								DataTableMenu = MenuButton
+							end
+
+							DataItem.MouseButton1Down:Connect(function()
+								Build[Value] = not Build[Value]
+								local Enabled = Build[Value]
+
+								TweenService:Create(DataItem, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
+								TweenService:Create(Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
+								TweenService:Create(DataTracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
+
+								DataTable_Opt.Callback(Value, Build[Value], DataTable_Data)
+
+								ChangedEvent:Fire("State", {Index = Value, State = Enabled})
+							end)
+
+							local Connection
+							Connection = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+								if not NewInstance.Parent then
+									if DataTable_Opt.Disable then
+										if Build[Value] then
+											Build[Value] = false
+
+											DataTable_Opt.Callback(Value, Build[Value], DataTableLibrary)
+
+											ChangedEvent:Fire("State", {Index = Value, State = false})
+
+											DataTable_Connection:Disconnect()
+										end
+									else
+										DataTable_Connection:Disconnect()
+									end
+								end
+							end)
+						end
 					end
+				end,
+				__index = function(t, k)
+					if k == "Text" then
+						return DataTable_Opt.Text
+					elseif k == "TextColor" then
+						return DataTable_Opt.TextColor
+					elseif k == "TextXAlignment" then
+						return DataTable_Opt.TextXAlignment
+					elseif k == "Font" then
+						return DataTable_Opt.Font
+					elseif k == "Visible" then
+						return DataTable_Opt.Visible
+					elseif k == "ReadOnly" then
+						return DataTable_Opt.ReadOnly
+					elseif k == "State" then
+						return {
+							Set = function(Index, State)
+								for _,v in pairs(DataTableContent:GetChildren()) do
+									if v:GetAttribute("Key") == Index then
+										Build[Index] = State
+										local Enabled = Build[Index]
+
+										TweenService:Create(v, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0.8) or 0, ImageColor3 = (Enabled and ThisTheme.DataTable) or ThisTheme.DataTableAccent}):Play()
+										TweenService:Create(v.Tracker.Tick, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.7}):Play()
+										TweenService:Create(v.Tracker, TweenInfo.new(0.15), {ImageTransparency = (Enabled and 0) or 0.8}):Play()
+
+										DataTable_Opt.Callback(Index, Enabled, DataTable_Data)
+
+										ChangedEvent:Fire("State", {Index = Index, State = Enabled})
+									end
+								end
+							end,
+							Get = function(Index)
+								return Build[Index]
+							end
+						}
+					elseif k == "Changed" then
+						return ChangedEvent
+					elseif k == "Destroy" then
+						return function()
+							DataTable:Destroy()
+						end
+					end
+				end,
+				_call = function(Func, ...)
+					Func(Func, ...)
 				end
-			end
+			}
 
-			function DataTableLibrary:GetState(Index)
-				return BuildTable[Index]
-			end
-
-			function DataTableLibrary:SetVisible(Visible)
-				DataTable.Visible = typeof(Visible) ~= "boolean" and ChipSet.Visible or Visible
-			end
-
-			function DataTableLibrary:GetVisible()
-				return DataTable.Visible
-			end
-
-			function DataTableLibrary:Destroy()
-				DataTable:Destroy()
-			end
-
-			return DataTableLibrary
+			return setmetatable(DataTable_Data, Funcs)
 		end
 
-        function OptionLibrary:ColorPicker(ColorPickerConfig)
-			ColorPickerConfig = typeof(ColorPickerConfig) == "table" and ColorPickerConfig or {}
+		function Tab_Data:ColorPicker(ColorPicker_Opt)
+			ColorPicker_Opt = CheckType(ColorPicker_Opt, "table", {})
 
-			local ColorPicker_Text = typeof(ColorPickerConfig.Text) == "string" and ColorPickerConfig.Text or "ColorPicker"
-			local ColorPicker_RichText = typeof(ColorPickerConfig.RichText) == "boolean" and ColorPickerConfig.RichText or false
-			local ColorPicker_TextColor = typeof(ColorPickerConfig.TextColor) == "Color3" and ColorPickerConfig.TextColor or ThisTheme.ColorPickerAccent
-			local ColorPicker_Font = typeof(ColorPickerConfig.Font) == "EnumItem" and ColorPickerConfig.Font or Enum.Font.GothamSemibold
-			local ColorPicker_Visible = typeof(ColorPickerConfig.Visible) ~= "boolean" and true or ColorPickerConfig.Visible
-			local ColorPicker_Default = typeof(ColorPickerConfig.Default) == "Color3" and ColorPickerConfig.Default or Color3.fromRGB(255, 255, 255)
-			local ColorPicker_Callback = typeof(ColorPickerConfig.Callback) == "function" and ColorPickerConfig.Callback or function() end
+			ColorPicker_Opt.Text = CheckType(ColorPicker_Opt.Text, "string", "ColorPicker")
+			ColorPicker_Opt.TextColor = CheckType(ColorPicker_Opt.TextColor, "Color3", ThisTheme.ColorPickerAccent)
+			ColorPicker_Opt.RichText = CheckType(ColorPicker_Opt.RichText, "boolean", false)
+			ColorPicker_Opt.Font = CheckType(ColorPicker_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			ColorPicker_Opt.Visible = CheckType(ColorPicker_Opt.Visible, "boolean", true)
+			ColorPicker_Opt.ReadOnly = CheckType(ColorPicker_Opt.ReadOnly, "boolean", false)
 
-			local ColorPicker_Menu = typeof(ColorPickerConfig.Menu) == "table" and ColorPickerConfig.Menu or {}
+			ColorPicker_Opt.Default = CheckType(ColorPicker_Opt.Default, "Color3", Color3.fromRGB(255, 255, 255))
+			ColorPicker_Opt.Callback = CheckType(ColorPicker_Opt.Callback, "function", function() end)
+
+			ColorPicker_Opt.Menu = CheckType(ColorPicker_Opt.Menu, "table", {})
 
 			local PickerToggle = false
-			local ColorPickerLibrary = {}
+			local ColorPicker_Data = {}
+			local ChangedEvent = CreateChangedEvent()
 
 			local H, S, V = Objects:New("NumberValue"), Objects:New("NumberValue"), Objects:New("NumberValue")
-			H.Value, S.Value, V.Value = Color3.toHSV(ColorPicker_Default)
+			H.Value, S.Value, V.Value = Color3.toHSV(ColorPicker_Opt.Default)
 
 			local ColorPicker = Objects:New("SmoothButton")
 			ColorPicker.Name = "ColorPicker"
@@ -3190,12 +3425,14 @@ function Material:Load(Config)
 			ColorPicker.ImageColor3 = ThisTheme.ColorPicker
 			ColorPicker.ImageTransparency = 1
 			ColorPicker.ClipsDescendants = true
-			ColorPicker.Visible = ColorPicker_Visible
+			ColorPicker.Visible = ColorPicker_Opt.Visible
 			ColorPicker.Parent = PageContentFrame
 
 			ColorPicker.MouseButton1Down:Connect(function()
-				PickerToggle = not PickerToggle
-				TweenService:Create(ColorPicker, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0) + ((PickerToggle and UDim2.fromOffset(0, 115)) or UDim2.fromOffset(0, 40))}):Play()
+				if not ColorPicker_Opt.ReadOnly then
+					PickerToggle = not PickerToggle
+					TweenService:Create(ColorPicker, TweenInfo.new(0.15), {Size = UDim2.fromScale(1, 0) + ((PickerToggle and UDim2.fromOffset(0, 115)) or UDim2.fromOffset(0, 40))}):Play()
+				end
 			end)
 
 			local ColorBar = Objects:New("Round")
@@ -3213,11 +3450,11 @@ function Material:Load(Config)
 
 			local ColorLabel = Objects:New("Label")
 			ColorLabel.Name = "Title"
-			ColorLabel.Font = ColorPicker_Font
-			ColorLabel.TextColor3 = ColorPicker_TextColor
+			ColorLabel.Font = ColorPicker_Opt.Font
+			ColorLabel.TextColor3 = ColorPicker_Opt.TextColor
 			ColorLabel.TextSize = 14
-			ColorLabel.RichText = ColorPicker_RichText
-			ColorLabel.Text = ColorPicker_Text
+			ColorLabel.RichText = ColorPicker_Opt.RichText
+			ColorLabel.Text = ColorPicker_Opt.Text
 			ColorLabel.TextTransparency = 1
 			ColorLabel.Parent = ColorBar
 
@@ -3225,7 +3462,7 @@ function Material:Load(Config)
 			ColorTracker.Name = "Tracker"
 			ColorTracker.Size = UDim2.fromOffset(50, 20)
 			ColorTracker.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-55, 5)
-			ColorTracker.ImageColor3 = ColorPicker_Default
+			ColorTracker.ImageColor3 = ColorPicker_Opt.Default
 			ColorTracker.ImageTransparency = 1
 			ColorTracker.Parent = ColorBar
 
@@ -3247,11 +3484,11 @@ function Material:Load(Config)
 			Hue.Parent = ColorPicker
 
 			local Saturation = Hue:Clone()
-			Saturation.Position += UDim2.fromOffset(0, 25)
+			Saturation.Position = Saturation.Position + UDim2.fromOffset(0, 25)
 			Saturation.Parent = ColorPicker
 
 			local Value = Saturation:Clone()
-			Value.Position += UDim2.fromOffset(0, 25)
+			Value.Position = Value.Position + UDim2.fromOffset(0, 25)
 			Value.Parent = ColorPicker
 
 			local HueLabel = Objects:New("Label")
@@ -3362,7 +3599,11 @@ function Material:Load(Config)
 				SaturationGrad.Color = ColorSequence.new(Color3.fromHSV(H.Value, 1, V.Value), Color3.fromRGB(0, 0, 0):Lerp(Color3.fromRGB(255, 255, 255), V.Value))
 				SaturationShadowGrad.Color = ColorSequence.new( Color3.fromHSV(H.Value, 1, V.Value), Color3.fromRGB(0, 0, 0):Lerp(Color3.fromRGB(255, 255, 255), V.Value))
 
-				pcall(ColorPicker_Callback, Color3.fromHSV(H.Value, S.Value, V.Value), ColorPickerLibrary)
+				if not ColorPicker_Opt.ReadOnly then
+					ColorPicker_Opt.Callback(Color3.fromHSV(H.Value, S.Value, V.Value), ColorPicker_Data)
+
+					ChangedEvent:Fire("Color", Color3.fromHSV(H.Value, S.Value, V.Value))
+				end
 			end)
 
 			S:GetPropertyChangedSignal("Value"):Connect(function()
@@ -3371,7 +3612,11 @@ function Material:Load(Config)
 				SaturationGrad.Color = ColorSequence.new(Color3.fromHSV(H.Value, 1, V.Value), Color3.fromRGB(0, 0, 0):Lerp(Color3.fromRGB(255, 255, 255), V.Value))
 				SaturationShadowGrad.Color = ColorSequence.new(Color3.fromHSV(H.Value, 1, V.Value), Color3.fromRGB(0, 0, 0):Lerp(Color3.fromRGB(255, 255, 255), V.Value))
 
-				pcall(ColorPicker_Callback, Color3.fromHSV(H.Value, S.Value, V.Value), ColorPickerLibrary)
+				if not ColorPicker_Opt.ReadOnly then
+					ColorPicker_Opt.Callback(Color3.fromHSV(H.Value, S.Value, V.Value), ColorPicker_Data)
+
+					ChangedEvent:Fire("Color", Color3.fromHSV(H.Value, S.Value, V.Value))
+				end
 			end)
 
 			V:GetPropertyChangedSignal("Value"):Connect(function()
@@ -3380,7 +3625,11 @@ function Material:Load(Config)
 				SaturationGrad.Color = ColorSequence.new(Color3.fromHSV(H.Value, 1, V.Value), Color3.fromRGB(0, 0, 0):Lerp(Color3.fromRGB(255, 255, 255), V.Value))
 				SaturationShadowGrad.Color = ColorSequence.new(Color3.fromHSV(H.Value, 1, V.Value), Color3.fromRGB(0, 0, 0):Lerp(Color3.fromRGB(255, 255, 255), V.Value))
 
-				pcall(ColorPicker_Callback, Color3.fromHSV(H.Value, S.Value, V.Value), ColorPickerLibrary)
+				if not ColorPicker_Opt.ReadOnly then
+					ColorPicker_Opt.Callback(Color3.fromHSV(H.Value, S.Value, V.Value), ColorPicker_Data)
+
+					ChangedEvent:Fire("Color", Color3.fromHSV(H.Value, S.Value, V.Value))
+				end
 			end)
 
 			HueTracker.MouseButton1Down:Connect(function()
@@ -3434,111 +3683,110 @@ function Material:Load(Config)
 				end)
 			end)
 
-			local MenuAdded, MenuButton = TryAddMenu(ColorLabel, ColorPicker_Menu, {
-				SetText = function(Text)
-					ColorLabel.Text = typeof(Text) == "string" and Text or ColorLabel.Text
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						ColorPicker_Opt.Text = CheckType(v, "string", ColorPicker_Opt.Text)
+
+						if #ColorPicker_Opt.Text > 0 then
+							ColorLabel.Text = ColorPicker_Opt.Text
+
+							ChangedEvent:Fire(k, ColorPicker_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						ColorPicker_Opt.TextColor = CheckType(v, "Color3", ColorPicker_Opt.TextColor)
+
+						ColorLabel.TextColor3 = ColorPicker_Opt.TextColor
+
+						ChangedEvent:Fire(k, ColorPicker_Opt.TextColor)
+					elseif k == "RichText" then
+						ColorPicker_Opt.RichText = CheckType(v, "boolean", ColorPicker_Opt.RichText)
+
+						ColorLabel.RichText = ColorPicker_Opt.RichText
+
+						ChangedEvent:Fire(k, ColorPicker_Opt.RichText)
+					elseif k == "Font" then
+						ColorPicker_Opt.Font = CheckType(v, "EnumItem", ColorPicker_Opt.Font)
+
+						ColorLabel.Font = ColorPicker_Opt.Font
+
+						ChangedEvent:Fire(k, ColorPicker_Opt.Font)
+					elseif k == "Visible" then
+						ColorPicker_Opt.Visible = CheckType(v, "boolean", ColorPicker_Opt.Visible)
+
+						ColorPicker.Visible = ColorPicker_Opt.Visible
+
+						ChangedEvent:Fire(k, ColorPicker_Opt.Visible)
+					elseif k == "ReadOnly" then
+						ColorPicker_Opt.ReadOnly = CheckType(v, "boolean", ColorPicker_Opt.ReadOnly)
+
+						ChangedEvent:Fire(k, ColorPicker_Opt.ReadOnly)
+					elseif k == "Color" then
+						if not ColorPicker_Opt.ReadOnly then
+							v = CheckType(v, "Color3", Color3.fromHSV(H.Value, S.Value, V.Value))
+
+							H.Value, S.Value, V.Value = Color3.toHSV(v)
+
+							ChangedEvent:Fire(k, Color3.toHSV(v))
+						end
+					end
 				end,
-				GetText = function()
-					return ColorLabel.Text
+				__index = function(t, k)
+					if k == "Text" then
+						return ColorPicker_Opt.Text
+					elseif k == "TextColor" then
+						return ColorPicker_Opt.TextColor
+					elseif k == "RichText" then
+						return ColorPicker_Opt.RichText
+					elseif k == "Font" then
+						return ColorPicker_Opt.Font
+					elseif k == "Visible" then
+						return ColorPicker_Opt.Visible
+					elseif k == "ReadOnly" then
+						return ColorPicker_Opt.ReadOnly
+					elseif k == "Color" then
+						return ColorTracker.ImageColor3
+					elseif k == "Changed" then
+						return ChangedEvent
+					elseif k == "Destroy" then
+						return function()
+							ColorPicker:Destroy()
+						end
+					end
 				end,
-				SetTextColor = function(TextColor)
-					ColorLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ColorLabel.TextColor3
-				end,
-				GetTextColor = function()
-					return ColorLabel.TextColor3
-				end,
-				SetFont = function(Font)
-					ColorLabel.Font = typeof(Font) == "EnumItem" and Font or ColorLabel.Font
-				end,
-				GetFont = function()
-					return ColorLabel.Font
-				end,
-				SetVisible = function(Visible)
-					ColorPicker.Visible = typeof(Visible) ~= "boolean" and ColorPicker.Visible or Visible
-				end,
-				GetVisible = function()
-					return ColorPicker.Visible
-				end,
-				SetColor = function(Color)
-					H.Value, S.Value, V.Value = typeof(Color) == "Color3" and Color3.toHSV(Color) or H.Value, S.Value, V.Value
-				end,
-				GetColor = function()
-					return ColorTracker.ImageColor3
+				__call = function(Func, ...)
+					Func(Func, ...)
 				end
-			})
+			}
+
+			local MenuAdded, MenuButton = TryAddMenu(ColorLabel, ColorPicker_Opt.Menu, setmetatable({}, Funcs))
 
 			if MenuAdded then
 				ColorTracker.Position -= UDim2.fromOffset(25, 0)
 				MenuButton.ImageColor3 = ThisTheme.ColorPickerAccent
 			end
 
-			function ColorPickerLibrary:SetText(Text)
-				ColorLabel.Text = typeof(Text) == "string" and Text or ColorLabel.Text
-			end
+			return setmetatable(ColorPicker_Data, Funcs)
+		end
 
-			function ColorPickerLibrary:GetText()
-				return ColorLabel.Text
-			end
+		function Tab_Data:Bind(Bind_Opt)
+			Bind_Opt = CheckType(Bind_Opt, "table", {})
 
-			function ColorPickerLibrary:SetTextColor(TextColor)
-				ColorLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or ColorLabel.TextColor3
-			end
+			Bind_Opt.Text = CheckType(Bind_Opt.Text, "string", "Bind")
+			Bind_Opt.TextColor = CheckType(Bind_Opt.TextColor, "Color3", ThisTheme.ButtonAccent)
+			Bind_Opt.RichText = CheckType(Bind_Opt.RichText, "boolean", false)
+			Bind_Opt.Font = CheckType(Bind_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			Bind_Opt.Visible = CheckType(Bind_Opt.Visible, "boolean", true)
+			Bind_Opt.ReadOnly = CheckType(Bind_Opt.ReadOnly, "boolean", false)
 
-			function ColorPickerLibrary:GetTextColor()
-				return ColorLabel.TextColor3
-			end
+			Bind_Opt.Enabled = CheckType(Bind_Opt.Enabled, "boolean", false)
+			Bind_Opt.Notify = CheckType(Bind_Opt.Notify, "boolean", false)
+			Bind_Opt.Bind = CheckType(Bind_Opt.Bind, "EnumItem", Enum.KeyCode.G)
+			Bind_Opt.Callback = CheckType(Bind_Opt.Callback, "function", function() end)
 
-			function ColorPickerLibrary:SetFont(Font)
-				ColorLabel.Font = typeof(Font) == "EnumItem" and Font or ColorLabel.Font
-			end
+			Bind_Opt.Menu = CheckType(Bind_Opt.Menu, "table", {})
 
-			function ColorPickerLibrary:GetFont()
-				return ColorLabel.Font
-			end
-
-			function ColorPickerLibrary:SetVisible(Visible)
-				ColorPicker.Visible = typeof(Visible) ~= "boolean" and ColorPicker.Visible or Visible
-			end
-
-			function ColorPickerLibrary:GetVisible()
-				return ColorPicker.Visible
-			end
-
-			function ColorPickerLibrary:SetColor(Color)
-				H.Value, S.Value, V.Value = typeof(Color) == "Color3" and Color3.toHSV(Color) or H.Value, S.Value, V.Value
-			end
-
-			function ColorPickerLibrary:GetColor()
-				return ColorTracker.ImageColor3
-			end
-
-			function ColorPickerLibrary:GetColorChanged(Callback)
-				local Connection
-				Connection = ColorTracker:GetPropertyChangedSignal("ImageColor3"):Connect(function()
-					pcall(Callback, ColorTracker.ImageColor3, Connection)
-				end)
-			end
-
-			function ColorPickerLibrary:Destroy()
-				ColorPicker:Destroy()
-			end
-
-			return ColorPickerLibrary
-        end
-
-        function OptionLibrary:Bind(BindConfig)
-			BindConfig = typeof(BindConfig) == "table" and BindConfig or {}
-
-			local Bind_Text = typeof(BindConfig.Text) == "string" and BindConfig.Text or "Bind"
-			local Bind_RichText = typeof(BindConfig.RichText) == "boolean" and BindConfig.RichText or false
-			local Bind_TextColor = typeof(BindConfig.TextColor) == "Color3" and BindConfig.TextColor or ThisTheme.ButtonAccent
-			local Bind_Font = typeof(BindConfig.Font) == "EnumItem" and BindConfig.Font or Enum.Font.GothamSemibold
-			local Bind_Visible = typeof(BindConfig.Visible) ~= "boolean" and true or BindConfig.Visible
-			local Bind_Enabled = typeof(BindConfig.Enabled) == "boolean" and BindConfig.Enabled or false
-			local Bind_Notify = typeof(BindConfig.Notify) == "boolean" and BindConfig.Notify or false
-			local Bind_KeyCode = typeof(BindConfig.Bind) == "EnumItem" and BindConfig.Bind or Enum.KeyCode.G
-			local Bind_Callback = typeof(BindConfig.Callback) == "function" and BindConfig.Callback or function() end
-			local Bind_Blacklist = typeof(BindConfig.Blacklist) == "table" and BindConfig.Blacklist or {
+			local Blacklist = {
 				Enum.KeyCode.A,
 				Enum.KeyCode.W,
 				Enum.KeyCode.D,
@@ -3559,14 +3807,18 @@ function Material:Load(Config)
 				Enum.KeyCode.Print
 			}
 
-			local Bind_Menu = typeof(BindConfig.Menu) == "table" and BindConfig.Menu or {}
+			local Shortkeys = {
+				RightControl = "RightCtrl",
+				LeftControl = "LeftCtrl",
+				LeftShift = "LShift",
+				RightShift = "RShift",
+				MouseButton1 = "Mouse1",
+				MouseButton2 = "Mouse2"
+			}
 
-			local BindLibrary = {}
-			local KeyCode = Bind_KeyCode.Name
-
-			if IsKeyCode(Setting.Keybind) then
-				Bind_Blacklist[#Bind_Blacklist + 1] = Enum.KeyCode[Setting.Keybind]
-			end
+			local Bind_Data = {}
+			local KeyCode =  Bind_Opt.Bind.Name
+			local ChangedEvent = CreateChangedEvent()
 
 			local BindContainer = Objects:New("SmoothButton")
 			BindContainer.Name = "Bind"
@@ -3574,7 +3826,7 @@ function Material:Load(Config)
 			BindContainer.ImageColor3 = ThisTheme.Button
 			BindContainer.ClipsDescendants = true
 			BindContainer.ImageTransparency = 1
-			BindContainer.Visible = Bind_Visible
+			BindContainer.Visible = Bind_Opt.Visible
 			BindContainer.Parent = PageContentFrame
 
 			local BindShadow = Objects:New("Shadow")
@@ -3584,18 +3836,18 @@ function Material:Load(Config)
 
 			local BindLabel = Objects:New("Label")
 			BindLabel.Name = "Title"
-			BindLabel.Font = Bind_Font
-			BindLabel.TextColor3 = Bind_TextColor
+			BindLabel.Font = Bind_Opt.Font
+			BindLabel.TextColor3 = Bind_Opt.TextColor
 			BindLabel.TextSize = 14
-			BindLabel.Text = Bind_Text
-            BindLabel.RichText = Bind_RichText
+			BindLabel.Text = Bind_Opt.Text
+            BindLabel.RichText = Bind_Opt.RichText
 			BindLabel.TextTransparency = 1
 			BindLabel.Parent = BindContainer
 
 			local BindButton = Objects:New("Label")
 			BindButton.Name = "BindButton"
 			BindButton.Font = Enum.Font.GothamSemibold
-			BindButton.Text = KeyCode
+			BindButton.Text = Shortkeys[KeyCode] or KeyCode
 			BindButton.Size = UDim2.new(0.332, -5, 1, 0)
 			BindButton.Position = UDim2.fromScale(0.649, 0)
 			BindButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -3611,223 +3863,189 @@ function Material:Load(Config)
 			TweenService:Create(BindButton, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
 			BindContainer.MouseButton1Click:Connect(function()
-				BindButton.Text = "···"
+				if not Bind_Opt.ReadOnly then
+					BindButton.Text = "···"
 
-				local Input, GameProcessed = UserInputService.InputBegan:Wait()
+					local Input, GameProcessed = UserInputService.InputBegan:Wait()
 
-				if Input.KeyCode.Name == "Unknown" then
-					KeyCode = nil
-					BindButton.Text = "None"
-				elseif table.find(Bind_Blacklist, Input.KeyCode) then
-					KeyCode = Bind_KeyCode.Name
-					BindButton.Text = Bind_KeyCode.Name
-					Material.Notification({
-						Description = ("[%s] is a blacklisted key, please use another one."):format(Input.KeyCode.Name),
-						Duration = 2
-					})
-				else
-					KeyCode = Input.KeyCode.Name
-					BindButton.Text = Input.KeyCode.Name
+					if Input.KeyCode.Name == "Unknown" then
+						KeyCode = nil
+						BindButton.Text = "None"
+					elseif table.find(Blacklist, Input.KeyCode) then
+						KeyCode = Bind_Opt.Bind.Name
+						BindButton.Text = Bind_Opt.Bind.Name
+						Material.Notification({
+							Description = ("[%s] is a blacklisted key, please use another one."):format(Input.KeyCode.Name),
+							Duration = 2
+						})
+					else
+						KeyCode = Input.KeyCode.Name
+						BindButton.Text = Shortkeys[Input.KeyCode.Name] or Input.KeyCode.Name
+
+						ChangedEvent:Fire("Bind", KeyCode)
+					end
 				end
 			end)
 
-			local BindConnection
-			BindConnection = UserInputService.InputBegan:Connect(function(Input, GameProcessed)
+			local Connection
+			Connection = UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 				if Input.KeyCode.Name == KeyCode and not GameProcessed then
 					if NewInstance.Parent then
-						Bind_Enabled = not Bind_Enabled
+						if not Bind_Opt.ReadOnly then
+							Bind_Opt.Enabled = not Bind_Opt.Enabled
 
-						if Bind_Notify then
+							if Bind_Opt.Notify then
+								Material.Notification({
+									Title = ("%s - [%s]"):format(BindLabel.Text, Bind_Opt.Enabled and "Enabled" or "Disabled"),
+									Duration = 2
+								})
+							end
+
+							Bind_Opt.Callback(Bind_Opt.Enabled, BindLibrary)
+
+							ChangedEvent:Fire("State", Bind_Opt.Enabled)
+						end
+					else
+						Connection:Disconnect()
+					end
+				end
+			end)
+
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Text" then
+						Bind_Opt.Text = CheckType(v, "string", Bind_Opt.Text)
+
+						if #Bind_Opt.Text > 0 then
+							BindLabel.Text = Bind_Opt.Text
+
+							ChangedEvent:Fire(k, Bind_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						Bind_Opt.TextColor = CheckType(v, "Color3", Bind_Opt.TextColor)
+						
+						BindLabel.TextColor3 = Bind_Opt.TextColor
+
+						ChangedEvent:Fire(k, Bind_Opt.TextColor)
+					elseif k == "RichText" then
+						Bind_Opt.RichText = CheckType(v, "boolean", Bind_Opt.RichText)
+						
+						BindLabel.RichText = Bind_Opt.RichText
+
+						ChangedEvent:Fire(k, Bind_Opt.RichText)
+					elseif k == "Font" then
+						Bind_Opt.Font = CheckType(v, "EnumItem", Bind_Opt.Font)
+						
+						BindLabel.Font = Bind_Opt.Font
+
+						ChangedEvent:Fire(k, Bind_Opt.Font)
+					elseif k == "Visible" then
+						Bind_Opt.Visible = CheckType(v, "boolean", Bind_Opt.Visible)
+
+						BindContainer.Visible = Bind_Opt.Visible
+
+						ChangedEvent:Fire(k, Bind_Opt.Visible)
+					elseif k == "ReadOnly" then
+						Bind_Opt.ReadOnly = CheckType(v, "boolean", Bind_Opt.ReadOnly)
+
+						ChangedEvent:Fire(k, Bind_Opt.ReadOnly)
+					elseif k == "State" then
+						Bind_Opt.Enabled = CheckType(v, "boolean", Bind_Opt.Enabled)
+
+						if Bind_Opt.Notify then
 							Material.Notification({
-								Title = ("%s - [%s]"):format(BindLabel.Text, Bind_Enabled and "Enabled" or "Disabled"),
+								Title = ("%s - [%s]"):format(BindLabel.Text, Bind_Opt.Enabled and "Enabled" or "Disabled"),
 								Duration = 2
 							})
 						end
 
-						pcall(Bind_Callback, Bind_Enabled, BindLibrary)
-					else
-						BindConnection:Disconnect()
+						Bind_Opt.Callback(Bind_Opt.Enabled, Bind_Data)
+
+						ChangedEvent:Fire(k, Bind_Opt.Enabled)
+					elseif k == "Notify" then
+						Bind_Opt.Notify = CheckType(v, "boolean", Bind_Opt.Notify)
+
+						ChangedEvent:Fire(k, Bind_Opt.Notify)
+					elseif k == "Bind" then
+						KeyCode = CheckType(v, "EnumItem", Enum.KeyCode[KeyCode]).Name
+
+						if IsKeyCode(KeyCode) and not Bind_Opt.ReadOnly then
+							BindButton.Text = Shortkeys[KeyCode] or KeyCode
+
+							ChangedEvent:Fire(k, KeyCode)
+						end
 					end
-				end
-			end)
-
-			local MenuAdded, MenuButton = TryAddMenu(BindContainer, Bind_Menu, {
-				SetText = function(Text)
-					BindLabel.Text = typeof(Text) == "string" and Text or BindLabel.Text
 				end,
-				GetText = function()
-					return BindLabel.Text
-				end,
-				SetTextColor = function(TextColor)
-					BindLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or BindLabel.TextColor3
-				end,
-				GetTextColor = function()
-					return BindLabel.TextColor3
-				end,
-				SetFont = function(Font)
-					BindLabel.Font = typeof(Font) == "EnumItem" and Font or BindLabel.Font
-				end,
-				GetFont = function()
-					return BindLabel.Font
-				end,
-				SetVisible = function(Visible)
-					BindContainer.Visible = typeof(Visible) ~= "boolean" and BindContainer.Visible or Visible
-				end,
-				GetVisible = function()
-					return BindContainer.Visible
-				end,
-				SetState = function(State)
-					Bind_Enabled = typeof(State) == "boolean" and State or Bind_Enabled
-
-					if Bind_Notify then
-						Material.Notification({
-							Title = ("%s - [%s]"):format(BindLabel.Text, Bind_Enabled and "Enabled" or "Disabled"),
-							Duration = 2
-						})
+				__index = function(t, k)
+					if k == "Text" then
+						return BindLabel.ContentText
+					elseif k == "TextColor" then
+						return Bind_Opt.TextColor
+					elseif k == "RichText" then
+						return Bind_Opt.RichText
+					elseif k == "Font" then
+						return Bind_Opt.Font
+					elseif k == "Visible" then
+						return Bind_Opt.Visible
+					elseif k == "ReadOnly" then
+						return Bind_Opt.ReadOnly
+					elseif k == "State" then
+						return Bind_Opt.Enabled			
+					elseif k == "Notify" then
+						return Bind_Opt.Notify
+					elseif k == "Bind" then
+						return Enum.KeyCode[KeyCode]
+					elseif k == "Changed" then
+						return ChangedEvent
+					elseif k == "Destroy" then
+						return function()
+							BindContainer:Destroy()
+						end
 					end
-
-					pcall(Bind_Callback, Bind_Enabled, BindLibrary)
 				end,
-				GetState = function()
-					return Bind_Enabled
-				end,
-				SetNotify = function(Notify)
-					Bind_Notify = typeof(Notify) == "boolean" and Notify or Bind_Notify
-				end,
-				GetNotify = function()
-					return Bind_Notify
-				end,
-				SetBind = function(Bind)
-					KeyCode = typeof(Bind) == "string" and Bind or KeyCode
-					BindButton.Text = typeof(Bind) == "string" and Bind or KeyCode
-				end,
-				GetBind = function()
-					return KeyCode
+				__call = function(Func, ...)
+					Func(Func, ...)
 				end
-			})
+			}
+
+			local MenuAdded, MenuButton = TryAddMenu(BindContainer, Bind_Opt.Menu, setmetatable({}, Funcs))
 
 			if MenuAdded then
 				BindButton.Position -= UDim2.fromOffset(25, 0)
 				MenuButton.ImageColor3 = ThisTheme.ColorPickerAccent
 			end
 
-			function BindLibrary:SetText(Text)
-				BindLabel.Text = typeof(Text) == "string" and Text or BindLabel.Text
-			end
-
-			function BindLibrary:GetText()
-				return BindLabel.Text
-			end
-
-			function BindLibrary:SetTextColor(TextColor)
-				BindLabel.TextColor3 = typeof(TextColor) == "Color3" and TextColor or BindLabel.TextColor3
-			end
-
-			function BindLibrary:GetTextColor()
-				return BindLabel.TextColor3
-			end
-
-			function BindLibrary:SetFont(Font)
-				BindLabel.Font = typeof(Font) == "EnumItem" and Font or BindLabel.Font
-			end
-
-			function BindLibrary:GetFont()
-				return BindLabel.Font
-			end
-
-			function BindLibrary:SetVisible(Visible)
-				BindContainer.Visible = typeof(Visible) ~= "boolean" and BindContainer.Visible or Visible
-			end
-
-			function BindLibrary:GetVisible()
-				return BindContainer.Visible
-			end
-
-			function BindLibrary:SetState(State)
-				Bind_Enabled = typeof(State) == "boolean" and State or Bind_Enabled
-
-				if Bind_Notify then
-					Material.Notification({
-						Title = ("%s - [%s]"):format(BindLabel.Text, Bind_Enabled and "Enabled" or "Disabled"),
-						Duration = 2
-					})
-				end
-
-				pcall(Bind_Callback, Bind_Enabled, BindLibrary)
-			end
-
-			function BindLibrary:GetState()
-				return Bind_Enabled
-			end
-
-			function BindLibrary:SetNotify(Notify)
-				Bind_Notify = typeof(Notify) == "boolean" and Notify or Bind_Notify
-			end
-
-			function BindLibrary:GetNotify()
-				return Bind_Notify
-			end
-
-			function BindLibrary:SetBind(Bind)
-				KeyCode = typeof(Bind) == "string" and Bind or KeyCode
-				BindButton.Text = typeof(Bind) == "string" and Bind or KeyCode
-			end
-
-			function BindLibrary:GetBind()
-				return KeyCode
-			end
-
-			function BindLibrary:Blacklist(Option, Key)
-				Option = typeof(Option) == "string" and Option or "Add"
-				Key = typeof(Key) == "EnumItem" and Key or nil
-
-				if Key then
-					local Index = table.find(Bind_Blacklist, Key)
-
-					if Option == "Add" then
-						if not Index then
-							Bind_Blacklist[#Bind_Blacklist + 1] = Key
-						end
-					elseif Option == "Remove" then
-						if Index and Key ~= Enum.KeyCode[Setting.Keybind] then
-							table.remove(Bind_Blacklist, Index)
-						end
-					end
-				end
-			end
-
-			function BindLibrary:GetBlacklisted()
-				return Bind_Blacklist
-			end
-
-			function BindLibrary:Destroy()
-				BindContainer:Destroy()
-			end
-
-			return BindLibrary
+			return setmetatable(Bind_Data, Funcs)
 		end
 
-        function OptionLibrary:TextField(TextFieldConfig)
-			TextFieldConfig = typeof(TextFieldConfig) == "table" and TextFieldConfig or {}
+		function Tab_Data:TextField(TextField_Opt)
+			TextField_Opt = CheckType(TextField_Opt, "table", {})
 
-			local TextField_Text = typeof(TextFieldConfig.Text) == "string" and TextFieldConfig.Text or "Bind"
-			local TextField_TextColor = typeof(TextFieldConfig.TextColor) == "Color3" and TextFieldConfig.TextColor or ThisTheme.TextFieldAccent
-			local TextField_Font = typeof(TextFieldConfig.Font) == "EnumItem" and TextFieldConfig.Font or Enum.Font.GothamSemibold
-			local TextField_Visible = typeof(TextFieldConfig.Visible) ~= "boolean" and true or TextFieldConfig.Visible
-			local TextField_Default = typeof(TextFieldConfig.Default) == "string" and TextFieldConfig.Default or ""
-			local TextField_InputType = typeof(TextFieldConfig.Type) == "string" and TextFieldConfig.Type or "Default"
-			local TextField_Callback = typeof(TextFieldConfig.Callback) == "function" and TextFieldConfig.Callback or function() end
+			TextField_Opt.Title = CheckType(TextField_Opt.Text, "string", "TextField")
+			TextField_Opt.TextColor = CheckType(TextField_Opt.TextColor, "table", {})
+			TextField_Opt.TextColor.Title = CheckType(TextField_Opt.TextColor.Title, "Color3", ThisTheme.TextFieldAccent)
+			TextField_Opt.TextColor.Text = CheckType(TextField_Opt.TextColor.Text, "Color3", ThisTheme.TextFieldAccent)
+			TextField_Opt.Font = CheckType(TextField_Opt.Font, "EnumItem", Enum.Font.GothamSemibold)
+			TextField_Opt.Visible = CheckType(TextField_Opt.Visible, "boolean", true)
+			TextField_Opt.ReadOnly = CheckType(TextField_Opt.ReadOnly, "boolean", false)
 
-			local TextField_Menu = typeof(TextFieldConfig.Menu) == "table" and TextFieldConfig.Menu or {}
+			TextField_Opt.Default = CheckType(TextField_Opt.Default, "string", "")
+			TextField_Opt.Type = CheckType(table.find({"string", "number"}, TextField_Opt.Type), "string", "string")
+			TextField_Opt.Clear = CheckType(TextField_Opt.Clear, "boolean", true)
+			TextField_Opt.Callback = CheckType(TextField_Opt.Callback, "function", function() end)
 
-			local TextFieldLibrary = {}
+			TextField_Opt.Menu = CheckType(TextField_Opt.Menu, "table", {})
+
+			local TextField_Data = {}
+
+			local ChangedEvent = CreateChangedEvent()
 
 			local TextField = Objects:New("Round")
 			TextField.Name = "TextField"
 			TextField.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 30)
 			TextField.ImageColor3 = ThisTheme.TextField
 			TextField.ImageTransparency = 1
-			TextField.Visible = TextField_Visible
+			TextField.Visible = TextField_Opt.Visible
 			TextField.Parent = PageContentFrame
 
 			local TextEffect = Objects:New("Frame")
@@ -3845,15 +4063,12 @@ function Material:Load(Config)
 
 			local TextInput = Objects:New("Box")
 			TextInput.Name = "Value"
-			TextInput.PlaceholderText = TextField_Text
-            TextInput.RichText = TextField_RichText
-			TextInput.PlaceholderColor3 = TextField_TextColor
-			TextInput.TextColor3 = TextField_TextColor
-			TextInput.Text = TextField_Default
-			TextInput.Font = TextField_Font
-			TextInput.TextInputType = Enum.TextInputType[TextField_InputType]
+			TextInput.PlaceholderText = TextField_Opt.Text
+			TextInput.PlaceholderColor3 = TextField_Opt.TextColor.Title
+			TextInput.TextColor3 = TextField_Opt.TextColor.Text
+			TextInput.Text = TextField_Opt.Default
+			TextInput.Font = TextField_Opt.Font
 			TextInput.TextSize = 14
-			TextInput.ClearTextOnFocus = false
 			TextInput.TextTransparency = 1
 			TextInput.TextTruncate = Enum.TextTruncate.AtEnd
 			TextInput.Parent = TextField
@@ -3864,269 +4079,228 @@ function Material:Load(Config)
 			TweenService:Create(TextInput, TweenInfo.new(0.5), {TextTransparency = 0.5}):Play()
 
 			TextInput:GetPropertyChangedSignal("Text"):Connect(function()
-                if TextField_InputType == "Number" or TextField_InputType == "Phone" then
-                    if not tonumber(TextInput.Text) and TextInput.Text:sub(1, #TextInput.Text) ~= "-" then
-                        TextInput.Text = ""
-                    end
-                end
-            end)
+				if TextField_Opt.Type == "number" and not tonumber(TextInput.Text) and TextInput.Text:sub(1, #TextInput.Text) ~= "-" then
+					TextInput.Text = ""
+				end
+			end)
 
 			TextInput.Focused:Connect(function()
 				TweenService:Create(TextField, TweenInfo.new(0.5), {ImageTransparency = 0.7}):Play()
 				TweenService:Create(TextInput, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 			end)
 
-			TextInput.FocusLost:Connect(function()
-				TweenService:Create(TextField, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
-				TweenService:Create(TextInput, TweenInfo.new(0.5), {TextTransparency = 0.5}):Play()
+			TextInput.FocusLost:Connect(function(EnterPressed)
+				if EnterPressed then
+					TweenService:Create(TextField, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
+					TweenService:Create(TextInput, TweenInfo.new(0.5), {TextTransparency = 0.5}):Play()
 
-				if TextInput.Text ~= "" then
-					if TextField_InputType == "Number" or TextField_InputType == "Phone" then
-						pcall(TextField_Callback, tonumber(TextInput.Text), TextFieldLibrary)
-                    else
-						pcall(TextField_Callback, TextInput.Text, TextFieldLibrary)
-                    end
+					if TextInput.Text ~= "" and not TextField_Opt.ReadOnly then
+						if TextField_Opt.Type == "number" then
+							TextField_Opt.Callback(tonumber(TextInput.Text), TextField_Data)
+						elseif TextField_Opt.Type == "string" then
+							TextField_Opt.Callback(TextInput.Text, TextField_Data)
+						end
+
+						ChangedEvent:Fire("Text", TextInput.Text)
+
+						if TextField_Opt.Clear then
+							TextInput.Text = ""
+						end
+					end
 				end
 			end)
 
-			local MenuAdded, MenuBar = TryAddMenu(TextField, TextField_Menu, {
-				SetText = function(Text, Type)
-					Type = typeof(Type) == "string" and Type or "Title"
+			local Funcs = {
+				__newindex = function(t, k, v)
+					if k == "Title" then
+						v = CheckType(v, "string", TextInput.PlaceholderText)
 
-					if Type == "Title" then
-						TextInput.PlaceholderText = typeof(Text) == "string" and Text or TextInput.PlaceholderText
-					elseif Type == "Text" then
-						TextInput.Text = typeof(Text) == "string" and Text or TextInput.Text
+						if #v > 0 then
+							TextInput.PlaceholderText = v
+
+							ChangedEvent:Fire(k, TextInput.PlaceholderText)
+						end
+					elseif k == "Text" then
+						TextField_Opt.Text = CheckType(v, TextField_Opt.Type, TextField_Opt.Text)
+
+						if #TextField_Opt.Text > 0 and not TextField_Opt.ReadOnly then
+							if TextField_Opt.Type == "string" then
+								TextInput.Text = TextField_Opt.Text
+
+								TextField_Opt.Callback(TextInput.Text, TextField_Data)
+							elseif TextField_Opt.Type == "number" then
+								TextInput.Text = TextField_Opt.Text
+
+								TextField_Opt.Callback(TextInput.Text, TextField_Data)
+							end
+
+							if TextField_Opt.Clear then
+								TextInput.Text = ""
+							end
+
+							ChangedEvent:Fire(k, TextField_Opt.Text)
+						end
+					elseif k == "TextColor" then
+						TextField_Opt.TextColor = CheckType(v, "table", TextField_Opt.TextColor)
+						TextField_Opt.TextColor.Title = CheckType(TextField_Opt.TextColor.Title, "Color3", TextField_Opt.TextColor.Title)
+						TextField_Opt.TextColor.Text = CheckType(TextField_Opt.TextColor.Text, "Color3", TextField_Opt.TextColor.Text)
+
+						TextInput.TextColor3 = TextField_Opt.TextColor.Text
+						TextInput.PlaceholderColor3 = TextField_Opt.TextColor.Title
+
+						ChangedEvent:Fire(k, {Title = TextField_Opt.TextColor.Title, Text = TextField_Opt.TextColor.Text})
+					elseif k == "Font" then
+						TextField_Opt.Font = CheckType(v, "EnumItem", TextField_Opt.Font)
+
+						TextInput.Font = TextField_Opt.Font
+
+						ChangedEvent:Fire("Font", TextField_Opt.Font)
+					elseif k == "Visible" then
+						TextField_Opt.Visible = CheckType(v, "boolean", TextField_Opt.Visible)
+
+						TextField.Visible = TextField_Opt.Visible
+
+						ChangedEvent:Fire("Visible", TextField_Opt.Visible)
+					elseif k == "ReadOnly" then
+						TextField_Opt.ReadOnly = CheckType(v, "boolean", TextField_Opt.ReadOnly)
+
+						ChangedEvent:Fire("ReadOnly", TextField_Opt.ReadOnly)
+					elseif k == "Type" then
+						TextField_Opt.Type = CheckType(table.find({"string", "number"}, v), "string", TextField_Opt.Type)
+
+						ChangedEvent:Fire("Type", TextField_Opt.Type)
+					elseif k == "Clear" then
+						TextField_Opt.Clear = CheckType(v, "boolean", TextField_Opt.Clear)
+
+						ChangedEvent:Fire("Clear", TextField_Opt.Clear)
 					end
 				end,
-				GetText = function(Type)
-					Type = typeof(Type) == "string" and Type or "Title"
-
-					if Type == "Title" then
+				__index = function(t, k)
+					if k == "Title" then
 						return TextInput.PlaceholderText
-					elseif Type == "Text" then
-						return TextInput.Text
+					elseif k == "Text" then
+						return TextField_Opt.Text
+					elseif k == "TextColor" then
+						return TextField_Opt.TextColor
+					elseif k == "Font" then
+						return TextField_Opt.Font
+					elseif k == "Visible" then
+						return TextField_Opt.Visible
+					elseif k == "ReadOnly" then
+						return TextField_Opt.ReadOnly
+					elseif k == "Type" then
+						return TextField_Opt.Type
+					elseif k == "Clear" then
+						return TextField_Opt.Clear				
+					elseif k == "Players" then
+						return function(Input)
+							Input = CheckType(Input, "string", nil)
+
+							if Input then
+								local Found = {}
+								local Method = Input:lower()
+
+								if Method == "me" then
+									table.insert(Found, Players.LocalPlayer.Name)
+								elseif Method == "random" then
+									table.insert(Found, Players:GetPlayers()[math.random(1, #Players:GetPlayers())])
+								end
+
+								for _,v in pairs(Players:GetPlayers()) do
+									if Method == "others" then
+										if v ~= Players.LocalPlayer then
+											table.insert(Found, v)
+										end
+									elseif Method == "all" then
+										table.insert(Found, v)
+									elseif Method == "nonfriends" then
+										if not v:GetFriendStatus(Players.LocalPlayer) == Enum.FriendStatus.NotFriend and v ~= Players.LocalPlayer then
+											table.insert(Found, v)
+										end
+									elseif Method == "friends" then
+										if v:GetFriendStatus(Players.LocalPlayer) == Enum.FriendStatus.NotFriend then
+											table.insert(Found, v)
+										end
+									elseif Method == "enemies" then
+										if v.Team ~= Players.LocalPlayer.Team then
+											table.insert(Found, v)
+										end
+									elseif Method == "allies" then
+										if v.Team == Players.LocalPlayer.Team then
+											table.insert(Found, v)
+										end
+									else
+										if v.Name:lower():sub(1, #Input) == Input:lower() or v.DisplayName:lower():sub(1, #Input) == Input:lower() then
+											table.insert(Found, v)
+										end
+									end
+								end
+
+								if table.maxn(Found) > 0 then
+									return Found
+								end
+
+								return nil
+							end
+						end
+					elseif k == "Changed" then
+						return Chan
+					elseif k == "Destroy" then
+						return function()
+							return TextField:Destroy()
+						end
 					end
 				end,
-				SetTextColor = function(TextColor, Type)
-					Type = typeof(Type) == "string" and Type or "Title"
-					
-					if Type == "Title" then
-						TextInput.PlaceholderColor = typeof(TextColor) == "Color3" and TextColor or TextInput.PlaceholderColor
-					elseif Type == "Text" then
-						TextInput.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TextInput.TextColor3
-					end
-				end,
-				GetTextColor = function(Type)
-					Type = typeof(Type) == "string" and Type or "Title"
-					
-					return Type == "Title" and TextInput.PlaceholderColor or Type == "Text" and TextInput.TextColor3
-				end,
-				SetFont = function(Font)
-					TextInput.Font = typeof(Font) == "EnumItem" and Font or TextInput.Font
-				end,
-				GetFont = function()
-					return TextInput.Font
-				end,
-				SetVisible = function(Visible)
-					TextField.Visible = typeof(Visible) ~= "boolean" and TextField.Visible or Visible
-				end,
-				GetVisible = function()
-					return TextField.Visible
-				end,
-				SetInputType = function(InputType)
-					TextInput.TextInputType = typeof(InputType) == "string" and Enum.TextInputType[InputType] or TextInput.TextInputType
-				end,
-				GetInputType = function()
-					return TextInput.TextInputType.Name
+				__call = function(Func, ...)
+					Func(Func, ...)
 				end
-			})
+			}
+
+			local MenuAdded, MenuBar = TryAddMenu(TextField, TextField_Opt.Menu, setmetatable({}, Funcs))
 
 			if MenuAdded then
 				MenuBar.ImageColor3 = ThisTheme.TextFieldAccent
 			end
 
-			function TextFieldLibrary:SetText(Text, Type)
-				Type = typeof(Type) == "string" and Type or "Title"
-
-				if Type == "Title" then
-					TextInput.PlaceholderText = typeof(Text) == "string" and Text or TextInput.PlaceholderText
-				elseif Type == "Text" then
-					if TextField_InputType == "Number" or TextField_InputType == "Phone" then
-						TextInput.Text = tonumber(Text) and Text or tonumber(TextInput.Text)
-						pcall(TextField_Callback, tonumber(TextInput.Text), TextFieldLibrary)
-					elseif TextField_InputType == "Default" or TextField_InputType == "PasswordShown" or TextField_InputType == "Username" then
-						TextInput.Text = tostring(Text) and Text or tostring(TextInput.Text)
-						pcall(TextField_Callback, tostring(TextInput.Text), TextFieldLibrary)
-					end
-				end
-			end
-
-			function TextFieldLibrary:GetText(Type)
-				Type = typeof(Type) == "string" and Type or "Title"
-
-				if Type == "Title" then
-					return TextInput.PlaceholderText
-				elseif Type == "Text" then
-					return (TextField_InputType == "Number" or TextField_InputType == "Phone") and tonumber(TextInput.Text) or TextInput.Text
-				end
-			end
-
-			function TextFieldLibrary:SetTextColor(TextColor, Type)
-				Type = typeof(Type) == "string" and Type or "Title"
-					
-				if Type == "Title" then
-					TextInput.PlaceholderColor = typeof(TextColor) == "Color3" and TextColor or TextInput.PlaceholderColor
-				elseif Type == "Text" then
-					TextInput.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TextInput.TextColor3
-				end
-			end
-
-			function TextFieldLibrary:GetTextColor(Type)
-				Type = typeof(Type) == "string" and Type or "Title"
-					
-				return Type == "Title" and TextInput.PlaceholderColor or Type == "Text" and TextInput.TextColor3
-			end
-
-			function TextFieldLibrary:SetFont(Font)
-				TextInput.Font = typeof(Font) == "EnumItem" and Font or TextInput.Font
-			end
-
-			function TextFieldLibrary:GetFont()
-				return TextInput.Font
-			end
-
-			function TextFieldLibrary:SetVisible(Visible)
-				TextField.Visible = typeof(Visible) ~= "boolean" and TextField.Visible or Visible
-			end
-
-			function TextFieldLibrary:GetVisible()
-				return TextField.Visible
-			end
-
-			function TextFieldLibrary:SetInputType(InputType)
-				TextInput.TextInputType = typeof(InputType) == "string" and Enum.TextInputType[InputType] or TextInput.TextInputType.Name
-			end
-
-			function TextFieldLibrary:GetInputType()
-				return TextInput.TextInputType.Name
-			end
-
-			function TextFieldLibrary:GetPlayer(Input)
-				if typeof(Input) == "string" then
-					local Found = {}
-					local Method = Input:lower()
-
-					if Method == "me" then
-						table.insert(Found, Players.LocalPlayer.Name)
-					elseif Method == "random" then
-						table.insert(Found, Players:GetPlayers()[math.random(1, #Players:GetPlayers())])
-					end
-
-					for _,v in pairs(Players:GetPlayers()) do
-						if Method == "others" then
-							if v ~= Players.LocalPlayer then
-								table.insert(Found, v)
-							end
-						elseif Method == "all" then
-							table.insert(Found, v)
-						elseif Method == "nonfriends" then
-							if not v:GetFriendStatus(Players.LocalPlayer) == Enum.FriendStatus.NotFriend and v ~= Players.LocalPlayer then
-								table.insert(Found, v)
-							end
-						elseif Method == "friends" then
-							if v:GetFriendStatus(Players.LocalPlayer) == Enum.FriendStatus.NotFriend then
-								table.insert(Found, v)
-							end
-						elseif Method == "enemies" then
-							if v.Team ~= Players.LocalPlayer.Team then
-								table.insert(Found, v)
-							end
-						elseif Method == "allies" then
-							if v.Team == Players.LocalPlayer.Team then
-								table.insert(Found, v)
-							end
-						else
-							if v.Name:lower():sub(1, #Input) == Input:lower() or v.DisplayName:lower():sub(1, #Input) == Input:lower() then
-								table.insert(Found, v)
-							end
-						end
-					end
-
-					if table.maxn(Found) > 0 then
-						return Found
-					end
-
-					return nil
-				end
-			end
-
-			function TextFieldLibrary:GetTextChanged(SignalConfig)
-				local Type = typeof(SignalConfig.Type) == "string" and SignalConfig.Type or "Title"
-				local Callback = typeof(SignalConfig.Callback) == "function" and SignalConfig.Callback or function() end
-
-				Type = Type == "Title" and "PlaceholderText" or "Text"
-		
-				local Connection
-				Connection = TextInput:GetPropertyChangedSignal(Type):Connect(function()
-					pcall(Callback, TextInput[Type], Connection)
-				end)
-			end
-
-			function TextFieldLibrary:Destroy()
-				TextField:Destroy()
-			end
-
-			return TextFieldLibrary
+			return setmetatable(TextField_Data, Funcs)
 		end
 
-        function OptionLibrary:GuiSettings(GuiConfig)
-            GuiConfig = typeof(GuiConfig) == "table" and GuiConfig or {}
+		function Tab_Data:Settings(Settings_Opt)
+			Settings_Opt = CheckType(Settings_Opt, "table", {})
 
-			local _Options = typeof(GuiConfig.Options) ~= "boolean" and true or GuiConfig.Options
-			local Rejoin = typeof(GuiConfig.Rejoin) ~= "boolean" and true or GuiConfig.Rejoin
+			Settings_Opt.Rejoin = CheckType(Settings_Opt.Rejoin, "boolean", false)
+			Settings_Opt.Options = CheckType(Settings_Opt.Options, "boolean", false)
 
-            if not Load_Minimize then
-                ToggleGUI = OptionLibrary:Bind({
-                    Text = "Toggle Gui",
-                    Bind = IsKeyCode(Setting.Keybind) and Enum.KeyCode[Setting.Keybind] or Default.Keybind,
-                    Callback = function(State)
-                        TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = State and Position(Load_Position, MainFrame).Hide or Position(Load_Position, MainFrame).Position}):Play()
-                    end
-                })
-            else
-                OptionLibrary:Button({
-                    Text = "Destroy UI",
-                    Callback = function()
+
+			local ToggleUI, Theme
+
+			if not Load_Opt.Minimize then
+				ToggleUI = self:Bind({
+					Text = "Toggle UI",
+					Bind = IsKeyCode(Setting.Keybind),
+					Callback = function(State)
+						TweenService:Create(MainFrame, TweenInfo.new(1, Enum.EasingStyle.Linear), {Position = State and Position(Load_Position, MainFrame).Hide or Position(Load_Position, MainFrame).Position}):Play()
+					end
+				})
+			else
+				self:Button({
+					Text = "Destroy UI",
+					Callback = function()
 						TweenService:Create(MainFrame, TweenInfo.new(1), {Size = UDim2.fromOffset(Load_SizeX, 0)}):Play()
 						MainFrame.ClipsDescendants = true
 						task.wait(1)
 						NewInstance:Destroy()
-                    end
-                })
-            end
+					end
+				})
+			end
 
-            GetTheme = OptionLibrary:Dropdown({
-				Text = "Theme",
-				Hide = true,
-                Visible = Theme,
-				Default = Setting.Theme,
-				Options = {
-					"Light",
-					"Dark",
-					"Mocha",
-					"Aqua",
-					"Jester",
-				}
-			})
+			if Settings_Opt.Rejoin then
+				self:Separator()
 
-            if Rejoin then
-				OptionLibrary:Separator()
-
-				OptionLibrary:Button({
+				self:Button({
 					Text = "Rejoin",
 					Callback = function()
-                        if RobloxReplicatedStorage.GetServerType:InvokeServer() == "StandardServer" then
+						if RobloxReplicatedStorage.GetServerType:InvokeServer() == "StandardServer" then
                             if table.maxn(Players:GetPlayers()) <= 1 then
                                 Players.LocalPlayer:Kick("\nRejoining...")
                                 TeleportService:Teleport(game.PlaceId)
@@ -4134,7 +4308,7 @@ function Material:Load(Config)
                                 TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
                             end
                         else
-                            Material.Notification({
+                            TabLibrary:Banner({
                                 Title = ("Can't rejoin, your current server type is %s"):format(RobloxReplicatedStorage.GetServerType:InvokeServer()),
                                 Duration = 5
                             })
@@ -4143,8 +4317,8 @@ function Material:Load(Config)
 				})
 			end
 
-            if _Options then
-				OptionLibrary:ChipSet({
+			if Settings_Opt.Options then
+				self:ChipSet({
 					Callback = function(Selected, State)
 						if Selected == "Performace Stats" then
 							UserSettings().GameSettings.PerformanceStatsVisible = State
@@ -4161,90 +4335,116 @@ function Material:Load(Config)
 					}
 				})
 			end
-        end
 
-		Load_Menu["Restore Settings"] = function()
-			TabLibrary:Banner({
-				Text = "Do you want to restore your settings?",
-				Button = "Cancel",
-				Options = {
-					Restore = function(Self)
-						Setting = Default
-                        writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
+			Load_Opt.Menu["Restore Settings"] = function()
+				TabLibrary:Banner({
+					Text = "Do you want to restore your settings?",
+					Button = "Cancel",
+					Options = {
+						Restore = function()
+							Setting = Default
 
-						if ToggleGUI then
-							ToggleGUI:SetBind(Setting.Keybind)
+							writefile(("%s.json"):format(File), HttpService:JSONEncode(Setting))
+
+							if ToggleUI then
+								ToggleUI.Bind = IsKeyCode(Setting.Keybind)
+							end
+
+							if Theme then
+								Theme.Option = Setting.Theme
+							end
+
+							Self.Text = "Configuration restored!"
+							task.wait(0.15)
+							Self:Close()
 						end
-
-						if GetTheme then
-							GetTheme:SetOption(Setting.Theme)
-						end
-
-						Self:SetText("Configuration restored!")
-						task.wait(0.15)
-						Self:Close()
-					end
-				}
-			})
-		end
-
-		local MenuAdded, MenuButton = TryAddMenu(TitleBar, Load_Menu, {})
-
-		if MenuAdded then
-			MenuButton.Position -= UDim2.fromOffset(31, 0)
-		end
-
-		Players.LocalPlayer.Destroying:Connect(function()
-			if ToggleGUI then
-				Setting.Keybind = ToggleGUI:GetBind()
+					}
+				})
 			end
 
-			if GetTheme then
-				Setting.Theme = GetTheme:GetOption()
+			local MenuAdded, MenuButton = TryAddMenu(TitleBar, Load_Opt.Menu, {})
+
+			if MenuAdded then
+				MenuButton.Position = MenuButton.Position - UDim2.fromOffset(31, 0)
 			end
 
-			Setting.Overrides = Load_Overrides
-			writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
-		end)
-
-		NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
-			if not NewInstance.Parent then
-				if ToggleGUI and GetTheme then
-					Setting.Keybind = ToggleGUI:GetBind()
-					Setting.Theme = GetTheme:GetOption()
+			local Connection1
+			Connection1 = Players.LocalPlayer.Destroying:Connect(function()
+				if ToggleUI then
+					Setting.Keybind = ToggleUI.Bind.Name
 				end
 
-                Setting.Overrides = Load_Overrides
+				if Theme then
+					Setting.Theme = Theme.Option
+				end
 
-				writefile("MaterialSettings.json", HttpService:JSONEncode(Setting))
+				writefile(("%s.json"):format(File), HttpService:JSONEncode(Setting))
+
+				Connection1:Disconnect()
+			end)
+
+			local Connection2
+			Connection2 = NewInstance:GetPropertyChangedSignal("Parent"):Connect(function()
+				if not NewInstance.Parent then
+					if ToggleUI then
+						Setting.Keybind = ToggleUI.Bind.Name
+					end
+
+					if Theme then
+						Setting.Theme = Theme.Option
+					end
+
+					writefile(("%s.json"):format(File), HttpService:JSONEncode(Setting))
+
+					Connection2:Disconnect()
+				end
+			end)
+		end
+
+		return setmetatable(Tab_Data, {
+			__newindex = function(t, k, v)
+				if k == "Title" then
+					Tab_Opt.Title = CheckType(v, "string", Tab_Opt.Title)
+
+					Button.Text = Tab_Opt.Title
+				elseif k == "TextColor" then
+					Tab_Opt.TextColor = CheckType(v, "Color3", Tab_Opt.TextColor)
+
+					Button.TextColor3 = Tab_Opt.TextColor
+				elseif k == "RichText" then
+					Tab_Opt.RichText = CheckType(v, "boolean", Tab_Opt.RichText)
+
+					Button.RichText = Tab_Opt.RichText
+				elseif k == "Font" then
+					Tab_Opt.Font = CheckType(v, "EnumItem", Tab_Opt.Font)
+
+					Button.Font = Tab_Opt.Font
+				elseif k == "Visible" then
+					Tab_Opt.Visible = CheckType(v, "boolean", Tab_Opt.Visible)
+
+					Button.Visible = Tab_Opt.Visible
+				elseif k == "Image" then
+					Tab_Opt.Image = CheckType(v, "number", Tab_Opt.Image)
+
+					NewImage.Image = RunService:IsStudio() and "http://www.roblox.com/asset/?id=5472131383" or game:GetObjects(("rbxassetid://%s"):format(Tab_Opt.Image))[1].Texture
+				end
+			end,
+			__index = function(t, k)
+				if k == "Title" then
+					return Tab_Opt.Title
+				elseif k == "TextColor" then
+					return Tab_Opt.TextColor
+				elseif k == "RichText" then
+					return Tab_Opt.RichText
+				elseif k == "Font" then
+					return Tab_Opt.Font
+				elseif k == "Visible" then
+					return Tab_Opt.Visible
+				elseif k == "Image" then
+					return Tab_Opt.Image
+				end
 			end
-		end)
-
-		return OptionLibrary
-	end
-
-	function TabLibrary:SetTitle(Text)
-		TitleText.Text = typeof(Text) == "string" and Text or TitleText.Text
-	end
-
-	function TabLibrary:GetTitle()
-        return Tab_RichText and TitleText.ContentText or TitleText.Text
-    end
-
-	function TabLibrary:SetTextColor(TextColor)
-		TitleText.TextColor3 = typeof(TextColor) == "Color3" and TextColor or TitleText.TextColor3
-	end
-
-	function TabLibrary:GetTextColor()
-		return TitleText.TextColor3
-	end
-
-	function TabLibrary:SetFont(Font)
-		TitleText.Font = typeof(Font) == "EnumItem" and Font or TitleText.Font
-	end
-
-	function TabLibrary:GetFont()
-		return TitleText.Font
+		})
 	end
 
 	return TabLibrary
