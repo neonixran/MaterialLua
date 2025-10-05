@@ -5,7 +5,7 @@ A material design library, designed for use in Roblox.
 [Balance](https://discord.gg/jzR3vfV)
 
 # Documentation Site
-[Material Docs](https://archemit.gitbook.io/material-lua/)
+[Material Docs](https://uis.gitbook.io/material/)
 
 # Full Changelog [08/07/2022]
 ```
